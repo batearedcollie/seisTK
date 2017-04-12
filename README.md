@@ -22,18 +22,18 @@ Installation
 
 * Boost and Boost Python
 
-* VTK (compiled with Python bindings)
+* VTK (compiled with Python bindings) [https://github.com/Kitware/VTK]
 
-* ObsPy (for the tests)
+* ObsPy (for the tests) [https://github.com/obspy/obspy]
 
 ###  Building 
 
  
-* Use Cmake to configure the build
+Use Cmake to configure the build
 
     $ cmake path/to/source
 
-* Then *make* and *make install*
+Then *make* and *make install*
 
     $ make 
 
@@ -60,5 +60,5 @@ Usage
 See:
 
 * cpp/Examples
-* python/Examples
+* stk/Examples
 

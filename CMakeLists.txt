@@ -24,111 +24,88 @@
 # TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, 
 # EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-# Installation directory
-## todo make this a cche path but cannot get it working
-set(PYTHON_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib/python2.7/site-packages/stk")
 
-# Module list to work though - these will be built for python compatibility
-set(PYTHON_MODULES "DataTypes" "Algorithms")
+# set the required version
+cmake_minimum_required(VERSION 3.2)
 
-# Modules that will be linked but not built for python
-#set(LINKED_MODULES "" )
+# Create a project
+project(seisTK)
 
-# Listof VTK modules used
-set(VTK_MODULES_USED vtkCommonDataModel vtkCommonCore vtkCommonExecutionModel) 
-set(VTK_PYTHOND_LIBS)
-foreach(TMP_LIB ${VTK_MODULES_USED})  
-  set(pythonD ${TMP_LIB}PythonD)
-  set(VTK_PYTHOND_LIBS ${VTK_PYTHOND_LIBS} ${pythonD})
-endforeach()
+#######################################
+# Add to the module path
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CMake ${CMAKE_MODULE_PATH})
 
-# Add the includes
-foreach(MOD ${PYTHON_MODULES})
-    include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../cpp/${MOD}/")
-endforeach()
-foreach(MOD ${LINKED_MODULES})
-    include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../cpp/${MOD}/")
-endforeach()
+#######################################
 
-#Add the non-built modules to link against
-foreach(MOD ${LINKED_MODULES})
-    list(APPEND PREVMODS Sp${MOD})
-endforeach()
+# These RPATH settings allow targets to run from the build tree
+set(CMAKE_MACOSX_RPATH FALSE)
+set(CMAKE_SKIP_BUILD_RPATH FALSE)    
+list(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib" isSystemDir)
+if("${isSystemDir}" STREQUAL "-1")
+    set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+endif("${isSystemDir}" STREQUAL "-1")
 
-#Dummy target for all python builds
-add_custom_target(pythonWrapping ALL)
 
-# Make sure that -fPIC is included in the CXX_FLAGS and C_FLAGS
-add_compile_options(-fPIC)
+#######################################
+# Numpy
+find_package(NumPy REQUIRED)
+if(NOT NUMPY_FOUND)
+    MESSAGE(FATAL_ERROR "Unable to find NumPy")
+endif()
+include_directories("${PYTHON_NUMPY_INCLUDE_DIR}")
+
+#######################################
+# VTK
+find_package(VTK REQUIRED)
+include(${VTK_USE_FILE})
+message(STATUS "VTK_LIBRARIES = ${VTK_LIBRARIES}")
+message(STATUS "VTK_INSTALL_PREFIX = ${VTK_INSTALL_PREFIX}")
+
+#######################################
+# Python and vtk wrapping
+find_package(PythonLibs 2.7 REQUIRED)
+include(vtkWrapPython)
+include_directories("${PYTHON_INCLUDE_PATH}")
+
+#######################################
+# Boost
+find_package(Boost REQUIRED)
+if(NOT Boost_FOUND)
+    MESSAGE(FATAL_ERROR "Unable to find correct Boost version. Did you set BOOST_ROOT?")
+endif()
+set(Boost_USE_STATIC_LIBS OFF)
+set(Boost_USE_MULTITHREADED ON)
+set(Boost_USE_STATIC_RUNTIME OFF)
+find_package(Boost COMPONENTS python)
+include_directories("${Boost_INCLUDE_DIRS}")
+message(STATUS "Boost_LIBRARIES = ${Boost_LIBRARIES}")
+
+#######################################
+# Add some general compile options - supress a few warnings
+
 add_compile_options(-std=c++11)
+if(APPLE)
+    add_compile_options("-Wno-macro-redefined")
+    add_compile_options("-Wno-#pragma-messages")
+else()
 
-# Work through modules and create python bindings
-foreach(MOD ${PYTHON_MODULES})
-
-    # Get a list of the source files for this module
-    file(GLOB SRC_FILES "${CMAKE_CURRENT_SOURCE_DIR}/../cpp/${MOD}/*.cxx")
-
-    # Wrapping    
-    vtk_wrap_python3(${MOD} PY_SRC_FILES "${SRC_FILES}")
-    
-    # PythonD target
-    add_library(${MOD}PythonD ${PY_SRC_FILES} ${SRC_FILES})
-    target_link_libraries(${MOD}PythonD    
-                            ${PREVMODS}    
-                            ${VTK_LIBRARIES}
-                            vtkWrappingPythonCore 
-                            ${VTK_PYTHON_LIBRARIES}
-                            )
-    
-    #message(STATUS "${MOD} PREVMODS = ${PREVMODS}")
-    #message(STATUS "VTK_PYTHOND_LIBS = ${VTK_PYTHOND_LIBS}")
-    
-    # Shared library target
-    add_library(${MOD} MODULE ${MOD}Init.cxx)
-    target_link_libraries(${MOD} 
-                        ${MOD}PythonD  
-                        ${VTK_PYTHOND_LIBS}
-                        ${Boost_LIBRARIES}
-                        ${FFTW_LIBRARIES})
-          
-    set_target_properties(${MOD} PROPERTIES PREFIX "")
-    if(APPLE) 
-        set_target_properties(${MOD} PROPERTIES SUFFIX ".so")
-    endif()
-    if(WIN32 AND NOT CYGWIN)
-        set_target_properties(${MOD} PROPERTIES SUFFIX ".pyd")
-    endif(WIN32 AND NOT CYGWIN)
-
-    # Add a dependecy to the main target
-    add_dependencies(pythonWrapping ${MOD})
-
-    # Install targets
-    install(TARGETS ${MOD} ${MOD}PythonD 
-        RUNTIME DESTINATION bin
-        LIBRARY DESTINATION ${PYTHON_INSTALL_DIR}
-        ARCHIVE DESTINATION ${PYTHON_INSTALL_DIR}
-        )
-
-    # Append to previous modules
-    list(APPEND PREVMODS ${MOD}PythonD)
-            
-endforeach()
+endif()
 
 
-#####################################
-# Install the curent __init__.py
+#######################################
+# Enable the tests
+enable_testing()
 
-file(GLOB PYTHON_MOD_SRC "${CMAKE_CURRENT_SOURCE_DIR}/*.py" )
-file(COPY ${PYTHON_MOD_SRC} DESTINATION ${CMAKE_CURRENT_BINARY_DIR} )
+#######################################
+# Build the modules
+add_subdirectory(cpp/DataTypes)
+add_subdirectory(cpp/Algorithms)
+add_subdirectory(cpp/Examples)
+add_subdirectory(stk)
 
-install(
-    DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
-    DESTINATION ${PYTHON_INSTALL_DIR}
-    FILES_MATCHING PATTERN "*.py"
-    )
 
-# Add the subdirectories
-add_subdirectory(obspyExt)
-add_subdirectory(Examples)
-    
-    
+#######################################
+# Documentation
+add_subdirectory(docs)
+
+
