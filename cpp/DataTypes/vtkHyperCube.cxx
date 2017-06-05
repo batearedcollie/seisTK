@@ -110,7 +110,7 @@ void vtkHyperCube::DeepCopy(vtkDataObject* src)
 
 }
 
-//Empty copy
+// Empty copy
 void vtkHyperCube::EmptyCopy(vtkDataObject* src)
 {
   if (vtkHyperCube* const pdo = vtkHyperCube::SafeDownCast(src))
@@ -125,7 +125,7 @@ void vtkHyperCube::EmptyCopy(vtkDataObject* src)
     }
 }
 
-//Empty copy
+// Empty copy
 void vtkHyperCube::UnAllocatedCopy(vtkDataObject* src)
 {
   if (vtkHyperCube* const pdo = vtkHyperCube::SafeDownCast(src))

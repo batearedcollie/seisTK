@@ -181,6 +181,11 @@ public:
 	//! Append to the dictionary list
 	void appendDict(PyObject *dd);
 
+	//! Append to the dictionary list (for C++)
+	void appendDict(boost::python::dict dict){
+		this->d_list.append(dict.copy());
+	}
+
 	//! Update the trace dictionary for a specific trace
 	void UpdateTraceDictionary(int trace, boost::python::dict);
 
@@ -215,6 +220,9 @@ public:
 
 	//! Create an copy
 	virtual void EmptyCopy(vtkDataObject* src);
+
+	//! Copy but without allocating any scalars
+	virtual void UnAllocatedCopy(vtkDataObject* src);
 
 	//! Copies a list of dictionaries into the trace dictionary list
 	virtual void DictionaryListCopy(PyObject *dd);

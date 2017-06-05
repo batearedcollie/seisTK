@@ -138,6 +138,9 @@ public:
 	virtual void EmptyCopy(vtkDataObject* src);
 
 	//! Copy but without alocating any scalars
+	/*!
+	 * Note - that if you use this you also have to ste the ScalarName
+	 */
 	virtual void UnAllocatedCopy(vtkDataObject* src);
 
 	//! Zero elements in double or float cube

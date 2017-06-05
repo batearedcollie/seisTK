@@ -163,6 +163,17 @@ void vtkTracePanelData::EmptyCopy(vtkDataObject* src)
   this->Superclass::EmptyCopy(src);
 }
 
+void vtkTracePanelData::UnAllocatedCopy(vtkDataObject* src)
+{
+
+	if (vtkTracePanelData* const pdo = vtkTracePanelData::SafeDownCast(src))
+	    {
+		  this->DictionaryListCopy(pdo->GetDictionaryList());
+	      this->Modified();
+	    }
+	this->Superclass::UnAllocatedCopy(src);
+}
+
 void vtkTracePanelData::DictionaryListCopy(PyObject *dd)
 {
   boost::python::extract< boost::python::list > list_ext(dd);
