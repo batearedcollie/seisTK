@@ -26,6 +26,8 @@ Installation
 
 * ObsPy (for the tests) [https://github.com/obspy/obspy]
 
+* Madagascar (for the tests) [https://github.com/ahay/src/] - compiled with python/ m8r bindings
+
 ###  Building 
 
  

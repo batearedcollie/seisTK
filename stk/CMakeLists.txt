@@ -130,6 +130,7 @@ install(
 # Add the subdirectories
 add_subdirectory(generators)
 add_subdirectory(obspyExt)
+add_subdirectory(mdExt)
 add_subdirectory(Examples)
     
     

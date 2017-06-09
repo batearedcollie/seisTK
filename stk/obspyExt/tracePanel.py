@@ -25,7 +25,6 @@
 # EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 from vtk.util import numpy_support
-from stk.DataTypes import vtkTracePanelData
 
 from obspy.core.stream import Stream as obsStream
 from obspy.core.trace import Trace as obsTrace

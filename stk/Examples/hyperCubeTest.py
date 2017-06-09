@@ -26,12 +26,20 @@
 #
 
 import stk.generators as gen
+import stk.mdExt as md
+
+
 import numpy as np
+import m8r as sf
 
 def HyperCubeDataSet():
     '''
-    Createing a simple HyperCube data object
+    Creating a simple HyperCube data object
     '''
+
+    print "\n***********************************"
+    print "Generic import"
+    print "***********************************" 
  
     # Generate a simple hyper cube
     cube = gen.hyperCubeGenerate(array=np.zeros([10,20,5,6],dtype=np.float),
@@ -46,6 +54,45 @@ def HyperCubeDataSet():
     for i,nn in enumerate(dims):
         print "Length = ",nn," spacing =",cube.GetAxisSpacing(i)," origin =",cube.GetAxisOrigin(i)
 
+def HyperCubeMadagascarTest():
+    '''
+    Converting to/from Madagascar/m8r
+    '''
     
+    print "\n***********************************"
+    print "M8r import/export"
+    print "***********************************" 
+    
+    # Make a madagascar file object
+    grid = sf.math(output="sin(x1)*cos(x2)",
+                   n1=101,n2=101,
+                   d1=0.2,d2=0.2,
+                   o1=10,o2=-10.)[0]
+    
+    #Grid informations
+    print "Madagascar data cube"
+    grid.sfin()
+    
+    print "\nConverting to vtkHyperCube"
+    cube=md.M8rToHyperCubeData(grid)
+    
+    print "Number of dimensions is ",cube.GetNDimensions()
+    
+    dims=np.zeros([cube.GetNDimensions()],dtype=np.int)  
+    cube.GetFullDimensions(dims)
+    for i,nn in enumerate(dims):
+        print "Length = ",nn," spacing =",cube.GetAxisSpacing(i)," origin =",cube.GetAxisOrigin(i)
+
+
+    print "\nConverting back to madagascar"
+    mdObj = md.ToMadagascar(cube)
+
+    print "\nsfin:"
+    mdObj.sfin()
+
+    print "\nsfattr:"
+    mdObj.attr()
+        
 if __name__ == '__main__':
     HyperCubeDataSet()
+    HyperCubeMadagascarTest()
