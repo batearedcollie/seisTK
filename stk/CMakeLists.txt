@@ -89,7 +89,7 @@ foreach(MOD ${PYTHON_MODULES})
                         ${MOD}PythonD  
                         ${VTK_PYTHOND_LIBS}
                         ${Boost_LIBRARIES}
-                        ${FFTW_LIBRARIES})
+                        )
           
     set_target_properties(${MOD} PROPERTIES PREFIX "")
     if(APPLE) 
@@ -128,6 +128,7 @@ install(
     )
 
 # Add the subdirectories
+add_subdirectory(generators)
 add_subdirectory(obspyExt)
 add_subdirectory(Examples)
     

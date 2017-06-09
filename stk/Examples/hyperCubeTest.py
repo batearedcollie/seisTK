@@ -24,8 +24,28 @@
 # TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, 
 # EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-'''
-Transfer between seisTK and ObsPy
-'''
 
-from tracePanel import ToTracePanelData,ToObsPy
+import stk.generators as gen
+import numpy as np
+
+def HyperCubeDataSet():
+    '''
+    Createing a simple HyperCube data object
+    '''
+ 
+    # Generate a simple hyper cube
+    cube = gen.hyperCubeGenerate(array=np.zeros([10,20,5,6],dtype=np.float),
+                          delta=[0.1,0.2,1.,2.],
+                          origin=[-0.5,0.,-10.,3.],
+                          )
+    print "Number of dimensions is ",cube.GetNDimensions()
+    
+    dims=np.zeros([4],dtype=np.int)
+        
+    cube.GetFullDimensions(dims)
+    for i,nn in enumerate(dims):
+        print "Length = ",nn," spacing =",cube.GetAxisSpacing(i)," origin =",cube.GetAxisOrigin(i)
+
+    
+if __name__ == '__main__':
+    HyperCubeDataSet()

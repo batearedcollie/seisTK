@@ -30,69 +30,11 @@ from stk.DataTypes import vtkTracePanelData
 from obspy.core.stream import Stream as obsStream
 from obspy.core.trace import Trace as obsTrace
 
+import stk.generators as gen
+
 import numpy as np
 import copy
 
-def Generate(array=np.zeros([100,1]),
-            traceDictList=[],
-            delta=1.,
-            origin=0.,
-            name="TraceData",
-            copy=True
-            ):
-    '''
-    @summary: Generates a vtkTracePanelData object from an input numpy array
-                
-    @param array: input data array
-    @type array: numpy nd array 
-    @param traceDictList: trace dictionary
-    @type traceDictList: [dict]  
-    @param delta: time sampling   
-    @type delta: float
-    @param origin: origin time for traces
-    @type origin: float
-    @param name: Name for data array
-    @type name: string
-    @param copy: perform a copy of the source array (turn this off at own risk)
-    @type copy: boolean      
-    
-    ** Example Usage **
-    
-    >>> from stk.obspyExt import tracePanel as tp
-
-    >>> tp = tp.Generate(array=mat,
-                       traceDict=dictionaryList,
-                       delta=deltaT,
-                       origin=0.,
-                       )
-                       
-    .. warning::                    
- 
-         If you use copy=False then you should not try to access the 
-            the trace data after processing.
-    
-    '''
-    
-    tpD = vtkTracePanelData()
-    
-    nsmpl=array.shape[-1]
-    ntrace=1
-    for i in range(0,len(array.shape)-1): ntrace=ntrace*array.shape[i]
-
-    tpD.SetDimensions(nsmpl,ntrace,1)
-    tpD.SetSpacing(delta,1.,1.)
-    tpD.SetOrigin(origin,0.,0.)
-
-    vtk_data = numpy_support.numpy_to_vtk(array.flatten(),
-                                          deep=copy
-                                          )
-    vtk_data.SetName("TraceData")
-    tpD.GetPointData().SetScalars(vtk_data)
-    
-    # Dictionary is copied by trace panel appendDict()
-    for dd in traceDictList: tpD.appendDict(dd)
-     
-    return tpD
 
 def ToTracePanelData(traces,origin_time=0.,name="TraceData"):
     '''
@@ -107,8 +49,8 @@ def ToTracePanelData(traces,origin_time=0.,name="TraceData"):
     
     ** Example Usage **
     
-    >>> from stk.obspyExt import tracePanel as tp
-    >>> tpD =tp.FromTraceData(dataset,name="TraceData")
+    >>> import stk.obspyExt as stkObs
+    >>> tpD =stkObs.FromTraceData(dataset,name="TraceData")
     '''
 
     # Create the numpy object    
@@ -122,7 +64,7 @@ def ToTracePanelData(traces,origin_time=0.,name="TraceData"):
     ll = []
     for tr in traces: ll.append(tr.stats.__dict__)
     
-    return Generate(array=mat,
+    return gen.tracePanelGenerate(array=mat,
             traceDictList=ll,
             delta=traces[0].stats.delta,
             origin=origin_time,
@@ -148,8 +90,8 @@ def ToObsPy(tracePanel,name="TraceData",useDictPointer=False):
     
     ** Example Usage **
     
-    >>> from stk.obspyExt import tracePanel as tp
-    >>> td = tp.ToTraceData(tpD,name="TraceData")
+    >>> import stk.obspyExt as stkObs
+    >>> td = stkObs.ToTraceData(tpD,name="TraceData")
     '''
 
     numComp = tracePanel.GetNumberOfScalarComponents()
@@ -163,12 +105,8 @@ def ToObsPy(tracePanel,name="TraceData",useDictPointer=False):
         dList=[]
         tracePanel.GetDictionaryList(dList)
 
-    print "dims =",dims[0],dims[1]
-
     for i in range(0,dims[1]):   
         
-        print "Getting ",i
-             
         dd=dList[i]
         
         for j in range(0,numComp):

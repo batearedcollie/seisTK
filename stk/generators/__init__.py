@@ -25,7 +25,8 @@
 # EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 '''
-Transfer between seisTK and ObsPy
+Python module for generating vtkhyperCube and TracePanelData objects
 '''
 
-from tracePanel import ToTracePanelData,ToObsPy
+from hyperCubeGenerate import hyperCubeGenerate
+from tracePanelGenerate import tracePanelGenerate

@@ -29,13 +29,59 @@ from obspy.core.trace import Trace as obsTrace
 from obspy.core import UTCDateTime 
 import numpy as np
 
-import stk.obspyExt.tracePanel as tp
+import stk.generators as gen
+import stk.obspyExt as stkObs
   
+
 def TraceDataSet():
     '''
-    Creating a vtkTracePanelData using python convenience functions
+    Createing a simple HyperCube data object
+    '''
+ 
+    print "\n***********************************"
+    print "Generic import"
+    print "***********************************" 
+    
+    # Generate a simple trace panel data
+    tdata = gen.tracePanelGenerate(
+                        array=np.zeros([1,100]),
+                        traceDictList=[{
+                            'network' : 'Blah',
+                            'station' : 'blah',
+                            'channel' : 'blah',
+                            'starttime' : UTCDateTime(),
+                        }],
+                        delta=1.,
+                        origin=0.,
+                        name="TraceData",
+                          )
+    print "Number of dimensions is ",tdata.GetNDimensions()
+    print "Number of points = ",tdata.GetNumberOfPoints()
+        
+    #print tdata
+    
+    dList=[]
+    tdata.GetDictionaryList(dList) 
+    for i,dd in enumerate(dList):
+        print "Dictionary for trace ",i
+        for kk in dd: print "\t",kk," : ",dd[kk]
+    
+    dims=np.zeros([2],dtype=np.int)
+        
+    tdata.GetFullDimensions(dims)
+    for i,nn in enumerate(dims):
+        print "Length = ",nn," spacing =",tdata.GetAxisSpacing(i)," origin =",tdata.GetAxisOrigin(i)
+
+
+def TraceDataObsPy():
+    '''
+    Creating a vtkTracePanelData using obsPy objects
     '''   
 
+    print "\n***********************************"
+    print "ObsPy functionality"
+    print "***********************************" 
+    
     # Make and obspy data stream
     dta = np.zeros(100)
     dta[50]=1.
@@ -60,7 +106,7 @@ def TraceDataSet():
 
     # Now make it into a trace panel data
     print "\nConverting to trace panel data"
-    tracePanelData = tp.ToTracePanelData(st,origin_time=0.,name="TraceData")    
+    tracePanelData = stkObs.ToTracePanelData(st,origin_time=0.,name="TraceData")    
 
     dims = tracePanelData.GetDimensions()
     print "Working with trace panel data:"
@@ -75,8 +121,9 @@ def TraceDataSet():
         
     # Convert back to obspy
     print "\nBack to ObsPy data"
-    updatedObsPy = tp.ToObsPy(tracePanelData) 
+    updatedObsPy = stkObs.ToObsPy(tracePanelData) 
     print updatedObsPy
 
 if __name__ == '__main__':
     TraceDataSet()
+    TraceDataObsPy()

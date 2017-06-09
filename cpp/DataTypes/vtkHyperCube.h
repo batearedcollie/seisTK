@@ -390,7 +390,7 @@ public:
 	virtual void SetSpacing(double* spc);
 
 
-	//! Getting spacing for a single axis -
+	//! Getting spacing for a single axis
 	//virtual PyObject* GetSpacingPython(){return (PyObject*)this->Spacing.data();}
 	virtual double GetAxisSpacing(int Axis){return this->Spacing[Axis];}
 
@@ -420,6 +420,9 @@ public:
 
 	//! Get axis origins
 	virtual double* GetOrigin(){return this->Origin.data();}
+
+	//! Getting origin for a single axis
+	virtual double GetAxisOrigin(int Axis){return this->Origin[Axis];}
 
 	//! Convenience method for getting a pointer from any field array.
 	void*  GetArrayPointer(vtkDataArray* 	array,int* coordinates);
