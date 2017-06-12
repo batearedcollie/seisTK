@@ -54,14 +54,14 @@ def ToHyperCubeData(MdgscrInput,name="HyperCubeData"):
     axis=1
 
     nn = MdgscrInput.int("n"+str(axis))    
-    while nn !=None:
+    while nn !=None and axis <= len(MdgscrInput.__array__().shape):
         
         delta.append( MdgscrInput.float("d"+str(axis)) )
         origin.append( MdgscrInput.float("o"+str(axis)) )        
         
         axis=axis+1
         nn = MdgscrInput.int("n"+str(axis))
-        
+            
     cube = gen.hyperCubeGenerate(array=MdgscrInput.__array__(),
                           delta=delta,
                           origin=origin,
