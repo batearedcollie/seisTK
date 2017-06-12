@@ -78,7 +78,7 @@ def hyperCubeGenerate(array=np.zeros([100,1]),
 
     tpD = vtkHyperCube()
     tpD.SetNDimensions(nDim)
-    tpD.SetDimensions(array.shape)
+    tpD.SetDimensions(np.flip(array.shape,0))
     tpD.SetSpacing(delta)
     tpD.SetOrigin(origin)
 
