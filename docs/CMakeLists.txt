@@ -52,7 +52,7 @@ if(BUILD_DOCUMENTATION)
                             ${TracePanelFilters}
                       VERBATIM)
 
-    install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html DESTINATION share/seisProc/doc)
+    install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html DESTINATION doc/seisTK)
 
 
 
