@@ -160,6 +160,38 @@ int main()
 		}
 
 
+		// Compute structured coordinates from point ID
+		{
+		cout << "\nComputing Structured coordinates (3D space)\n";
+		double pp[4];
+		hCube->GetPoint(3,pp);
+		cout << "Getting point 3 = "<< pp[0] << ","<< pp[1] << "," << pp[2] << "," << pp[3] << endl;
+		hCube->GetPoint(9,pp);
+		cout << "Getting point 9 =  "<< pp[0] << ","<< pp[1] << "," << pp[2] << "," << pp[3] << endl;
+		hCube->GetPoint(100,pp);
+		cout << "Getting point 100 =  "<< pp[0] << ","<< pp[1] << "," << pp[2] << "," << pp[3] << endl;
+		}
+
+		{
+		cout << "\nComputing Coordinates in ND Space\n";
+		int pp[4];
+		vtkIdType idout;
+		hCube->GetNDPointFromId(3,pp);
+		cout << "Getting point 3 = "<< pp[0] << ","<< pp[1] << "," << pp[2] << "," << pp[3];
+		idout=hCube->ComputePointId(pp);
+		cout << " Backwards id=" << idout << endl;
+		hCube->GetNDPointFromId(9,pp);
+		cout << "Getting point 9 =  "<< pp[0] << ","<< pp[1] << "," << pp[2] << "," << pp[3];
+		idout=hCube->ComputePointId(pp);
+		cout << " Backwards id=" << idout << endl;
+
+		hCube->GetNDPointFromId(100,pp);
+		cout << "Getting point 100 =  "<< pp[0] << ","<< pp[1] << "," << pp[2] << "," << pp[3];
+		idout=hCube->ComputePointId(pp);
+		cout << " Backwards id=" << idout << endl;
+		}
+
+
 	}
 
 	//We use return =0 for tests because

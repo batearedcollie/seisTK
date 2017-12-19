@@ -539,6 +539,22 @@ void vtkHyperCube::ComputeInternalExtent(int* intExt, int* tgtExt, int* bnds)
 	vtkImageData::ComputeInternalExtent(intExt,tgtExt,bnds);
 }
 
+void vtkHyperCube::GetNDPointFromId(vtkIdType id, int *ijk)
+{
+	vtkIdType pp = id;
+	int* dims= this->GetFullDimensions();
+	int i=this->GetNDimensions();
+	while (i>1){
+		vtkIdType str=1;
+		for(int ii=0;ii<i-1;ii++){str=str*dims[ii];}
+		ijk[i-1]=(int)((pp)/str);
+		pp=pp-(ijk[i-1])*str;
+		i--;
+	}
+	ijk[0]=(int)pp;
+}
+
+
 /**************************************/
 // Private methods
 
@@ -584,16 +600,19 @@ int vtkHyperCube::getNDcoordinateFrom3D(int* coord3D,int* coordND)
 {
 	// Get the grid position
 	vtkIdType pp = vtkImageData::ComputePointId(coord3D);
-	int* dims= this->GetFullDimensions();
-	int i=this->GetNDimensions();
-	while (i>1){
-		vtkIdType str=1;
-		for(int ii=0;ii<i-1;ii++){str=str*dims[ii];}
-		coordND[i-1]=(int)((pp)/str);
-		pp=pp-(coordND[i-1])*str;
-		i--;
-	}
-	coordND[0]=(int)pp;
+	this->GetNDPointFromId(pp,coordND);
+
+	//vtkIdType pp = vtkImageData::ComputePointId(coord3D);
+	//int* dims= this->GetFullDimensions();
+	//int i=this->GetNDimensions();
+	//while (i>1){
+	//	vtkIdType str=1;
+	//	for(int ii=0;ii<i-1;ii++){str=str*dims[ii];}
+	//	coordND[i-1]=(int)((pp)/str);
+	//	pp=pp-(coordND[i-1])*str;
+	//	i--;
+	//}
+	//coordND[0]=(int)pp;
 
 	return 1;
 }

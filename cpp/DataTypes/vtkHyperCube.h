@@ -159,6 +159,9 @@ public:
 	}
 
 
+
+
+
 	//!TODO Add an extra dimension - on outside
 
 	//!TODO Remove Null axis with length 1
@@ -389,7 +392,6 @@ public:
 	//! Setting spacing
 	virtual void SetSpacing(double* spc);
 
-
 	//! Getting spacing for a single axis
 	//virtual PyObject* GetSpacingPython(){return (PyObject*)this->Spacing.data();}
 	virtual double GetAxisSpacing(int Axis){return this->Spacing[Axis];}
@@ -441,7 +443,8 @@ public:
 	 */
 	void ComputeInternalExtent(int* intExt, int* tgtExt, int* bnds);
 
-
+	//! Get point in ND structure coords based in id (note using GetPoint return the 3D version)
+	void GetNDPointFromId(vtkIdType id, int *ijk);
 
 
 protected:
