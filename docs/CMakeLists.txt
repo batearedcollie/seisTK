@@ -28,11 +28,13 @@
 ##################################
 # C++ - Doxygen doucmentation
 
+find_package(Doxygen)
+message(STATUS "DOXYGEN_FOUND = ${DOXYGEN_FOUND}")
 option(BUILD_DOCUMENTATION "Create and install the HTML based API  documentation (requires Doxygen)" ${DOXYGEN_FOUND})
 
 if(BUILD_DOCUMENTATION)
 
-    find_package(Doxygen REQUIRED)
+    message(STATUS " Building doxygen documentation")
 
     set(doxyfile_in ${CMAKE_CURRENT_SOURCE_DIR}/stk.doxyfile)
     set(doxyfile ${CMAKE_CURRENT_BINARY_DIR}/doxyfile)
@@ -53,11 +55,6 @@ if(BUILD_DOCUMENTATION)
                       VERBATIM)
 
     install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html DESTINATION doc/seisTK)
-
-
-
-##################################
-# Python - Sphinx documentation
 
 
 endif()
