@@ -38,6 +38,7 @@ Copyright 2017 Bateared Collie
 #include "vtkDataArray.h"
 
 #include <iostream>
+#include <vector>
 
 //! Macro to define pointer into hyper cube and run code
 #define USEHYPERCUBE_POINTERMACRO(type,cube,i,j,k,pvar,code)	\
@@ -146,10 +147,16 @@ public:
 	//! Zero elements in double or float cube
 	virtual void Zero();
 
-	//! Compute 3D (wrapped) coordinates from ND
+	//! Compute 3D (wrapped) coordinates from ND - thread safe
+	void  Get3DcoordinateFromND(int* coordND, int coord3D[3]);
+
+	//! Compute 3D (wrapped) coordinates from ND - Not thread safe
 	int*  Get3DcoordinateFromND(int* coordND);
 
-	//! Compute ND (unwrapped) coordinates from 3D
+	//! Compute ND (unwrapped) coordinates from 3D - thread safe
+	void  GetNDcoordinateFrom3D(int coord3D[3], int* iPoint);
+
+	//! Compute ND (unwrapped) coordinates from 3D - Not thread safe
 	int*  GetNDcoordinateFrom3D(int* coord3D);
 
 	//! Compute ND (unwrapped) coordinates from 3D
@@ -157,9 +164,6 @@ public:
 		int coord[3]={i,j,k};
 		return this->GetNDcoordinateFrom3D(coord);
 	}
-
-
-
 
 
 	//!TODO Add an extra dimension - on outside
@@ -300,10 +304,16 @@ public:
 		vtkImageData::GetPointGradient(i,j,k,s,g);
 	}
 
-	//! Given a location in structured coordinates (i-j-k), return the point id.
+	//! Given a location in structured coordinates (i-j-k), return the point id. - thread safe
+	virtual vtkIdType ComputePointId (int* ijk,int coord_workspace[3]);
+
+	//! Given a location in structured coordinates (i-j-k), return the point id. - not thread safe
 	virtual vtkIdType ComputePointId (int* ijk);
 
-	//! Given a location in structured coordinates (i-j-k), return the cell id.
+	//! Given a location in structured coordinates (i-j-k), return the cell id. - thread safe
+	virtual vtkIdType ComputeCellId(int* ijk,int coord_workspace[3]);
+
+	//! Given a location in structured coordinates (i-j-k), return the cell id. - not thread safe
 	virtual vtkIdType ComputeCellId(int* ijk);
 
 	//! Update and axis extent - note this does not change the structure
@@ -329,19 +339,28 @@ public:
 		vtkImageData::SetExtent(x1,x2,y1,y2,z1,z2);
 	}
 
-	//! Access the native pointer for the scalar data uses elements 0,2,... from the extent input
+	//! Access the native pointer for the scalar data uses elements 0,2,... from the extent input - thread safe
+	virtual void* GetScalarPointerForExtent	(int* extent, int* coord_workspace,int coord3d_workspace[3]);
+
+	//! Access the native pointer for the scalar data uses elements 0,2,... from the extent input - not thread safe
 	virtual void* GetScalarPointerForExtent	(int* extent);
 
-	//! Access the native pointer for the scalar data.
+	//! Access the native pointer for the scalar data - thread safe
+	virtual void* GetScalarPointer(int* ijk,int coord_workspace[3]);
+
+	//! Access the native pointer for the scalar data- not thread safe
 	virtual void* GetScalarPointer(int* ijk=nullptr);
 
 	//! Access the native pointer for the scalar data. - note assumes 3D wrapping applied to Z
 	virtual void* GetScalarPointer(int x, int y, int z);
 
-	//! Sets a scalar value
+	//! Gets a scalar value - thread safe
+	virtual float GetScalarComponentAsFloat(int* coords,int component,int coord_workspace[3]);
+
+	//! Gets a scalar value - not thread safe
 	virtual float GetScalarComponentAsFloat(int* coords,int component);
 
-	//! Gets a scalar value from 3D grid
+	//! Gets a scalar value from 3D grid - not thread safe
 	virtual float GetScalarComponentAsFloat(int x,int y,int z,int component){
 		return vtkImageData::GetScalarComponentAsFloat(x,y,z,component);
 	}
@@ -351,10 +370,16 @@ public:
 		return vtkImageData::SetScalarComponentFromFloat(x,y,z,component,v);
 	}
 
-	//! Sets a scalar value
+	//! Sets a scalar value - thread safe
+	virtual void SetScalarComponentFromFloat(int* ijk,int component,float v,int coord_workspace[3]);
+
+	//! Sets a scalar value - not thread safe
 	virtual void SetScalarComponentFromFloat(int* ijk,int component,float v);
 
-	//! Sets a scalar value
+	//! Gets a scalar value - thread safe
+	virtual float GetScalarComponentAsDouble(int* coords,int component,int coord_workspace[3]);
+
+	//! Gets a scalar value - not thread safe
 	virtual float GetScalarComponentAsDouble(int* coords,int component);
 
 	//! Gets a scalar value from 3D grid
@@ -362,12 +387,15 @@ public:
 		return vtkImageData::GetScalarComponentAsDouble(x,y,z,component);
 	}
 
-	//! Sets a scalar value
+	//! Sets a scalar value - not threadsafe
 	virtual void SetScalarComponentFromDouble(int x, int y,int z,int component,double v){
 		return vtkImageData::SetScalarComponentFromDouble(x,y,z,component,v);
 	}
 
-	//! Sets a scalar value
+	//! Sets a scalar value - thread safe
+	virtual void SetScalarComponentFromDouble(int* ijk,int component,double v,int coord_workspace[3]);
+
+	//! Sets a scalar value - not thread safe
 	virtual void SetScalarComponentFromDouble(int* ijk,int component,double v);
 
 	//! This method is disabled
@@ -376,7 +404,7 @@ public:
 		return;
 	}
 
-	//! Reallocates an copies to crop to an extent - disabled
+	//! Reallocates and copies to crop to an extent - disabled
 	void Crop(const int* updateExtent){
 		vtkErrorMacro("vtkHyperCube::Crop - not supported  - Developer error")
 		return;
@@ -426,10 +454,13 @@ public:
 	//! Getting origin for a single axis
 	virtual double GetAxisOrigin(int Axis){return this->Origin[Axis];}
 
-	//! Convenience method for getting a pointer from any field array.
+	//! Convenience method for getting a pointer from any field array - thread safe
+	void*  GetArrayPointer(vtkDataArray* 	array,int* coordinates, int coord_workspace[3]);
+
+	//! Convenience method for getting a pointer from any field array - not threadsafe
 	void*  GetArrayPointer(vtkDataArray* 	array,int* coordinates);
 
-	//! Convenience method for getting a pointer from any field array.
+	//! Convenience method for getting a pointer from any field array - not threadsafe
 	void *GetArrayPointerForExtent(vtkDataArray* array, int extent[6]);
 
 	/*!
@@ -461,6 +492,7 @@ protected:
 		this->Spacing.resize(3,1.);
 		this->Origin.resize(3,0.);
 
+		// TODO- not thread safe
 		this->Point.resize(3);
 		this->iPoint.resize(3);
 	}
@@ -479,9 +511,14 @@ protected:
 
 private:
 
-	std::vector<double> Point;			//!< for the GetPoint method
-	std::vector<int> iPoint;			//!< For computing positions
-	int coord[3];						//!< for computing 3D positions
+
+	std::vector<double> Point;			//!< for the GetPoint method (Note - not thread safe)
+	std::vector<int> iPoint;			//!< For computing positions (Note - not thread safe)
+	int coord[3];						//!< for computing 3D positions (Note - not thread safe)
+	//#if defined(_OPENMP)
+	//	#pragma omp threadprivate(Point,iPoint,coord)
+	//#endif
+
 
 	//! Internal method to compute extents from input dimensions
 	virtual std::vector<int> makeExtentsFromDims(int* dims);

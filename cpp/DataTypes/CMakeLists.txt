@@ -44,6 +44,7 @@ add_library(${LIBNAME} SHARED ${SRC_FILES})
 TARGET_LINK_LIBRARIES(${LIBNAME} ${Boost_LIBRARIES} 
                                 ${PYTHON_LIBRARIES} 
                                 ${VTK_LIBRARIES})
+                                
 if(APPLE) 
     set_target_properties(${LIBNAME} PROPERTIES SUFFIX ".so")
     set_target_properties(${LIBNAME} PROPERTIES PREFIX "lib")

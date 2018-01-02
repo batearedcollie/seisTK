@@ -32,6 +32,10 @@ Copyright 2017 Bateared Collie
 #include "vtkHyperCube.h"
 #include "vtkSmartPointer.h"
 
+#if defined(_OPENMP)
+	#include <omp.h>
+#endif
+
 /**************************************/
 // Definitions
 using namespace std;
@@ -193,6 +197,60 @@ int main()
 
 
 	}
+
+	//
+	// TODO - start here with why it is not threading properly
+	//
+
+	#if defined(_OPENMP)
+	{
+		cout << "\n***************************\nHyperCube threading test\n";
+
+		// Make a 2D hyper cube
+		vtkSmartPointer<vtkHyperCube> hCube = vtkSmartPointer<vtkHyperCube>::New();
+
+		// Go through the points using threading
+		hCube->SetNDimensions(2);
+		cout << "\nNumber of dimensions: " << hCube->GetNDimensions() << endl;
+		int dims[4]={1,3,2,2};
+
+		// set dimensions
+		hCube->SetDimensions(4,dims);
+		hCube->AllocateScalars(VTK_FLOAT,1);
+
+		cout << "Image dimensions: ";
+		for(int i=0; i<4;i++){cout << hCube->GetFullDimensions()[i] << ", ";}
+		cout << std::endl;
+
+		int nPoint = hCube->GetNumberOfPoints();
+		cout << "Number of points = " << nPoint << std::endl;
+
+		#pragma omp parallel
+		{
+		int tid = omp_get_thread_num();
+		printf("Hello from thread %i of %i\n",tid,omp_get_num_threads());
+
+		float* ff0= (float*) hCube->GetScalarPointer();
+
+		#pragma omp for
+		for(vtkIdType counter=0;counter<nPoint;counter++){
+			int coord[4];
+			int work[3];
+			hCube->GetNDPointFromId(counter,coord);
+			float* ff = (float*) hCube->GetScalarPointer(coord,work);	// using thread safe version
+
+			printf("counter=%lli thread=%i : Coordinate = %i,%i,%i,%i : Pointer %li\n",
+					counter,tid,coord[0],coord[1],coord[2],coord[3],ff-ff0);
+
+
+		}
+		}
+
+
+
+	}
+	#endif
+
 
 	//We use return =0 for tests because
 	// Otherwise it breaks Makefiles

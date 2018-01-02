@@ -81,8 +81,21 @@ include_directories("${Boost_INCLUDE_DIRS}")
 message(STATUS "Boost_LIBRARIES = ${Boost_LIBRARIES}")
 
 #######################################
-# Add some general compile options - supress a few warnings
+# OpenMP
+set(ENABLE_OpenMP TRUE CACHE BOOL "Enable OpenMP" ) 
+if(ENABLE_OpenMP)
+    find_package(OpenMP REQUIRED)
+    message(STATUS "OpenMP_C_FLAGS = ${OpenMP_C_FLAGS}")        
+    message(STATUS "OpenMP_CXX_FLAGS = ${OpenMP_CXX_FLAGS}")    
 
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")    
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+    add_definitions(-D_OPENMP)    
+endif()
+
+
+#######################################
+# Add some general compile options - supress a few warnings
 add_compile_options(-std=c++11)
 if(APPLE)
     add_compile_options("-Wno-macro-redefined")

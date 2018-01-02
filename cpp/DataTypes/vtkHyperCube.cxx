@@ -29,6 +29,7 @@ Copyright 2017 Bateared Collie
 
 /**************************************/
 // Includes
+
 #include "vtkHyperCube.h"
 #include "vtkMath.h"
 #include "vtkObjectFactory.h"
@@ -157,6 +158,11 @@ void vtkHyperCube::Zero()
 	 this->Modified();
 }
 
+void  vtkHyperCube::Get3DcoordinateFromND(int* coordND, int coord3D[3])
+{
+	this->get3DcoordinateFromND(coordND,coord3D);
+}
+
 int*  vtkHyperCube::Get3DcoordinateFromND(int* coordND)
 {
 	if(this->iPoint.size()<3){
@@ -164,6 +170,11 @@ int*  vtkHyperCube::Get3DcoordinateFromND(int* coordND)
 	}
 	this->get3DcoordinateFromND(coordND,this->iPoint.data());
 	return this->iPoint.data();
+}
+
+void  vtkHyperCube::GetNDcoordinateFrom3D(int coord3D[3],int* iPoint)
+{
+	this->getNDcoordinateFrom3D(coord3D,iPoint);
 }
 
 int*  vtkHyperCube::GetNDcoordinateFrom3D(int* coord3D)
@@ -378,10 +389,22 @@ int vtkHyperCube::ComputeStructuredCoordinates( const double* x,
 	  return isInBounds;
 }
 
+vtkIdType vtkHyperCube::ComputePointId (int* ijk, int coord_workspace[3])
+{
+	this->get3DcoordinateFromND(ijk,coord_workspace);
+	return vtkImageData::ComputePointId(coord_workspace);
+}
+
 vtkIdType vtkHyperCube::ComputePointId (int* ijk)
 {
 	this->get3DcoordinateFromND(ijk,this->coord);
 	return vtkImageData::ComputePointId(this->coord);
+}
+
+vtkIdType vtkHyperCube::ComputeCellId(int* ijk,int coord_workspace[3])
+{
+	this->get3DcoordinateFromND(ijk,coord_workspace);
+	return vtkImageData::ComputeCellId(coord_workspace);
 }
 
 vtkIdType vtkHyperCube::ComputeCellId(int* ijk)
@@ -419,12 +442,28 @@ void vtkHyperCube::GetAxisUpdateExtent(int idx, int &min, int &max,
 	max = updateExtent[idx*2+1];
 }
 
+void* vtkHyperCube::GetScalarPointerForExtent(int* extent, int* coord_workspace,
+												int coord3d_workspace[3])
+{
+	for(int i=0;i<this->NDimensions;i++){
+		coord_workspace[i]=extent[2*i];
+	}
+	return this->GetScalarPointer(coord_workspace,coord3d_workspace);
+}
+
 void* vtkHyperCube::GetScalarPointerForExtent(int* extent)
 {
 	for(int i=0;i<this->NDimensions;i++){
 		this->iPoint[i]=extent[2*i];
 	}
 	return this->GetScalarPointer(this->iPoint.data());
+}
+
+void* vtkHyperCube::GetScalarPointer(int* ijk,int coord_workspace[3])
+{
+	if(ijk==nullptr) return vtkImageData::GetScalarPointer();
+	this->get3DcoordinateFromND(ijk,coord_workspace);
+	return vtkImageData::GetScalarPointer(coord_workspace);
 }
 
 void* vtkHyperCube::GetScalarPointer(int* ijk)
@@ -443,6 +482,19 @@ void* vtkHyperCube::GetScalarPointer(int x, int y, int z)
 	  return vtkImageData::GetScalarPointer(tmp);
 }
 
+float vtkHyperCube::GetScalarComponentAsFloat(int* coords,int component,int coord_workspace[3])
+{
+
+	if(this->get3DcoordinateFromND(coords,coord_workspace)!=1){
+		vtkErrorMacro("Error computing cooridnate")
+		return 0.;
+	}
+	return vtkImageData::GetScalarComponentAsFloat(coord_workspace[0],
+													coord_workspace[1],
+													coord_workspace[2],
+													component);
+}
+
 float vtkHyperCube::GetScalarComponentAsFloat(int* coords,int component)
 {
 
@@ -454,6 +506,18 @@ float vtkHyperCube::GetScalarComponentAsFloat(int* coords,int component)
 													this->coord[1],
 													this->coord[2],
 													component);
+}
+
+void vtkHyperCube::SetScalarComponentFromFloat(int* ijk,int component,float v,int coord_workspace[3])
+{
+	if(this->get3DcoordinateFromND(ijk,coord_workspace)!=1){
+		vtkErrorMacro("Error computing coordinate")
+		return;
+	}
+	return vtkImageData::SetScalarComponentFromFloat(coord_workspace[0],
+														coord_workspace[1],
+														coord_workspace[2],
+														component,v);
 }
 
 void vtkHyperCube::SetScalarComponentFromFloat(int* ijk,int component,float v)
@@ -468,6 +532,19 @@ void vtkHyperCube::SetScalarComponentFromFloat(int* ijk,int component,float v)
 														component,v);
 }
 
+float vtkHyperCube::GetScalarComponentAsDouble(int* coords,int component,int coord_workspace[3])
+{
+
+	if(this->get3DcoordinateFromND(coords,coord_workspace)!=1){
+		vtkErrorMacro("Error computing coordinate")
+		return 0.;
+	}
+	return vtkImageData::GetScalarComponentAsDouble(coord_workspace[0],
+													coord_workspace[1],
+													coord_workspace[2],
+													component);
+}
+
 float vtkHyperCube::GetScalarComponentAsDouble(int* coords,int component)
 {
 
@@ -479,6 +556,18 @@ float vtkHyperCube::GetScalarComponentAsDouble(int* coords,int component)
 													this->coord[1],
 													this->coord[2],
 													component);
+}
+
+void vtkHyperCube::SetScalarComponentFromDouble(int* ijk,int component,double v,int coord_workspace[3])
+{
+	if(this->get3DcoordinateFromND(ijk,coord_workspace)!=1){
+		vtkErrorMacro("Error computing coordinate")
+		return;
+	}
+	return vtkImageData::SetScalarComponentFromDouble(coord_workspace[0],
+														coord_workspace[1],
+														coord_workspace[2],
+														component,v);
 }
 
 void vtkHyperCube::SetScalarComponentFromDouble(int* ijk,int component,double v)
@@ -516,11 +605,20 @@ void vtkHyperCube::SetOrigin(double* org)
 }
 
 void* vtkHyperCube::GetArrayPointer(vtkDataArray* 	array,
+							int* coordinates,
+							int coord_workspace[3])
+{
+	this->get3DcoordinateFromND(coordinates,coord_workspace);
+	return vtkImageData::GetArrayPointer(array,coord_workspace);
+}
+
+void* vtkHyperCube::GetArrayPointer(vtkDataArray* 	array,
 							int* coordinates)
 {
 	this->get3DcoordinateFromND(coordinates,this->coord);
 	return vtkImageData::GetArrayPointer(array,this->coord);
 }
+
 
 void* vtkHyperCube::GetArrayPointerForExtent(vtkDataArray* array, int extent[6])
 {
@@ -581,9 +679,7 @@ int vtkHyperCube::get3DcoordinateFromND(int* coordND,int* coord3D)
 	}
 
 	if(this->NDimensions>3){
-
 		//TODO - add bounds checking here
-
 		int* dims = this->GetFullDimensions();
 		int add=0;
 		int wrap=dims[2];
@@ -601,18 +697,6 @@ int vtkHyperCube::getNDcoordinateFrom3D(int* coord3D,int* coordND)
 	// Get the grid position
 	vtkIdType pp = vtkImageData::ComputePointId(coord3D);
 	this->GetNDPointFromId(pp,coordND);
-
-	//vtkIdType pp = vtkImageData::ComputePointId(coord3D);
-	//int* dims= this->GetFullDimensions();
-	//int i=this->GetNDimensions();
-	//while (i>1){
-	//	vtkIdType str=1;
-	//	for(int ii=0;ii<i-1;ii++){str=str*dims[ii];}
-	//	coordND[i-1]=(int)((pp)/str);
-	//	pp=pp-(coordND[i-1])*str;
-	//	i--;
-	//}
-	//coordND[0]=(int)pp;
 
 	return 1;
 }
