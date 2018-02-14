@@ -114,8 +114,35 @@ enable_testing()
 add_subdirectory(cpp/DataTypes)
 add_subdirectory(cpp/Algorithms)
 add_subdirectory(cpp/Examples)
-add_subdirectory(stk)
 
+#add_subdirectory(stk)
+#######################################
+# Install the python module
+
+
+file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/setup.py" DESTINATION ${CMAKE_CURRENT_BINARY_DIR} )
+
+add_custom_command(
+  OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/build/timestamp
+  COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/setup.py build 
+  COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_CURRENT_BINARY_DIR}/build/timestamp
+  WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+)
+add_custom_target(stk_build ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/build/timestamp)
+
+
+# Install logic 
+set(INSTALL_CODE "execute_process(")
+set(INSTALL_CODE "${INSTALL_CODE} COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/setup.py")
+set(INSTALL_CODE "${INSTALL_CODE} install --prefix=${CMAKE_INSTALL_PREFIX}")
+set(INSTALL_CODE "${INSTALL_CODE} WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}")
+set(INSTALL_CODE "${INSTALL_CODE} )")
+install(CODE "${INSTALL_CODE}")
+
+
+#######################################
+# Add the python dir (for testing)
+add_subdirectory(stk)
 
 #######################################
 # Documentation

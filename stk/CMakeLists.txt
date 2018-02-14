@@ -114,23 +114,9 @@ foreach(MOD ${PYTHON_MODULES})
             
 endforeach()
 
-
 #####################################
-# Install the curent __init__.py
+# Add the examples directory (other directories are handled by python setup)
 
-file(GLOB PYTHON_MOD_SRC "${CMAKE_CURRENT_SOURCE_DIR}/*.py" )
-file(COPY ${PYTHON_MOD_SRC} DESTINATION ${CMAKE_CURRENT_BINARY_DIR} )
-
-install(
-    DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
-    DESTINATION ${PYTHON_INSTALL_DIR}
-    FILES_MATCHING PATTERN "*.py"
-    )
-
-# Add the subdirectories
-add_subdirectory(generators)
-add_subdirectory(obspyExt)
-add_subdirectory(mdExt)
 add_subdirectory(Examples)
     
     

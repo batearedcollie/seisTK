@@ -1,4 +1,4 @@
-# Copyright 2017 Bateared Collie
+# Copyright 2018 Bateared Collie
 #
 # Redistribution and use in source and binary forms, with or without modification, 
 # are permitted provided that the following conditions are met:
@@ -23,15 +23,17 @@
 # HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR 
 # TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, 
 # EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#
+'''
+Set up module 
+'''
+from distutils.core import setup
 
-#######################################
-#Copy the scripts to build directory
-
-file(GLOB SRC_FILES "${CMAKE_CURRENT_SOURCE_DIR}/*.py" )
-file(COPY ${SRC_FILES} DESTINATION ${CMAKE_CURRENT_BINARY_DIR} )
-
-install(
-    DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
-    DESTINATION ${PYTHON_INSTALL_DIR}
-    FILES_MATCHING PATTERN "*.py"
-    )
+setup( 
+    name    = 'stk',
+    version = '0.1',
+    description = 'SeisTK Python bindings',
+    author = 'Bateared Collie',
+    author_email = 'BatearedCollie@gmail.com',
+    packages=['stk','stk.generators','stk.mdExt','stk.obspyExt'],    
+)
