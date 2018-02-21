@@ -114,6 +114,29 @@ foreach(MOD ${PYTHON_MODULES})
             
 endforeach()
 
+
+########################################################
+# Copy python source tree into build directory (if required)
+set(PYTHON_SRC_MODULES generators mdExt obspyExt)
+
+if(NOT "${CMAKE_CURRENT_BINARY_DIR}" STREQUAL "${CMAKE_CURRENT_SOURCE_DIR}")
+  file(GLOB scripts "${CMAKE_CURRENT_SOURCE_DIR}/*.py")
+  foreach(script ${scripts})
+     get_filename_component(name ${script} NAME)
+     configure_file(${script} ${CMAKE_CURRENT_BINARY_DIR}/${name}  COPYONLY) 
+  endforeach() 
+  
+  foreach(pymod ${PYTHON_SRC_MODULES})
+    file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${pymod})
+    file(GLOB scripts "${CMAKE_CURRENT_SOURCE_DIR}/${pymod}/*.py")  
+    foreach(script ${scripts})
+        get_filename_component(name ${script} NAME)
+        configure_file(${script} ${CMAKE_CURRENT_BINARY_DIR}/${pymod}/${name}  COPYONLY) 
+    endforeach() 
+  endforeach() 
+endif()  
+
+
 #####################################
 # Add the examples directory (other directories are handled by python setup)
 
