@@ -209,6 +209,37 @@ public:
 	//! Return number of cells in the full dataset (use GetNumberOfCells for the 3D wrapped object)
 	vtkIdType GetFullNumberOfCells();
 
+	//! Get point position overirding vtkImageData method
+	void GetPoint(vtkIdType ptId, int* work, double* xx)
+	{
+		this->GetNDPointFromId(ptId,work);
+		int nn =this->GetNDimensions();
+		double* spc= this->GetSpacing();
+		double* org= this->GetOrigin();
+		for(int i=0;i<nn;i++)xx[i]=org[i]+spc[i]*work[i];
+	}
+
+	//! Get point position (NOT thread safe)
+	void GetPoint(vtkIdType ptId,double* xx)
+	{
+		this->GetNDPointFromId(ptId,this->iPoint.data());
+		int nn =this->GetNDimensions();
+		double* spc= this->GetSpacing();
+		double* org= this->GetOrigin();
+		for(int i=0;i<nn;i++)xx[i]=org[i]+spc[i]*this->iPoint[i];
+	}
+
+	//! Get point position (NOT thread safe)
+	double* GetPoint(vtkIdType ptId)
+	{
+		this->GetNDPointFromId(ptId,this->iPoint.data());
+		int nn =this->GetNDimensions();
+		double* spc= this->GetSpacing();
+		double* org= this->GetOrigin();
+		for(int i=0;i<nn;i++)this->Point[i]=org[i]+spc[i]*this->iPoint[i];
+		return this->Point.data();
+	}
+
 	//! Convenience function computes the structured coordinates for a point x[3]
 	/*!
 	 * The voxel is specified by the array ijk, and the parametric coordinates
