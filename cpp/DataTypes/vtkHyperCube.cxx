@@ -652,6 +652,21 @@ void vtkHyperCube::GetNDPointFromId(vtkIdType id, int *ijk)
 	ijk[0]=(int)pp;
 }
 
+void vtkHyperCube::GetNDPointFromId(vtkIdType id, int *ijk,int* work_dims)
+{
+	vtkIdType pp = id;
+	this->GetFullDimensions(work_dims);
+	int i=this->GetNDimensions();
+	while (i>1){
+		vtkIdType str=1;
+		for(int ii=0;ii<i-1;ii++){str=str*work_dims[ii];}
+		ijk[i-1]=(int)((pp)/str);
+		pp=pp-(ijk[i-1])*str;
+		i--;
+	}
+	ijk[0]=(int)pp;
+}
+
 
 /**************************************/
 // Private methods

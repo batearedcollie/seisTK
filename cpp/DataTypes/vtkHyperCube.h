@@ -505,9 +505,11 @@ public:
 	 */
 	void ComputeInternalExtent(int* intExt, int* tgtExt, int* bnds);
 
-	//! Get point in ND structure coords based in id (note using GetPoint return the 3D version)
+	//! Get point in ND structure coords based in id (note using GetPoint return the 3D version)  - not thread safe
 	void GetNDPointFromId(vtkIdType id, int *ijk);
 
+	//! Get point in ND structure coords based in id - thread safe
+	void GetNDPointFromId(vtkIdType id, int *ijk,int * work);
 
 protected:
 
