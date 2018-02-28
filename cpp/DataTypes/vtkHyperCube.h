@@ -209,7 +209,24 @@ public:
 	//! Return number of cells in the full dataset (use GetNumberOfCells for the 3D wrapped object)
 	vtkIdType GetFullNumberOfCells();
 
-	//! Get point position overirding vtkImageData method
+	//! Get point position overriding vtkImageData method - thread safe
+	/*!
+	 * returns
+	 * =======
+	 * ijk - the point coordinates
+	 * work_dims - the dimensions of the cube
+	 * xx - the position of the point in the grid
+	 */
+	void GetPoint(vtkIdType ptId ,int* work_ijk, int* work_dims, double* xx)
+	{
+		this->GetNDPointFromId(ptId,work_ijk,work_dims);
+		int nn =this->GetNDimensions();
+		double* spc= this->GetSpacing();
+		double* org= this->GetOrigin();
+		for(int i=0;i<nn;i++)xx[i]=org[i]+spc[i]*work_ijk[i];
+	}
+
+	//! Get point position overriding vtkImageData method - not  thread safe
 	void GetPoint(vtkIdType ptId, int* work, double* xx)
 	{
 		this->GetNDPointFromId(ptId,work);
@@ -505,11 +522,18 @@ public:
 	 */
 	void ComputeInternalExtent(int* intExt, int* tgtExt, int* bnds);
 
-	//! Get point in ND structure coords based in id (note using GetPoint return the 3D version)  - not thread safe
+
+	//! Get point in ND structure coords based in id (note using GetPoint return the 3D version) - not thread safe
 	void GetNDPointFromId(vtkIdType id, int *ijk);
 
 	//! Get point in ND structure coords based in id - thread safe
-	void GetNDPointFromId(vtkIdType id, int *ijk,int * work);
+	/*!
+	 * returns
+	 * =======
+	 * ijk - the point coordinates
+	 * work_dims - the dimensions of the cube
+	 */
+	void GetNDPointFromId(vtkIdType id, int *ijk,int * work_dims);
 
 protected:
 

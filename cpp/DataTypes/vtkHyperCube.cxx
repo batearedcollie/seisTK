@@ -637,6 +637,7 @@ void vtkHyperCube::ComputeInternalExtent(int* intExt, int* tgtExt, int* bnds)
 	vtkImageData::ComputeInternalExtent(intExt,tgtExt,bnds);
 }
 
+
 void vtkHyperCube::GetNDPointFromId(vtkIdType id, int *ijk)
 {
 	vtkIdType pp = id;
