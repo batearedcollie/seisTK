@@ -69,14 +69,22 @@ include_directories("${PYTHON_INCLUDE_PATH}")
 
 #######################################
 # Boost
-find_package(Boost REQUIRED)
-if(NOT Boost_FOUND)
-    MESSAGE(FATAL_ERROR "Unable to find correct Boost version. Did you set BOOST_ROOT?")
-endif()
 set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
-find_package(Boost COMPONENTS python)
+
+if(APPLE)
+    # Updated to OSX High Sierra  and Home Brew install Boot python libs as 
+    #  libboost_python27 etc. rather than libboost_python 
+    #  CMake does not seem to like this but we can get it to work 
+    #  if we pass in the component as python 27
+    find_package(Boost REQUIRED COMPONENTS python27)
+else()
+    find_package(Boost REQUIRED COMPONENTS python)
+endif()
+if(NOT Boost_FOUND)
+    MESSAGE(FATAL_ERROR "Unable to find correct Boost version. Did you set BOOST_ROOT?")
+endif()
 include_directories("${Boost_INCLUDE_DIRS}")
 message(STATUS "Boost_LIBRARIES = ${Boost_LIBRARIES}")
 
@@ -87,7 +95,6 @@ if(ENABLE_OpenMP)
     find_package(OpenMP REQUIRED)
     message(STATUS "OpenMP_C_FLAGS = ${OpenMP_C_FLAGS}")        
     message(STATUS "OpenMP_CXX_FLAGS = ${OpenMP_CXX_FLAGS}")    
-
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")    
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
     add_definitions(-D_OPENMP)    
