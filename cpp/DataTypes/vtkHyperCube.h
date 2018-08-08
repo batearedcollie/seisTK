@@ -138,9 +138,9 @@ public:
 	//! Create an empty copy
 	virtual void EmptyCopy(vtkDataObject* src);
 
-	//! Copy but without alocating any scalars
+	//! Copy but without allocating any scalars
 	/*!
-	 * Note - that if you use this you also have to ste the ScalarName
+	 * Note - that if you use this you also have to set the ScalarName
 	 */
 	virtual void UnAllocatedCopy(vtkDataObject* src);
 

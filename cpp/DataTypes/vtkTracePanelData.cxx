@@ -49,11 +49,17 @@ void vtkTracePanelData::PrintSelf(ostream& os, vtkIndent indent)
 	os << indent << "vtkTracePanelData:" << endl;
 	this->PrintFullTraceDictionary(os);
 	os << indent << "End vtkTracePanelData" << endl;
+
 	this->Superclass::PrintSelf(os, indent.GetNextIndent());
 }
 
 void vtkTracePanelData::PrintTraceDictionary(ostream& os, int Trace)
 {
+	#if defined(_OPENMP)
+	#pragma omp critical (PrintTraceDictionary)
+	{
+	#endif
+
 	boost::python::extract< boost::python::dict > dict_ext(this->d_list[Trace]);
 	if(!dict_ext.check()){
         vtkErrorMacro("Trace " << Trace <<"  has a bad dictionary")
@@ -67,11 +73,18 @@ void vtkTracePanelData::PrintTraceDictionary(ostream& os, int Trace)
       std::string valstr = boost::python::extract< std::string >( boost::python::str(dd[keylist[j]]));
       os << "  key: " << keystr << " -> " << valstr << " " << endl;
 	}
+	#if defined(_OPENMP)
+	}
+	#endif
 }
 
 void vtkTracePanelData::PrintFullTraceDictionary(ostream& os)
 {
-	//TODO - add indents
+	#if defined(_OPENMP)
+	#pragma omp critical (PrintFullTraceDictionary)
+	{
+	#endif
+
 	boost::python::extract< boost::python::list > list_ext(this->d_list);
 	boost::python::list ll = list_ext();
 	int len = boost::python::len(ll);
@@ -80,41 +93,74 @@ void vtkTracePanelData::PrintFullTraceDictionary(ostream& os)
 		this->PrintTraceDictionary(os,i1);
 	}
 	os << "End Dictionary " << endl;
+
+	#if defined(_OPENMP)
+	}
+	#endif
 }
 
 
 // Dictionary setter
 void vtkTracePanelData::appendDict(PyObject *dd)
 {
+	#if defined(_OPENMP)
+	#pragma omp critical (appendDict)
+	{
+	#endif
 	boost::python::extract< boost::python::dict > dict_ext(dd);
 	this->d_list.append(dict_ext().copy());
+	#if defined(_OPENMP)
+	}
+	#endif
 }
 
 void vtkTracePanelData::UpdateTraceDictionary(int trace, boost::python::dict dUpdate)
 {
+	#if defined(_OPENMP)
+	#pragma omp critical (UpdateTraceDictionary)
+	{
+	#endif
 	boost::python::extract< boost::python::dict > dict_ext(this->d_list[trace]);
 	boost::python::dict dd = dict_ext();
 	dd.update(dUpdate);
+	#if defined(_OPENMP)
+	}
+	#endif
 }
 
 void vtkTracePanelData::RemoveFromAllTraceDictionaries(const char* key)
 {
-	  boost::python::extract< boost::python::list > list_ext(this->d_list);
-	  if(!list_ext.check()){
+	#if defined(_OPENMP)
+	#pragma omp critical (RemoveFromAllTraceDictionaries)
+	{
+	#endif
+	boost::python::extract< boost::python::list > list_ext(this->d_list);
+	 if(!list_ext.check()){
 	      vtkErrorMacro("Bad dictionary list")
-	  }
-	  boost::python::list ll = list_ext();
-	  int len = boost::python::len(ll);
-	  for(int i=0;i<len;i++){
-		  this->RemoveFromTraceDictionary(key,i);
-	  }
+	 }
+	 boost::python::list ll = list_ext();
+	 int len = boost::python::len(ll);
+	 for(int i=0;i<len;i++){
+	   this->RemoveFromTraceDictionary(key,i);
+	 }
+	#if defined(_OPENMP)
+	}
+	#endif
 }
 
 void vtkTracePanelData::RemoveFromTraceDictionary(const char* key, int Trace)
 {
+	#if defined(_OPENMP)
+	#pragma omp critical (RemoveFromTraceDictionary)
+	{
+	#endif
+
 	boost::python::extract< boost::python::dict > dict_ext(this->d_list[Trace]);
 	boost::python::dict dd = dict_ext();
 	dd[key].del();
+	#if defined(_OPENMP)
+	}
+	#endif
 }
 
 // Get Data
@@ -176,6 +222,11 @@ void vtkTracePanelData::UnAllocatedCopy(vtkDataObject* src)
 
 void vtkTracePanelData::DictionaryListCopy(PyObject *dd)
 {
+  #if defined(_OPENMP)
+  #pragma omp critical (DictionaryListCopy)
+  {
+  #endif
+
   boost::python::extract< boost::python::list > list_ext(dd);
   if(!list_ext.check()){
       vtkErrorMacro("Bad dictionary list")
@@ -189,15 +240,27 @@ void vtkTracePanelData::DictionaryListCopy(PyObject *dd)
   		this->d_list.append(dd);
   }
 
+  #if defined(_OPENMP)
+  }
+  #endif
   this->Modified();
 }
 
 void vtkTracePanelData::CleanDictionaryList()
 {
+	#if defined(_OPENMP)
+	#pragma omp critical (CleanDictionaryList)
+	{
+	#endif
+
 	boost::python::extract< boost::python::list > list_ext(this->d_list);
 	boost::python::list ll = list_ext();
 	int len = boost::python::len(ll);
 	for(int i=0;i<len;i++){ll.pop();}
+
+	#if defined(_OPENMP)
+	}
+	#endif
 }
 
 

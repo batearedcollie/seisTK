@@ -36,6 +36,10 @@ Copyright 2017 Bateared Collie
 // Definitions
 using namespace std;
 
+#if defined(_OPENMP)
+	#include <omp.h>
+#endif
+
 /**************************************/
 // main
 int main()
@@ -50,6 +54,7 @@ int main()
 
 		vtkSmartPointer<vtkTracePanelData> trc = vtkSmartPointer<vtkTracePanelData>::New();
 
+
 		int dims[2]={125,10};			// 10 traces of 125 samples
 		trc->SetDimensions(dims);
 		trc->AllocateScalars(VTK_FLOAT,1);
@@ -59,6 +64,7 @@ int main()
 
 		double org[2]={-1,0.};			// start of time axis at -1. seconds
 		trc->SetOrigin(org);
+
 
 		// Create some trace headers
 		for(int i=0;i<trc->GetFullDimensions()[1];i++){
@@ -71,13 +77,71 @@ int main()
 			trc->appendDict((PyObject*)dd.ptr());
 		}
 
-
 		// Write out the trace data
 		cout << "\nTraceData object:\n";
 		trc->Print(cout);
 
 
+
 	}
+
+
+	{
+
+		cout << "\n\n*********************************\n";
+		cout << "VTK TracePanel Data Threading Test\n";
+
+
+		// Make trace data
+		vtkSmartPointer<vtkTracePanelData> trc = vtkSmartPointer<vtkTracePanelData>::New();
+		int dims[2]={125,10};			// 10 traces of 125 samples
+		trc->SetDimensions(dims);
+		trc->AllocateScalars(VTK_FLOAT,1);
+		double smpl[2]={0.004,1.};		// 4ms sample rate
+		trc->SetSpacing(smpl);
+		double org[2]={-1,0.};			// start of time axis at -1. seconds
+		trc->SetOrigin(org);
+		// Create some trace headers
+		for(int i=0;i<trc->GetFullDimensions()[1];i++){
+			// Create a trace dictionary
+			boost::python::dict dd;
+			dd["sample_rate"]=0.004;
+			dd["trace_id"]=i;
+			dd["station_code"]="test";
+			trc->appendDict((PyObject*)dd.ptr());
+		}
+
+
+
+		// Start threading
+		#if defined(_OPENMP)
+		#pragma omp parallel
+		{
+		int tid = omp_get_thread_num();
+		int ntd = omp_get_num_threads();
+		#else
+		int tid =0;
+		int ntd = 1;
+		#endif
+
+		printf("Hello from thread %i of %i\n",tid,ntd);
+
+		// Make local copy on this thread
+		vtkSmartPointer<vtkTracePanelData> trc_lcl = vtkSmartPointer<vtkTracePanelData>::New();
+		trc_lcl->DeepCopy(trc);
+
+		if(tid==2){
+			trc_lcl->Print(cout);
+		}
+
+
+		#if defined(_OPENMP)
+		}
+		#endif
+
+	}
+
+
 	Py_Finalize();
 
 	//We use return =0 for tests because

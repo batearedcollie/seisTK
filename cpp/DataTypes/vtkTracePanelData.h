@@ -136,6 +136,10 @@ public:
 	 * to which the trace dictionaries will be added
 	 */
 	void GetDictionaryList(PyObject* ReturnList){
+		#if defined(_OPENMP)
+		#pragma omp critical (GetDictionaryList)
+		{
+		#endif
 		boost::python::extract< boost::python::list > lout_ext(ReturnList);
 		boost::python::list lout = lout_ext();
 		boost::python::extract< boost::python::list > list_ext(this->d_list);
@@ -146,6 +150,9 @@ public:
 	  		boost::python::dict dd = dict_ext().copy();
 	  		lout.append(dd);
 		}
+		#if defined(_OPENMP)
+		}
+		#endif
 	}
 
 	//! Dictionary getter - returns Pyobject because of the VTK Parser
@@ -155,21 +162,45 @@ public:
 	 * use void GetDictionaryList(PyObject* ReturnList);
 	 */
 	PyObject* GetDict(int trace=0){
+
+		PyObject* out;
+
+		#if defined(_OPENMP)
+		#pragma omp critical (GetDict)
+		{
+		#endif
 		boost::python::extract< boost::python::dict > dict_ext(this->d_list[trace]);
 		boost::python::dict dd = dict_ext();
-		return (PyObject*)dd.ptr();
+		out=(PyObject*)dd.ptr();
+		#if defined(_OPENMP)
+		}
+		#endif
+
+		return out;
 	}
 
 	//! Get a value from a trace dictionary header
 	template<typename T>
 	bool GetFromTraceDictionary(const char* key, T &ss, int Trace=0){
+		bool rval=false;
+
+		#if defined(_OPENMP)
+		#pragma omp critical (GetFromTraceDictionary)
+		{
+		#endif
+
 		boost::python::extract< boost::python::dict > dict_ext(this->d_list[Trace]);
 		boost::python::dict dd = dict_ext();
 		if(dd.has_key(key)==true){
 			ss = boost::python::extract< T >( dd[key] );
-			return true;
+			rval=true;
 		}
-		return false;
+
+		#if defined(_OPENMP)
+		}
+		#endif
+
+		return rval;
 	}
 
 	//! Removes item from all trace dictionaries in list
@@ -182,6 +213,9 @@ public:
 	void appendDict(PyObject *dd);
 
 	//! Append to the dictionary list (for C++)
+	/*!
+	 *  Note htis should be called from within an OpenMP critical region
+	 */
 	void appendDict(boost::python::dict dict){
 		this->d_list.append(dict.copy());
 	}
@@ -192,6 +226,10 @@ public:
 	//! set or add an item to the dictionary on all traces
 	template<typename T>
 	void SetUniformDictionaryValue(const char* key, T val){
+		#if defined(_OPENMP)
+		#pragma omp critical (SetUniformDictionaryValue)
+		{
+		#endif
 		boost::python::extract< boost::python::list > list_ext(this->d_list);
 		boost::python::list ll = list_ext();
 		int len = boost::python::len(ll);
@@ -201,6 +239,9 @@ public:
 		for(int i=0;i<len;i++){
 			this->UpdateTraceDictionary(i,dUpdate);
 		}
+		#if defined(_OPENMP)
+		}
+		#endif
 	}
 
 	//! From vtkType.h, a handle on what type of vtkDataObject this is.
