@@ -198,9 +198,6 @@ int main()
 
 	}
 
-	//
-	// TODO - start here with why it is not threading properly
-	//
 
 	#if defined(_OPENMP)
 	{
@@ -244,6 +241,24 @@ int main()
 
 
 		}
+		}
+
+
+		// Make thread local copy
+		#pragma omp parallel
+		{
+			int tid = omp_get_thread_num();
+			vtkSmartPointer<vtkHyperCube> hCube_lcl = vtkSmartPointer<vtkHyperCube>::New();
+
+			hCube_lcl->DeepCopy(hCube);
+			int nPoint = hCube_lcl->GetNumberOfPoints();
+			for(vtkIdType counter=0;counter<nPoint;counter++){
+				int coord[4];
+				int work[3];
+				hCube_lcl->GetNDPointFromId(counter,coord);
+				float* ff = (float*) hCube_lcl->GetScalarPointer(coord,work);
+				*ff *= tid;
+			}
 		}
 
 
