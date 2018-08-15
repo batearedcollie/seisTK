@@ -48,12 +48,12 @@ int main()
 	// Need to have this so that the Python call back don't cause seg faults
 	Py_Initialize();
 
+	/*
 	{
 		cout << "\n\n*********************************\n";
 		cout << "Basic test for vtkTracePanelData\n";
 
 		vtkSmartPointer<vtkTracePanelData> trc = vtkSmartPointer<vtkTracePanelData>::New();
-
 
 		int dims[2]={125,10};			// 10 traces of 125 samples
 		trc->SetDimensions(dims);
@@ -84,6 +84,7 @@ int main()
 
 
 	}
+	*/
 
 
 	{
@@ -110,7 +111,12 @@ int main()
 			dd["station_code"]="test";
 			trc->appendDict((PyObject*)dd.ptr());
 		}
-
+		int nPoint = trc->GetNumberOfPoints();
+		float* ff = (float*) trc->GetScalarPointer();
+		for(vtkIdType counter=0;counter<nPoint;counter++){
+			*ff = 1.;
+			ff++;
+		}
 
 
 		// Start threading
@@ -124,23 +130,29 @@ int main()
 		int ntd = 1;
 		#endif
 
-		printf("Hello from thread %i of %i\n",tid,ntd);
-
 		// Make local copy on this thread
-		vtkSmartPointer<vtkTracePanelData> trc_lcl = vtkSmartPointer<vtkTracePanelData>::New();
+		SEISTK_OPENMP_THREAD_LOCAL_INSTANCIATE(trc_lcl,vtkTracePanelData)
 		trc_lcl->DeepCopy(trc);
 
-		if(tid==2){
-			trc_lcl->Print(cout);
+		// Do something
+		int nPoint = trc_lcl->GetNumberOfPoints();
+		for(vtkIdType counter=0;counter<nPoint;counter++){
+			int coord[4];
+			int work[3];
+			trc_lcl->GetNDPointFromId(counter,coord);
+			float* ff = (float*) trc_lcl->GetScalarPointer(coord,work);
+			*ff *= tid;
 		}
 
+		float* ff = (float*) trc_lcl->GetScalarPointer();
+
+		printf("Hello from thread %i of %i ff[10]=%f\n",tid,ntd,ff[10]);
 
 		#if defined(_OPENMP)
 		}
 		#endif
 
 	}
-
 
 	Py_Finalize();
 

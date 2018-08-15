@@ -46,6 +46,7 @@ vtkStandardNewMacro(vtkTracePanelData)
 // Print Self
 void vtkTracePanelData::PrintSelf(ostream& os, vtkIndent indent)
 {
+
 	os << indent << "vtkTracePanelData:" << endl;
 	this->PrintFullTraceDictionary(os);
 	os << indent << "End vtkTracePanelData" << endl;
@@ -55,10 +56,10 @@ void vtkTracePanelData::PrintSelf(ostream& os, vtkIndent indent)
 
 void vtkTracePanelData::PrintTraceDictionary(ostream& os, int Trace)
 {
-	#if defined(_OPENMP)
-	#pragma omp critical (PrintTraceDictionary)
-	{
-	#endif
+//	#if defined(_OPENMP)
+//	#pragma omp critical (seistk_omp_critical)
+//	{
+//	#endif
 
 	boost::python::extract< boost::python::dict > dict_ext(this->d_list[Trace]);
 	if(!dict_ext.check()){
@@ -73,30 +74,51 @@ void vtkTracePanelData::PrintTraceDictionary(ostream& os, int Trace)
       std::string valstr = boost::python::extract< std::string >( boost::python::str(dd[keylist[j]]));
       os << "  key: " << keystr << " -> " << valstr << " " << endl;
 	}
-	#if defined(_OPENMP)
-	}
-	#endif
+
+//	#if defined(_OPENMP)
+//	}
+//	#endif
 }
 
 void vtkTracePanelData::PrintFullTraceDictionary(ostream& os)
 {
-	#if defined(_OPENMP)
-	#pragma omp critical (PrintFullTraceDictionary)
-	{
-	#endif
+
+	int len;
+
+//	#if defined(_OPENMP)
+//	#pragma omp critical (seistk_omp_critical)
+//	{
+//	#endif
 
 	boost::python::extract< boost::python::list > list_ext(this->d_list);
 	boost::python::list ll = list_ext();
-	int len = boost::python::len(ll);
+	len = boost::python::len(ll);
 	os << "Full trace dictionary - Number of Traces: " << len << endl;
+
 	for(int i1=0;i1<len;i1++){
 		this->PrintTraceDictionary(os,i1);
+
+//		boost::python::extract< boost::python::dict > dict_ext(this->d_list[i1]);
+//		if(!dict_ext.check()){
+//	        vtkErrorMacro("Trace " << i1 <<"  has a bad dictionary")
+//	    }
+//	    boost::python::dict dd = dict_ext();
+//		boost::python::list keylist = dd.keys();
+//		int lk = boost::python::len(keylist);
+//	    os << "Trace " << i1 << endl;
+//		for(int j=0;j<lk;j++){
+//	      std::string keystr = boost::python::extract< std::string >( boost::python::str(keylist[j]));
+//	      std::string valstr = boost::python::extract< std::string >( boost::python::str(dd[keylist[j]]));
+//	      os << "  key: " << keystr << " -> " << valstr << " " << endl;
+//		}
+
 	}
 	os << "End Dictionary " << endl;
 
-	#if defined(_OPENMP)
-	}
-	#endif
+//	#if defined(_OPENMP)
+//	}
+//	#endif
+
 }
 
 
@@ -104,7 +126,7 @@ void vtkTracePanelData::PrintFullTraceDictionary(ostream& os)
 void vtkTracePanelData::appendDict(PyObject *dd)
 {
 	#if defined(_OPENMP)
-	#pragma omp critical (appendDict)
+	#pragma omp critical (seistk_omp_critical)
 	{
 	#endif
 	boost::python::extract< boost::python::dict > dict_ext(dd);
@@ -116,48 +138,46 @@ void vtkTracePanelData::appendDict(PyObject *dd)
 
 void vtkTracePanelData::UpdateTraceDictionary(int trace, boost::python::dict dUpdate)
 {
-	#if defined(_OPENMP)
-	#pragma omp critical (UpdateTraceDictionary)
-	{
-	#endif
 	boost::python::extract< boost::python::dict > dict_ext(this->d_list[trace]);
 	boost::python::dict dd = dict_ext();
 	dd.update(dUpdate);
-	#if defined(_OPENMP)
-	}
-	#endif
 }
 
 void vtkTracePanelData::RemoveFromAllTraceDictionaries(const char* key)
 {
+	int len;
 	#if defined(_OPENMP)
-	#pragma omp critical (RemoveFromAllTraceDictionaries)
+	#pragma omp critical (seistk_omp_critical)
 	{
 	#endif
 	boost::python::extract< boost::python::list > list_ext(this->d_list);
-	 if(!list_ext.check()){
-	      vtkErrorMacro("Bad dictionary list")
-	 }
-	 boost::python::list ll = list_ext();
-	 int len = boost::python::len(ll);
-	 for(int i=0;i<len;i++){
-	   this->RemoveFromTraceDictionary(key,i);
-	 }
+	if(!list_ext.check()){
+	    vtkErrorMacro("Bad dictionary list")
+	}
+	boost::python::list ll = list_ext();
+	len = boost::python::len(ll);
+
 	#if defined(_OPENMP)
 	}
 	#endif
+
+	for(int i=0;i<len;i++){
+		this->RemoveFromTraceDictionary(key,i);
+	}
+
 }
 
 void vtkTracePanelData::RemoveFromTraceDictionary(const char* key, int Trace)
 {
 	#if defined(_OPENMP)
-	#pragma omp critical (RemoveFromTraceDictionary)
+	#pragma omp critical (seistk_omp_critical)
 	{
 	#endif
 
 	boost::python::extract< boost::python::dict > dict_ext(this->d_list[Trace]);
 	boost::python::dict dd = dict_ext();
 	dd[key].del();
+
 	#if defined(_OPENMP)
 	}
 	#endif
@@ -190,12 +210,12 @@ void vtkTracePanelData::ShallowCopy(vtkDataObject* src)
 //Deep
 void vtkTracePanelData::DeepCopy(vtkDataObject* src)
 {
-	if (vtkTracePanelData* const pdo = vtkTracePanelData::SafeDownCast(src))
-    {
-	  this->DictionaryListCopy(pdo->GetDictionaryList());
-      this->Modified();
-    }
-  this->Superclass::DeepCopy(src);
+if (vtkTracePanelData* const pdo = vtkTracePanelData::SafeDownCast(src))
+	{
+		this->DictionaryListCopy(pdo->GetDictionaryList());
+		this->Modified();
+	}
+	this->Superclass::DeepCopy(src);
 }
 
 //Empty copy
@@ -211,7 +231,6 @@ void vtkTracePanelData::EmptyCopy(vtkDataObject* src)
 
 void vtkTracePanelData::UnAllocatedCopy(vtkDataObject* src)
 {
-
 	if (vtkTracePanelData* const pdo = vtkTracePanelData::SafeDownCast(src))
 	    {
 		  this->DictionaryListCopy(pdo->GetDictionaryList());
@@ -222,34 +241,38 @@ void vtkTracePanelData::UnAllocatedCopy(vtkDataObject* src)
 
 void vtkTracePanelData::DictionaryListCopy(PyObject *dd)
 {
-  #if defined(_OPENMP)
-  #pragma omp critical (DictionaryListCopy)
-  {
-  #endif
 
-  boost::python::extract< boost::python::list > list_ext(dd);
-  if(!list_ext.check()){
-      vtkErrorMacro("Bad dictionary list")
-  }
-  boost::python::list ll = list_ext();
-  int len = boost::python::len(ll);
-  this->CleanDictionaryList();
-  for(int i=0;i<len;i++){
+	this->CleanDictionaryList();
+
+	#if defined(_OPENMP)
+	#pragma omp critical (seistk_omp_critical)
+	{
+	#endif
+
+	boost::python::extract< boost::python::list > list_ext(dd);
+    if(!list_ext.check()){
+        vtkErrorMacro("Bad dictionary list")
+    }
+    boost::python::list ll = list_ext();
+    int len = boost::python::len(ll);
+
+    for(int i=0;i<len;i++){
   		boost::python::extract<boost::python::dict> dict_ext(ll[i]);
   		boost::python::dict dd = dict_ext().copy();
   		this->d_list.append(dd);
-  }
+    }
 
-  #if defined(_OPENMP)
-  }
-  #endif
-  this->Modified();
+    #if defined(_OPENMP)
+    }
+    #endif
+
+	this->Modified();
 }
 
 void vtkTracePanelData::CleanDictionaryList()
 {
 	#if defined(_OPENMP)
-	#pragma omp critical (CleanDictionaryList)
+	#pragma omp critical (seistk_omp_critical)
 	{
 	#endif
 

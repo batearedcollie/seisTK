@@ -63,6 +63,8 @@ void vtkHyperCube::PrintSelf(ostream& os, vtkIndent indent)
 		os << indent << indent << "Origin: " << org[i] << endl;
 	}
 	os << indent << "End vtkHyperCube" << endl;
+
+
 	this->Superclass::PrintSelf(os,indent.GetNextIndent());
 }
 
@@ -97,8 +99,16 @@ void vtkHyperCube::ShallowCopy(vtkDataObject* src)
 // Deep copy
 void vtkHyperCube::DeepCopy(vtkDataObject* src)
 {
+	#if defined(_OPENMP)
+	#pragma omp critical (seistk_omp_critical)
+	{
+	#endif
 
 	this->Superclass::DeepCopy(src);
+
+	#if defined(_OPENMP)
+	}
+	#endif
 
 	if (vtkHyperCube* const pdo = vtkHyperCube::SafeDownCast(src))
 	{

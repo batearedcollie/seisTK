@@ -41,8 +41,27 @@ Copyright 2017 Bateared Collie
 #include <string>
 #include <iostream>
 
-// Definitions (vtk types go up to 36)
+//! Definitions (vtk types go up to 36)
 #define VTK_TRACE_PANEL_DATA 38
+
+
+//! Macro for variable instanciation inside OpenMP parallel regions
+/*!
+ * Use this when creating thread local variables. For example:
+ *
+ * 	@code
+	#pragma omp parallel
+	THREAD_LOCAL_OPENMP_INSTANCIATE(trc_lcl,vtkTracePanelData)
+	@endcode
+ */
+#define SEISTK_OPENMP_THREAD_LOCAL_INSTANCIATE(x,type) 	\
+		vtkSmartPointer<type> x;			\
+		_Pragma("omp critical (seistk_omp_critical)")		\
+		{									\
+		x = vtkSmartPointer<type>::New();	\
+		}
+
+
 
 
 /*!
@@ -112,9 +131,15 @@ public:
 	vtkTypeMacro(vtkTracePanelData , vtkHyperCube)
 
 	//! Print self
+	/*!
+	 * Note - this should probably not be called from inside a parallel region
+	 */
 	void PrintSelf(ostream& os, vtkIndent indent);
 
 	//! Prints out the trace dictionary
+	/*!
+	 * Note - this should probably not be called from inside a parallel region
+	 */
 	void PrintTraceDictionary(ostream& os,int Trace);
 
 	//! Prints out the complete trace dictionary
@@ -137,7 +162,7 @@ public:
 	 */
 	void GetDictionaryList(PyObject* ReturnList){
 		#if defined(_OPENMP)
-		#pragma omp critical (GetDictionaryList)
+		#pragma omp critical (seistk_omp_critical)
 		{
 		#endif
 		boost::python::extract< boost::python::list > lout_ext(ReturnList);
@@ -166,7 +191,7 @@ public:
 		PyObject* out;
 
 		#if defined(_OPENMP)
-		#pragma omp critical (GetDict)
+		#pragma omp critical (seistk_omp_critical)
 		{
 		#endif
 		boost::python::extract< boost::python::dict > dict_ext(this->d_list[trace]);
@@ -185,7 +210,7 @@ public:
 		bool rval=false;
 
 		#if defined(_OPENMP)
-		#pragma omp critical (GetFromTraceDictionary)
+		#pragma omp critical (seistk_omp_critical)
 		{
 		#endif
 
@@ -214,20 +239,23 @@ public:
 
 	//! Append to the dictionary list (for C++)
 	/*!
-	 *  Note htis should be called from within an OpenMP critical region
+	 *  Note this should be called from within an OpenMP critical region
 	 */
 	void appendDict(boost::python::dict dict){
 		this->d_list.append(dict.copy());
 	}
 
 	//! Update the trace dictionary for a specific trace
+	/*!
+	 * Note - this should be called from within a Serial or OpenMP critical region
+	 */
 	void UpdateTraceDictionary(int trace, boost::python::dict);
 
 	//! set or add an item to the dictionary on all traces
 	template<typename T>
 	void SetUniformDictionaryValue(const char* key, T val){
 		#if defined(_OPENMP)
-		#pragma omp critical (SetUniformDictionaryValue)
+		#pragma omp critical (seistk_omp_critical)
 		{
 		#endif
 		boost::python::extract< boost::python::list > list_ext(this->d_list);
@@ -236,12 +264,14 @@ public:
 		boost::python::dict dUpdate;
 		dUpdate.clear();
 		dUpdate[key]=val;
+
 		for(int i=0;i<len;i++){
 			this->UpdateTraceDictionary(i,dUpdate);
 		}
 		#if defined(_OPENMP)
 		}
 		#endif
+
 	}
 
 	//! From vtkType.h, a handle on what type of vtkDataObject this is.
