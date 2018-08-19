@@ -37,6 +37,9 @@ include_directories ("${CMAKE_CURRENT_SOURCE_DIR}/../Algorithms")
 add_executable(vtkHyperCubeTest vtkHyperCubeTest.cxx)
 target_link_libraries(vtkHyperCubeTest stkDataTypes)
 
+add_executable(vtkTraceHeaderTest vtkTraceHeaderTest.cxx)
+target_link_libraries(vtkTraceHeaderTest stkDataTypes)
+
 add_executable(vtkTracePanelTest vtkTracePanelTest.cxx)
 target_link_libraries(vtkTracePanelTest stkDataTypes)
 

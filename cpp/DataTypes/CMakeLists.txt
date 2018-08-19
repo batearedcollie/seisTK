@@ -26,9 +26,11 @@
 
 # Specify sources and library name
 set(HDR_FILES vtkHyperCube.h
+                vtkTraceHeader.h
                 vtkTracePanelData.h
                 )
 set(SRC_FILES vtkHyperCube.cxx
+                vtkTraceHeader.cxx
                 vtkTracePanelData.cxx
                 )
 set(LIBNAME DataTypes)
