@@ -104,14 +104,6 @@ public:
 	//! Printself
 	void PrintSelf(ostream &os, vtkIndent indent);
 
-
-	//! Get headers as list of dictionaries
-	/*!
-	 * Note - this should not be used inside threaded block
-	 */
-	//void GetDictionaryList(PyObject* ReturnList);
-	// - make a python function for this..
-
 	//! Set constant dictionary value
 	void SetUniformValue(const char* key, vtkVariant value){
 		if(this->KeyExists(key)==true){
@@ -201,11 +193,6 @@ protected:
 
 
 private:
-
-
-
-
-	//vtkSmartPointer<vtkVariantArray> ColumnList;	//! Internal list of columns
 
 };
 

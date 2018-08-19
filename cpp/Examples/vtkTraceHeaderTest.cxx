@@ -40,6 +40,9 @@ Copyright 2017 Bateared Collie
 // Definitions
 using namespace std;
 
+#if defined(_OPENMP)
+	#include <omp.h>
+#endif
 
 /**************************************/
 // main
@@ -111,6 +114,54 @@ int main()
 		cout << "\nUpdated table\n";
 		hdr->Dump();
 
+	}
+
+	{
+		cout << "\n\n*********************************\n";
+		cout << "VTK TracHeader Threading Test\n";
+
+		vtkSmartPointer<vtkTraceHeader> hdr = vtkSmartPointer<vtkTraceHeader>::New();
+
+		// Set up basic table
+		vtkSmartPointer<vtkVariantArray> xpos = vtkSmartPointer<vtkVariantArray>::New();
+		xpos->SetName("xpos");
+		vtkSmartPointer<vtkVariantArray> ypos = vtkSmartPointer<vtkVariantArray>::New();
+		ypos->SetName("ypos");
+		vtkSmartPointer<vtkVariantArray> stn_id = vtkSmartPointer<vtkVariantArray>::New();
+		stn_id->SetName("stn_id");
+		for ( unsigned int i = 0; i < 10; i++ ) {
+			xpos->InsertNextValue( vtkVariant( double(i*20.) ) );
+			ypos->InsertNextValue( vtkVariant( double(i*-20.) ) );
+			stn_id->InsertNextValue( vtkVariant(i) );
+		}
+
+		hdr->AddColumn(xpos);
+		hdr->AddColumn(ypos);
+		hdr->AddColumn(stn_id);
+
+		hdr->SetUniformValue("nsmpl",vtkVariant(100));
+		cout << "\nUpdated table\n";
+		hdr->Dump();
+
+		#if defined(_OPENMP)
+		#pragma omp parallel
+		{
+		int tid = omp_get_thread_num();
+		int ntd = omp_get_num_threads();
+		#else
+		int tid =0;
+		int ntd = 1;
+		#endif
+
+		vtkSmartPointer<vtkTraceHeader> hdr_lcl = vtkSmartPointer<vtkTraceHeader>::New();
+		hdr_lcl->DeepCopy(hdr);
+		hdr_lcl->SetValueByName(0,"nsmpl",vtkVariant( tid ));
+
+		printf("tid=%i nsmpl-tid=%i\n",tid,hdr_lcl->GetValueByName(0,"nsmpl").ToInt());
+
+		#if defined(_OPENMP)
+		}
+		#endif
 	}
 
 	return 0;
