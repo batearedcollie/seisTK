@@ -26,41 +26,47 @@ Copyright 2017 Bateared Collie
  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef SEISTK_CPP_ALGORITHMS_VTKTRACEPANELALGORITHM_H_
-#define SEISTK_CPP_ALGORITHMS_VTKTRACEPANELALGORITHM_H_
+#ifndef SEISTK_ALGORITHMS_VTKTRACEHEADERALGORITHM_H_
+#define SEISTK_ALGORITHMS_VTKTRACEHEADERALGORITHM_H_
 
 // Includes
+#include "vtkTraceHeader.h"
+#include "vtkTableAlgorithm.h"
 #include "vtkSmartPointer.h"
-#include "vtkHyperCubeAlgorithm.h"
-#include "vtkTracePanelData.h"
+
+
 
 /*!
-\brief Abstract base algorithm class for working with trace panel data.
-
-Special thanks to Dave Gobbi and team at Kitware for advice in putting this together
+\brief Abstract base algorithm class for working with trace header data.
 
 */
-class VTK_EXPORT vtkTracePanelAlgorithm : public vtkHyperCubeAlgorithm
+class VTK_EXPORT vtkTraceHeaderAlgorithm : public vtkTableAlgorithm
 {
+
 public:
 
 	//! New method
-	static vtkTracePanelAlgorithm *New();
+	static vtkTraceHeaderAlgorithm *New();
 
 	//! Typedef
-	vtkTypeMacro(vtkTracePanelAlgorithm , vtkHyperCubeAlgorithm)
+	vtkTypeMacro(vtkTraceHeaderAlgorithm , vtkTableAlgorithm)
 
 	//! Print self
 	void PrintSelf(ostream& os, vtkIndent indent);
 
+	//! Interface the algorithm to the Pipeline's passes.
+	//int ProcessRequest(vtkInformation*,
+	//                             vtkInformationVector**,
+	//                            vtkInformationVector*);
+
 	//! Return pointer to output data
-	vtkTracePanelData* GetOutput(int port=0){
-		return vtkTracePanelData::SafeDownCast(this->GetOutputDataObject(port));
+	vtkTraceHeader* GetOutput(int port=0){
+		return vtkTraceHeader::SafeDownCast(this->GetOutputDataObject(port));
 	}
 
 protected:
 
-	vtkTracePanelAlgorithm(){
+	vtkTraceHeaderAlgorithm(){
 		this->SetNumberOfInputPorts(1);
 		this->SetNumberOfOutputPorts(1);
 	}
@@ -71,11 +77,24 @@ protected:
 	//! Fill output ports - to take vtkTracePanelData objects
 	virtual int FillOutputPortInformation(int port, vtkInformation* info);
 
+//	//! Request update extent
+//		virtual int RequestUpdateExtent(
+//		  vtkInformation* vtkNotUsed(request),
+//		  vtkInformationVector** inputVector,
+//		  vtkInformationVector* vtkNotUsed(outputVector));
+
 	//! Produce output of proper type
 	virtual int RequestDataObject(vtkInformation* request,
 	                                vtkInformationVector** inputVector,
 	                                vtkInformationVector* outputVector);
 
+	//! Method that does the actual calculation. - should be overridden by children
+	virtual int RequestData(vtkInformation* request,
+	                          vtkInformationVector** inputVector,
+	                          vtkInformationVector* outputVector){
+		vtkErrorMacro("Developer Error RequestData not implemented")
+		return 0;
+	}
 private:
 
 
@@ -83,4 +102,4 @@ private:
 };
 
 
-#endif /* SEISTK_CPP_ALGORITHMS_VTKTRACEPANELALGORITHM_H_ */
+#endif /* SEISTK_ALGORITHMS_VTKTRACEHEADERALGORITHM_H_ */

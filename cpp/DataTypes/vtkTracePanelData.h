@@ -31,7 +31,7 @@ Copyright 2017 Bateared Collie
 
 // Includes
 #include "vtkHyperCube.h"
-#include <boost/python.hpp>
+#include "vtkTraceHeader.h"
 
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
@@ -45,30 +45,9 @@ Copyright 2017 Bateared Collie
 #define VTK_TRACE_PANEL_DATA 38
 
 
-//! Macro for variable instanciation inside OpenMP parallel regions
-/*!
- * Use this when creating thread local variables. For example:
- *
- * 	@code
-	#pragma omp parallel
-	THREAD_LOCAL_OPENMP_INSTANCIATE(trc_lcl,vtkTracePanelData)
-	@endcode
- */
-#define SEISTK_OPENMP_THREAD_LOCAL_INSTANCIATE(x,type) 	\
-		vtkSmartPointer<type> x;			\
-		_Pragma("omp critical (seistk_omp_critical)")		\
-		{									\
-		x = vtkSmartPointer<type>::New();	\
-		}
-
-
-
-
 /*!
 
-\brief Stores a set of traces as a 2D ImageData/hyper cube
- with a list of python dictionaries to store individual
- trace headers.
+\brief Combines a vtkHyperCube and vtkTraceHeader Object inorder to store traces
 
 By convention the X axis of the cube is trace time. Y is the trace number
 
@@ -78,44 +57,14 @@ Usage
 C++
 ---
 	@code
-	// Create with an empty dictionary
-	vtkSmartPointer<vtkTracePanelData> trc = vtkSmartPointer<vtkTracePanelData>::New();
-	trc->SetDimensions(32,1,1);
-	trc->AllocateScalars(VTK_FLOAT,1);
-	trc->SetSpacing(0.004,1,1);
-	trc->SetOrigin(0,0.,0.);
+	....
 	@endcode
 
 Python
 ------
 
 	@code
-    tpD = vtkTracePanelData()
-
-    # Set the dimensions
-    tpD.SetDimensions(nsmpl,ntrace,1)
-
-    # Set the spacings
-    tpD.SetSpacing(dfA.result["data"][0].stats.delta,1.,1.)
-
-    # Set the origin
-    tpD.SetOrigin(0.,0.,0.)
-
-    # Set the data values
-    points = tpD.GetPointData()
-    points.SetScalars(vtk_data)
-
-    # Set the dictionary
-    tpD.setDict(dfA.result["data"][0].stats.__dict__)
-
-    # Print out some information here
-    print "Dimensions: ",tpD.GetDimensions()
-    print "Number of points: ",tpD.GetNumberOfPoints()
-    print "Number of cells: ",tpD.GetNumberOfCells()
-    print "Data Array:",tpD.GetPointData().GetScalars("TraceData")
-    dd = tpD.getDict()
-    print "Trace dictionary"
-    for key in dd: print key,":",dd[key]
+	...
 	@endcode
 
 
@@ -136,142 +85,9 @@ public:
 	 */
 	void PrintSelf(ostream& os, vtkIndent indent);
 
-	//! Prints out the trace dictionary
-	/*!
-	 * Note - this should probably not be called from inside a parallel region
-	 */
-	void PrintTraceDictionary(ostream& os,int Trace);
-
-	//! Prints out the complete trace dictionary
-	void PrintFullTraceDictionary(ostream& os);
-
-	//! Get full dictionary list -
-	/*
-	 *  NOTE - this is not safe when called from python beacuse it does bad
-	 *  		this wrt whether Python or C handles the memory allocation for the list.
-	 *  		For calling from python use.
-	 */
-	PyObject* GetDictionaryList(){
-		return (PyObject*)this->d_list.ptr();
-	}
-
-	//! Dictionary list getter
-	/*
-	 * Return list should be a python list object
-	 * to which the trace dictionaries will be added
-	 */
-	void GetDictionaryList(PyObject* ReturnList){
-		#if defined(_OPENMP)
-		#pragma omp critical (seistk_omp_critical)
-		{
-		#endif
-		boost::python::extract< boost::python::list > lout_ext(ReturnList);
-		boost::python::list lout = lout_ext();
-		boost::python::extract< boost::python::list > list_ext(this->d_list);
-		boost::python::list ll = list_ext();
-		int len = boost::python::len(ll);
-		for(int i=0;i<len;i++){
-	  		boost::python::extract<boost::python::dict> dict_ext(ll[i]);
-	  		boost::python::dict dd = dict_ext().copy();
-	  		lout.append(dd);
-		}
-		#if defined(_OPENMP)
-		}
-		#endif
-	}
-
-	//! Dictionary getter - returns Pyobject because of the VTK Parser
-	/*
-	 * note calling this function from python destroys the dictionary
-	 * in C++. If you want to preserve the data source in c++
-	 * use void GetDictionaryList(PyObject* ReturnList);
-	 */
-	PyObject* GetDict(int trace=0){
-
-		PyObject* out;
-
-		#if defined(_OPENMP)
-		#pragma omp critical (seistk_omp_critical)
-		{
-		#endif
-		boost::python::extract< boost::python::dict > dict_ext(this->d_list[trace]);
-		boost::python::dict dd = dict_ext();
-		out=(PyObject*)dd.ptr();
-		#if defined(_OPENMP)
-		}
-		#endif
-
-		return out;
-	}
-
-	//! Get a value from a trace dictionary header
-	template<typename T>
-	bool GetFromTraceDictionary(const char* key, T &ss, int Trace=0){
-		bool rval=false;
-
-		#if defined(_OPENMP)
-		#pragma omp critical (seistk_omp_critical)
-		{
-		#endif
-
-		boost::python::extract< boost::python::dict > dict_ext(this->d_list[Trace]);
-		boost::python::dict dd = dict_ext();
-		if(dd.has_key(key)==true){
-			ss = boost::python::extract< T >( dd[key] );
-			rval=true;
-		}
-
-		#if defined(_OPENMP)
-		}
-		#endif
-
-		return rval;
-	}
-
-	//! Removes item from all trace dictionaries in list
-	void RemoveFromAllTraceDictionaries(const char* key);
-
-	//! Removes a value from a trace header dictionary
-	void RemoveFromTraceDictionary(const char* key, int Trace=0);
-
-	//! Append to the dictionary list
-	void appendDict(PyObject *dd);
-
-	//! Append to the dictionary list (for C++)
-	/*!
-	 *  Note this should be called from within an OpenMP critical region
-	 */
-	void appendDict(boost::python::dict dict){
-		this->d_list.append(dict.copy());
-	}
-
-	//! Update the trace dictionary for a specific trace
-	/*!
-	 * Note - this should be called from within a Serial or OpenMP critical region
-	 */
-	void UpdateTraceDictionary(int trace, boost::python::dict);
-
-	//! set or add an item to the dictionary on all traces
-	template<typename T>
-	void SetUniformDictionaryValue(const char* key, T val){
-		#if defined(_OPENMP)
-		#pragma omp critical (seistk_omp_critical)
-		{
-		#endif
-		boost::python::extract< boost::python::list > list_ext(this->d_list);
-		boost::python::list ll = list_ext();
-		int len = boost::python::len(ll);
-		boost::python::dict dUpdate;
-		dUpdate.clear();
-		dUpdate[key]=val;
-
-		for(int i=0;i<len;i++){
-			this->UpdateTraceDictionary(i,dUpdate);
-		}
-		#if defined(_OPENMP)
-		}
-		#endif
-
+	//! Friend function to access the header table
+	vtkSmartPointer<vtkTraceHeader> GetHeaderTable(){
+		return this->HeaderTable;
 	}
 
 	//! From vtkType.h, a handle on what type of vtkDataObject this is.
@@ -295,17 +111,11 @@ public:
 	//! Copy but without allocating any scalars
 	virtual void UnAllocatedCopy(vtkDataObject* src);
 
-	//! Copies a list of dictionaries into the trace dictionary list
-	virtual void DictionaryListCopy(PyObject *dd);
-
-	//! Copies a list of dictionaries into the trace dictionary list
-	virtual void CleanDictionaryList();
-
-
 protected:
 
 	vtkTracePanelData(){
 		this->SetNDimensions(2);
+		this->HeaderTable = vtkSmartPointer<vtkTraceHeader>::New();
 	}
 
 	~vtkTracePanelData(){
@@ -313,8 +123,8 @@ protected:
 
 private:
 
-	//! Trace Dictionary list
-	boost::python::list d_list;
+	vtkSmartPointer<vtkTraceHeader> HeaderTable;		//!< Trace header table object
+
 };
 
 

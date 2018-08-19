@@ -4,3 +4,5 @@
 /.settings
 /Sandbox/
 /sandbox/
+CMakeFiles/
+CMakeCache.txt

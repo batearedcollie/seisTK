@@ -101,28 +101,28 @@ def TraceDataObsPy():
     
     print "\nMade some data in obspy"
     
-    # Plot it 
-    #st[0].plot()
-
-    # Now make it into a trace panel data
-    print "\nConverting to trace panel data"
-    tracePanelData = stkObs.ToTracePanelData(st,origin_time=0.,name="TraceData")    
-
-    dims = tracePanelData.GetDimensions()
-    print "Working with trace panel data:"
-    print "Dimensions = ",dims[0],dims[1],dims[2]
-    print "Number of points = ",tracePanelData.GetNumberOfPoints()
-        
-    dList=[]
-    tracePanelData.GetDictionaryList(dList) 
-    for i,dd in enumerate(dList):
-        print "Dictionary for trace ",i
-        for kk in dd: print "\t",kk," : ",dd[kk]
-        
-    # Convert back to obspy
-    print "\nBack to ObsPy data"
-    updatedObsPy = stkObs.ToObsPy(tracePanelData) 
-    print updatedObsPy
+#     # Plot it 
+#     #st[0].plot()
+# 
+#     # Now make it into a trace panel data
+#     print "\nConverting to trace panel data"
+#     tracePanelData = stkObs.ToTracePanelData(st,origin_time=0.,name="TraceData")    
+# 
+#     dims = tracePanelData.GetDimensions()
+#     print "Working with trace panel data:"
+#     print "Dimensions = ",dims[0],dims[1],dims[2]
+#     print "Number of points = ",tracePanelData.GetNumberOfPoints()
+#         
+#     dList=[]
+#     tracePanelData.GetDictionaryList(dList) 
+#     for i,dd in enumerate(dList):
+#         print "Dictionary for trace ",i
+#         for kk in dd: print "\t",kk," : ",dd[kk]
+#         
+#     # Convert back to obspy
+#     print "\nBack to ObsPy data"
+#     updatedObsPy = stkObs.ToObsPy(tracePanelData) 
+#     print updatedObsPy
 
 if __name__ == '__main__':
     TraceDataSet()

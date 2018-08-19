@@ -25,10 +25,12 @@
 # EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 set(HDR_FILES vtkHyperCubeAlgorithm.h 
-              vtkTracePanelAlgorithm.h 
+                vtkTraceHeaderAlgorithm.h 
+                vtkTracePanelAlgorithm.h 
                 )
 set(SRC_FILES vtkHyperCubeAlgorithm.cxx
-              vtkTracePanelAlgorithm.cxx
+                vtkTraceHeaderAlgorithm.cxx
+                vtkTracePanelAlgorithm.cxx
                 )
 
 set(LIBNAME Algorithms)

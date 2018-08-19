@@ -86,9 +86,27 @@ C++
 Python
 ------
 	@code
-	...
-	[Some code here]
-	...
+	from stk.DataTypes import vtkTraceHeader
+
+    header = vtkTraceHeader()
+
+    # Add stations field
+    v = vtk.vtkVariantArray()
+    v.SetName("station")
+    for i in range(0,10): v.InsertNextValue("stn-"+str(i))
+    header.AddColumn(v)
+
+    # Add channels field
+    v = vtk.vtkVariantArray()
+    v.SetName("channel")
+    for i in range(0,10): v.InsertNextValue("chn-"+str(i))
+    header.AddColumn(v)
+
+    # Set a uniform value
+    header.SetUniformValue("dt",vtk.vtkVariant(0.004))
+
+    # Dump to screen
+    header.Dump()
 	@endcode
 */
 class VTK_EXPORT vtkTraceHeader : public vtkTable
@@ -155,6 +173,9 @@ public:
 
 	//! Deep copy
 	virtual void DeepCopy(vtkDataObject* src);
+
+	//! Empty copy - just copies the column headers
+	virtual void EmptyCopy(vtkDataObject* src);
 
 	//! Returns a list of column headers / keys
 	std::vector<std::string> GetKeyList(){

@@ -45,15 +45,6 @@ if("${isSystemDir}" STREQUAL "-1")
     set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 endif("${isSystemDir}" STREQUAL "-1")
 
-
-#######################################
-# Numpy
-find_package(NumPy REQUIRED)
-if(NOT NUMPY_FOUND)
-    MESSAGE(FATAL_ERROR "Unable to find NumPy")
-endif()
-include_directories("${PYTHON_NUMPY_INCLUDE_DIR}")
-
 #######################################
 # VTK
 find_package(VTK REQUIRED)
@@ -66,27 +57,6 @@ message(STATUS "VTK_INSTALL_PREFIX = ${VTK_INSTALL_PREFIX}")
 find_package(PythonLibs 2.7 REQUIRED)
 include(vtkWrapPython)
 include_directories("${PYTHON_INCLUDE_PATH}")
-
-#######################################
-# Boost
-set(Boost_USE_STATIC_LIBS OFF)
-set(Boost_USE_MULTITHREADED ON)
-set(Boost_USE_STATIC_RUNTIME OFF)
-
-if(APPLE)
-    # Updated to OSX High Sierra  and Home Brew install Boot python libs as 
-    #  libboost_python27 etc. rather than libboost_python 
-    #  CMake does not seem to like this but we can get it to work 
-    #  if we pass in the component as python 27
-    find_package(Boost REQUIRED COMPONENTS python27)
-else()
-    find_package(Boost REQUIRED COMPONENTS python)
-endif()
-if(NOT Boost_FOUND)
-    MESSAGE(FATAL_ERROR "Unable to find correct Boost version. Did you set BOOST_ROOT?")
-endif()
-include_directories("${Boost_INCLUDE_DIRS}")
-message(STATUS "Boost_LIBRARIES = ${Boost_LIBRARIES}")
 
 #######################################
 # OpenMP
@@ -122,10 +92,8 @@ add_subdirectory(cpp/DataTypes)
 add_subdirectory(cpp/Algorithms)
 add_subdirectory(cpp/Examples)
 
-#add_subdirectory(stk)
 #######################################
 # Install the python module
-
 
 file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/setup.py" DESTINATION ${CMAKE_CURRENT_BINARY_DIR} )
 

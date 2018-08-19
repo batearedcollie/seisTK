@@ -48,7 +48,8 @@ vtkStandardNewMacro(vtkTraceHeader)
 void vtkTraceHeader::PrintSelf(ostream& os, vtkIndent indent)
 {
 	os << indent << "vtkTraceHeader:\n";
-	this->Superclass::PrintSelf(os, indent);
+	this->Superclass::PrintSelf(os,indent.GetNextIndent());
+	os << indent << "End vtkTraceHeader" << endl;
 }
 
 // Get Data
@@ -75,7 +76,19 @@ void vtkTraceHeader::DeepCopy(vtkDataObject* src)
 	this->Superclass::DeepCopy(src);
 }
 
+//Empty
+void vtkTraceHeader::EmptyCopy(vtkDataObject* src)
+{
+	std::vector<std::string> keys = this->GetKeyList();
 
+	this->Initialize();
+
+	for(int i=0;i<keys.size();i++){
+		vtkSmartPointer<vtkVariantArray> vv = vtkSmartPointer<vtkVariantArray>::New();
+		vv->SetName(keys[i].c_str());
+		this->AddColumn(vv);
+	}
+}
 
 /**************************************/
 // Protected methods

@@ -29,65 +29,66 @@ Copyright 2017 Bateared Collie
 
 /**************************************/
 // Includes
-#include "vtkTracePanelData.h"
-#include "vtkSimpleTraceFilter.h"
+
+
+#include "vtkObjectFactory.h"
+#include "vtkDemandDrivenPipeline.h"
+#include "vtkStreamingDemandDrivenPipeline.h"
+#include "vtkTraceHeaderAlgorithm.h"
+
 #include <iostream>
 
 /**************************************/
 // Definitions
+
 using namespace std;
 
 
+/**************************************/
+// Public methods
+
+// New method
+vtkStandardNewMacro(vtkTraceHeaderAlgorithm)
+
+// Print self
+void vtkTraceHeaderAlgorithm::PrintSelf(ostream& os, vtkIndent indent)
+{
+	os << indent << "vtkTraceHeaderAlgorithm:\n";
+	this->Superclass::PrintSelf(os, indent);
+}
+
+/**************************************/
+// Protected methods
+
+// Filling output ports
+int vtkTraceHeaderAlgorithm::FillInputPortInformation(
+  int vtkNotUsed(port), vtkInformation* info)
+{
+	info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkTraceHeader");
+	return 1;
+}
+
+// Filling output ports
+int vtkTraceHeaderAlgorithm::FillOutputPortInformation(
+  int vtkNotUsed(port), vtkInformation* info)
+{
+	info->Set(vtkDataObject::DATA_TYPE_NAME(), "vtkTraceHeader");
+	return 1;
+}
+
+int vtkTraceHeaderAlgorithm::RequestDataObject(
+  vtkInformation* vtkNotUsed(request),
+  vtkInformationVector** vtkNotUsed(inputVector),
+  vtkInformationVector* vtkNotUsed(outputVector))
+{
+	vtkTraceHeader *newobj = vtkTraceHeader::New();
+	this->GetExecutive()->SetOutputData(0, newobj);
+	newobj->Delete();
+	return 1;
+}
 
 
 /**************************************/
-// main
-int main()
-{
-	{
-		cout << "\n*********************************\n";
-
-
-		// Make some trace data
-		vtkSmartPointer<vtkTracePanelData> trc = vtkSmartPointer<vtkTracePanelData>::New();
-		int dims[2]={12,1};				// 1 trace of 12 samples
-		trc->SetDimensions(dims);
-		trc->AllocateScalars(VTK_FLOAT,1);
-		double smpl[2]={0.004,1.};		// 4ms sample rate
-		trc->SetSpacing(smpl);
-		double org[2]={-1,0.};			// start of time axis at -1. seconds
-		trc->SetOrigin(org);
-
-		cout << "Input data =\n";
-		for(int i=0;i<trc->GetFullDimensions()[0];i++){
-			int coord[2]={i,0};
-			float v = i*2.;
-			trc->SetScalarComponentFromFloat(coord,0,v);
-			cout << v  << ", ";
-		}
-		cout << endl;
-
-
-		// Run the filter
-		vtkSmartPointer<vtkSimpleTraceFilter> filter= vtkSmartPointer<vtkSimpleTraceFilter>::New();
-		filter->SetInputData(trc);
-		filter->Update();
-
-		// Print the output
-		vtkSmartPointer<vtkTracePanelData> out = filter->GetOutput();
-		cout << "Output data =\n";
-		for(int i=0;i<out->GetFullDimensions()[0];i++){
-			int coord[2]={i,0};
-			float v = out->GetScalarComponentAsFloat(coord,0);
-			cout << v  << ", ";
-		}
-		cout << endl;
-
-
-	}
-
-	return 0;
-}
-
+// Private methods
 
 

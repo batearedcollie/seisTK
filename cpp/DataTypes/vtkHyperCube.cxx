@@ -49,23 +49,23 @@ vtkStandardNewMacro(vtkHyperCube)
 // Print self
 void vtkHyperCube::PrintSelf(ostream& os, vtkIndent indent)
 {
-	os << indent << "vtkHyperCube:" << endl;
-	os << indent << "Number of Dimensions: " <<this->GetNDimensions() << endl;
+	os << indent<< "vtkHyperCube:" << endl;
+	os << indent.GetNextIndent() << "Number of Dimensions: " <<this->GetNDimensions() << endl;
 	int* dims= this->GetFullDimensions();
 	int* ext = this->GetFullExtent();
 	double* spc= this->GetSpacing();
 	double* org= this->GetOrigin();
 	for(int i=0;i<this->GetNDimensions();i++){
-		os << indent << "Axis: " << i << endl;
-		os << indent << indent << "Number of points: " << dims[i] << endl;
-		os << indent << indent << "Extent: " << ext[2*i] << " , " <<  ext[2*i+1] << endl;
-		os << indent << indent << "Spacing: " << spc[i] << endl;
-		os << indent << indent << "Origin: " << org[i] << endl;
+		os << indent.GetNextIndent() << "Axis: " << i << endl;
+		os << indent.GetNextIndent() << indent << "Number of points: " << dims[i] << endl;
+		os << indent.GetNextIndent() << indent << "Extent: " << ext[2*i] << " , " <<  ext[2*i+1] << endl;
+		os << indent.GetNextIndent() << indent << "Spacing: " << spc[i] << endl;
+		os << indent.GetNextIndent() << indent << "Origin: " << org[i] << endl;
 	}
-	os << indent << "End vtkHyperCube" << endl;
-
 
 	this->Superclass::PrintSelf(os,indent.GetNextIndent());
+	os << indent << "End vtkHyperCube" << endl;
+
 }
 
 // Get Data

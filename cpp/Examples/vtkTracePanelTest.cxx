@@ -32,6 +32,8 @@ Copyright 2017 Bateared Collie
 #include "vtkTracePanelData.h"
 #include "vtkSmartPointer.h"
 
+#include "vtkVariantArray.h"
+
 /**************************************/
 // Definitions
 using namespace std;
@@ -46,9 +48,6 @@ int main()
 {
 
 	// Need to have this so that the Python call back don't cause seg faults
-	Py_Initialize();
-
-	/*
 	{
 		cout << "\n\n*********************************\n";
 		cout << "Basic test for vtkTracePanelData\n";
@@ -65,26 +64,32 @@ int main()
 		double org[2]={-1,0.};			// start of time axis at -1. seconds
 		trc->SetOrigin(org);
 
+		// Add some trace headers
+		vtkSmartPointer<vtkTraceHeader> hdr= trc->GetHeaderTable();
 
-		// Create some trace headers
-		for(int i=0;i<trc->GetFullDimensions()[1];i++){
-
-			// Create a trace dictionary
-			boost::python::dict dd;
-			dd["sample_rate"]=0.004;
-			dd["trace_id"]=i;
-			dd["station_code"]="test";
-			trc->appendDict((PyObject*)dd.ptr());
+		vtkSmartPointer<vtkVariantArray> xpos = vtkSmartPointer<vtkVariantArray>::New();
+		xpos->SetName("xpos");
+		vtkSmartPointer<vtkVariantArray> ypos = vtkSmartPointer<vtkVariantArray>::New();
+		ypos->SetName("ypos");
+		vtkSmartPointer<vtkVariantArray> stn_id = vtkSmartPointer<vtkVariantArray>::New();
+		stn_id->SetName("stn_id");
+		for ( unsigned int i = 0; i < 10; i++ ) {
+			xpos->InsertNextValue( vtkVariant( double(i*20.) ) );
+			ypos->InsertNextValue( vtkVariant( double(i*-20.) ) );
+			stn_id->InsertNextValue( vtkVariant(i) );
 		}
+		hdr->AddColumn(xpos);
+		hdr->AddColumn(ypos);
+		hdr->AddColumn(stn_id);
+
+		cout << "\nHeader table:\n";
+		trc->GetHeaderTable()->Dump();
 
 		// Write out the trace data
 		cout << "\nTraceData object:\n";
 		trc->Print(cout);
 
-
-
 	}
-	*/
 
 
 	{
@@ -102,15 +107,28 @@ int main()
 		trc->SetSpacing(smpl);
 		double org[2]={-1,0.};			// start of time axis at -1. seconds
 		trc->SetOrigin(org);
+
 		// Create some trace headers
+		vtkSmartPointer<vtkVariantArray> c1 = vtkSmartPointer<vtkVariantArray>::New(); c1->SetName("station");
+		vtkSmartPointer<vtkVariantArray> c2 = vtkSmartPointer<vtkVariantArray>::New(); c2->SetName("channel");
+		vtkSmartPointer<vtkVariantArray> c3 = vtkSmartPointer<vtkVariantArray>::New(); c3->SetName("location");
+
+		trc->GetHeaderTable()->AddColumn(c1);
+		trc->GetHeaderTable()->AddColumn(c2);
+		trc->GetHeaderTable()->AddColumn(c3);
+
 		for(int i=0;i<trc->GetFullDimensions()[1];i++){
-			// Create a trace dictionary
-			boost::python::dict dd;
-			dd["sample_rate"]=0.004;
-			dd["trace_id"]=i;
-			dd["station_code"]="test";
-			trc->appendDict((PyObject*)dd.ptr());
+			vtkSmartPointer<vtkVariantArray> row  = vtkSmartPointer<vtkVariantArray>::New();
+			row->InsertNextValue( vtkVariant( std::string("stn")+std::to_string(i) ) );
+			row->InsertNextValue( vtkVariant( "CHZ" ) );
+			row->InsertNextValue( vtkVariant( i ) );
+			trc->GetHeaderTable()->InsertNextRow(row);
 		}
+
+		cout << "\nHeaders:\n";
+		trc->GetHeaderTable()->Dump();
+
+		// Assign some values
 		int nPoint = trc->GetNumberOfPoints();
 		float* ff = (float*) trc->GetScalarPointer();
 		for(vtkIdType counter=0;counter<nPoint;counter++){
@@ -131,7 +149,7 @@ int main()
 		#endif
 
 		// Make local copy on this thread
-		SEISTK_OPENMP_THREAD_LOCAL_INSTANCIATE(trc_lcl,vtkTracePanelData)
+		vtkSmartPointer<vtkTracePanelData> trc_lcl = vtkSmartPointer<vtkTracePanelData>::New();
 		trc_lcl->DeepCopy(trc);
 
 		// Do something
@@ -145,7 +163,6 @@ int main()
 		}
 
 		float* ff = (float*) trc_lcl->GetScalarPointer();
-
 		printf("Hello from thread %i of %i ff[10]=%f\n",tid,ntd,ff[10]);
 
 		#if defined(_OPENMP)
@@ -153,8 +170,6 @@ int main()
 		#endif
 
 	}
-
-	Py_Finalize();
 
 	//We use return =0 for tests because
 	// Otherwise it breaks Makefiles

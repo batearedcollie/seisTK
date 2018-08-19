@@ -36,7 +36,6 @@ Copyright 2017 Bateared Collie
 
 
 
-
 #include <iostream>
 
 /**************************************/
