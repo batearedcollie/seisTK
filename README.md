@@ -6,9 +6,11 @@ Introduction
 ------------
 
 The purpose of seisTK is to provide data types and binds which allow representation of seismic data in VTK.
-In particular this adds two pieces of functionality 
+In particular this adds three pieces of functionality 
 
 *vtkHyperCube* provides the ability to store and manipulate grids with more than 3 dimensions. 
+
+*vtkTraceHeader* provides storage of seismic trace headers. 
 
 *vtkTracePanelData* provides storage of seismic trace data. 
 
@@ -19,8 +21,6 @@ Installation
 ------------
 
 ### Prerequisites
-
-* Boost and Boost Python
 
 * VTK (compiled with Python bindings) [https://github.com/Kitware/VTK]
 

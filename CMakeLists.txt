@@ -46,6 +46,12 @@ if("${isSystemDir}" STREQUAL "-1")
 endif("${isSystemDir}" STREQUAL "-1")
 
 #######################################
+# Python Executable
+if(NOT PYTHON_EXECUTABLE)
+  find_package(PythonInterp)
+endif()
+
+#######################################
 # VTK
 find_package(VTK REQUIRED)
 include(${VTK_USE_FILE})
@@ -94,7 +100,6 @@ add_subdirectory(cpp/Examples)
 
 #######################################
 # Install the python module
-
 file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/setup.py" DESTINATION ${CMAKE_CURRENT_BINARY_DIR} )
 
 add_custom_command(
