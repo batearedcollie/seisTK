@@ -25,8 +25,11 @@
 # EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
+import vtk
 from vtk.util import numpy_support
 from stk.DataTypes import vtkTracePanelData
+
+import stk.traceHeaderUtility as th
 
 from obspy.core import UTCDateTime
 import numpy as np
@@ -42,14 +45,15 @@ def tracePanelGenerate(array=np.zeros([1,100]),
             delta=1.,
             origin=0.,
             name="TraceData",
-            copy=True
+            copy=True,
+            **kwargs
             ):
     '''
     @summary: Generates a vtkTracePanelData object from an input numpy array
                 
     @param array: input data array (assumed traces are row major)
     @type array: numpy nd array 
-    @param traceDictList: trace dictionary
+    @param traceDictList: trace dictionary list
     @type traceDictList: [dict]  
     @param delta: time sampling   
     @type delta: float
@@ -116,6 +120,9 @@ def tracePanelGenerate(array=np.zeros([1,100]),
     vtk_data.SetName("TraceData")
     tpD.GetPointData().SetScalars(vtk_data)
     
-    for dd in traceDictList: tpD.appendDict(dd)
-     
+#     for dd in traceDictList: tpD.appendDict(dd)
+
+    for dd in traceDictList: th.AddHeaderKeys(tpD.GetHeaderTable(),dd,**kwargs)
+
+
     return tpD

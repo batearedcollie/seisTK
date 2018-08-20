@@ -37,6 +37,7 @@ Copyright 2017 Bateared Collie
 #include "vtkInformationVector.h"
 #include "vtkPointData.h"
 #include "vtkDataArray.h"
+#include "vtkSmartPointer.h"
 
 #include <string>
 #include <iostream>
@@ -57,7 +58,42 @@ Usage
 C++
 ---
 	@code
-	....
+		vtkSmartPointer<vtkTracePanelData> trc = vtkSmartPointer<vtkTracePanelData>::New();
+
+		int dims[2]={125,10};			// 10 traces of 125 samples
+		trc->SetDimensions(dims);
+		trc->AllocateScalars(VTK_FLOAT,1);
+
+		double smpl[2]={0.004,1.};		// 4ms sample rate
+		trc->SetSpacing(smpl);
+
+		double org[2]={-1,0.};			// start of time axis at -1. seconds
+		trc->SetOrigin(org);
+
+		// Add some trace headers
+		vtkSmartPointer<vtkTraceHeader> hdr= trc->GetHeaderTable();
+
+		vtkSmartPointer<vtkVariantArray> xpos = vtkSmartPointer<vtkVariantArray>::New();
+		xpos->SetName("xpos");
+		vtkSmartPointer<vtkVariantArray> ypos = vtkSmartPointer<vtkVariantArray>::New();
+		ypos->SetName("ypos");
+		vtkSmartPointer<vtkVariantArray> stn_id = vtkSmartPointer<vtkVariantArray>::New();
+		stn_id->SetName("stn_id");
+		for ( unsigned int i = 0; i < 10; i++ ) {
+			xpos->InsertNextValue( vtkVariant( double(i*20.) ) );
+			ypos->InsertNextValue( vtkVariant( double(i*-20.) ) );
+			stn_id->InsertNextValue( vtkVariant(i) );
+		}
+		hdr->AddColumn(xpos);
+		hdr->AddColumn(ypos);
+		hdr->AddColumn(stn_id);
+
+		cout << "\nHeader table:\n";
+		trc->GetHeaderTable()->Dump();
+
+		// Write out the trace data
+		cout << "\nTraceData object:\n";
+		trc->Print(cout);
 	@endcode
 
 Python
@@ -86,7 +122,7 @@ public:
 	void PrintSelf(ostream& os, vtkIndent indent);
 
 	//! Friend function to access the header table
-	vtkSmartPointer<vtkTraceHeader> GetHeaderTable(){
+	vtkTraceHeader* GetHeaderTable(){
 		return this->HeaderTable;
 	}
 

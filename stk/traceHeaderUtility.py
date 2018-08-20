@@ -135,7 +135,7 @@ def GetTraceHeaderDict(traceID,tHeader,**kwargs):
     cnames = GetHeaderKeys(tHeader)
     dd={}
     for cc in cnames: 
-        vv = tHeader.GetValueByName(1,cc)
+        vv = tHeader.GetValueByName(traceID,cc)
         type = vv.GetTypeAsString()
         dd[cc]=vtk.vtkVariantCast(vv,type)
 

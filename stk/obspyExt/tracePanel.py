@@ -29,13 +29,14 @@ from vtk.util import numpy_support
 from obspy.core.stream import Stream as obsStream
 from obspy.core.trace import Trace as obsTrace
 
-import stk.generators as gen
+import stk.tracePanelDataUtility as tu
+import stk.traceHeaderUtility as th
 
 import numpy as np
 import copy
 
 
-def ToTracePanelData(traces,origin_time=0.,name="TraceData"):
+def ToTracePanelData(traces,origin_time=0.,name="TraceData",**kwargs):
     '''
     @summary: Converts an obspy stream to a TracePanelData
     
@@ -63,15 +64,16 @@ def ToTracePanelData(traces,origin_time=0.,name="TraceData"):
     ll = []
     for tr in traces: ll.append(tr.stats.__dict__)
     
-    return gen.tracePanelGenerate(array=mat,
+    return tu.tracePanelGenerate(array=mat,
             traceDictList=ll,
             delta=traces[0].stats.delta,
             origin=origin_time,
             name=name,
-            copy=True
+            copy=True,
+            **kwargs
             )
 
-def ToObsPy(tracePanel,name="TraceData",useDictPointer=False):
+def ToObsPy(tracePanel,name="TraceData",**kwargs):
     '''
     @summary: Generates a ObsPy stream object from a vtkTracePanelData object
 
@@ -81,11 +83,6 @@ def ToObsPy(tracePanel,name="TraceData",useDictPointer=False):
     @param name: scalar array name to take from vtkTracePanelData object
     @type name: string
     
-    @param useDictPointer: use a direct pointer to the C++ representation
-                    of the trace header dictionaries. If you use this 
-                    it will stop C++ being able to access the dictionary 
-                    properly.
-    @type useDictPointer: boolean
     
     ** Example Usage **
     
@@ -98,11 +95,8 @@ def ToObsPy(tracePanel,name="TraceData",useDictPointer=False):
     dims = tracePanel.GetDimensions()
     out = obsStream([])
 
-    if useDictPointer ==True:
-        dList = tracePanel.GetDictionaryList()
-    else:
-        dList=[]
-        tracePanel.GetDictionaryList(dList)
+    dList=[]
+    for i in range(0,dims[1]): dList.append( th.GetTraceHeaderDict(i,tracePanel.GetHeaderTable(),**kwargs) )
 
     for i in range(0,dims[1]):   
         

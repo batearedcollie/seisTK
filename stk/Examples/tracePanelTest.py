@@ -29,7 +29,9 @@ from obspy.core.trace import Trace as obsTrace
 from obspy.core import UTCDateTime 
 import numpy as np
 
-import stk.generators as gen
+import stk.tracePanelDataUtility as tu
+import stk.traceHeaderUtility as th
+
 import stk.obspyExt as stkObs
   
 
@@ -41,9 +43,10 @@ def TraceDataSet():
     print "\n***********************************"
     print "Generic import"
     print "***********************************" 
-    
+
+
     # Generate a simple trace panel data
-    tdata = gen.tracePanelGenerate(
+    tdata = tu.tracePanelGenerate(
                         array=np.zeros([1,100]),
                         traceDictList=[{
                             'network' : 'Blah',
@@ -57,21 +60,15 @@ def TraceDataSet():
                           )
     print "Number of dimensions is ",tdata.GetNDimensions()
     print "Number of points = ",tdata.GetNumberOfPoints()
-        
-    #print tdata
-    
-    dList=[]
-    tdata.GetDictionaryList(dList) 
-    for i,dd in enumerate(dList):
-        print "Dictionary for trace ",i
-        for kk in dd: print "\t",kk," : ",dd[kk]
-    
+
+    print "Headers"
+    tdata.GetHeaderTable().Dump()
+
     dims=np.zeros([2],dtype=np.int)
-        
+         
     tdata.GetFullDimensions(dims)
     for i,nn in enumerate(dims):
         print "Length = ",nn," spacing =",tdata.GetAxisSpacing(i)," origin =",tdata.GetAxisOrigin(i)
-
 
 def TraceDataObsPy():
     '''
@@ -98,31 +95,30 @@ def TraceDataObsPy():
         }
     tr = obsTrace(data=dta,header=hdr)
     st.append(tr)
+
+    # Plot it 
+    #st[0].plot()
+ 
+    # Now make it into a trace panel data
+    print "\nConverting to trace panel data"
+    tracePanelData = stkObs.ToTracePanelData(st,origin_time=0.,name="TraceData")    
+ 
+    dims = tracePanelData.GetDimensions()
+    print "Working with trace panel data:"
+    print "Dimensions = ",dims[0],dims[1],dims[2]
+    print "Number of points = ",tracePanelData.GetNumberOfPoints()
+
+    dlist=[]
+    for i in range(0,dims[1]): dlist.append( th.GetTraceHeaderDict(i,tracePanelData.GetHeaderTable()) )
     
-    print "\nMade some data in obspy"
-    
-#     # Plot it 
-#     #st[0].plot()
-# 
-#     # Now make it into a trace panel data
-#     print "\nConverting to trace panel data"
-#     tracePanelData = stkObs.ToTracePanelData(st,origin_time=0.,name="TraceData")    
-# 
-#     dims = tracePanelData.GetDimensions()
-#     print "Working with trace panel data:"
-#     print "Dimensions = ",dims[0],dims[1],dims[2]
-#     print "Number of points = ",tracePanelData.GetNumberOfPoints()
-#         
-#     dList=[]
-#     tracePanelData.GetDictionaryList(dList) 
-#     for i,dd in enumerate(dList):
-#         print "Dictionary for trace ",i
-#         for kk in dd: print "\t",kk," : ",dd[kk]
-#         
+    for i,dd in enumerate(dlist):
+        print "Dictionary for trace ",i
+        for kk in dd: print "\t",kk," : ",dd[kk]
+       
 #     # Convert back to obspy
-#     print "\nBack to ObsPy data"
-#     updatedObsPy = stkObs.ToObsPy(tracePanelData) 
-#     print updatedObsPy
+    print "\nBack to ObsPy data"
+    updatedObsPy = stkObs.ToObsPy(tracePanelData) 
+    print updatedObsPy
 
 if __name__ == '__main__':
     TraceDataSet()
