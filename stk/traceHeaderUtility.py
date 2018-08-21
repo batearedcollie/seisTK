@@ -56,10 +56,12 @@ def ConvertKeys(inputDict,lambdaDict):
     
     return out
     
-def ConvertKeysToVTK(inputDict,lambdaDict={"starttime": lambda x: x if x == None else UTCDateTime(x).isoformat(),
-                                           "endtime": lambda x: x if x == None else UTCDateTime(x).isoformat(),
-                                            
-                                            },**kwargs):
+def ConvertKeysToVTK(inputDict,
+                    lambdaDict={"starttime": lambda x: x if x == None else UTCDateTime(x).isoformat(),
+                                "endtime": lambda x: x if x == None else UTCDateTime(x).isoformat(),
+                                "processing": lambda x: str(x)
+                                },
+                    **kwargs):
     '''
     Used to convert dictionary keys for representation in the trace header table
     
@@ -109,7 +111,6 @@ def AddHeaderKeys(tHeader,inputDict,**kwargs):
     addArray=vtk.vtkVariantArray()
     for cc in cols: 
         if cc in dd:
-            # TODO - need lambda conversions here here
             addArray.InsertNextValue(dd[cc])
         else:
             addArray.InsertNextValue(None)
