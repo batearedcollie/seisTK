@@ -31,7 +31,6 @@ Copyright 2017 Bateared Collie
 
 // Includes
 #include "vtkTable.h"
-#include <boost/python.hpp>
 
 #include "vtkSmartPointer.h"
 #include "vtkInformation.h"
@@ -143,7 +142,7 @@ public:
 	void SetUniformTuple(const char* key, const int size, T* tuple)
 	{
 		if(this->KeyExists(key)==true){
-			vtkSmartPointer<V> vv = (V*) this->GetColumnByName("key");
+			vtkSmartPointer<V> vv = (V*) this->GetColumnByName(key);
 			for(int i=0;i<this->GetNumberOfRows();i++){
 				vv->SetTypedTuple(i,tuple);
 			}

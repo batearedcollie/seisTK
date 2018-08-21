@@ -82,8 +82,20 @@ int main()
 		hdr->AddColumn(ypos);
 		hdr->AddColumn(stn_id);
 
+
+		// Add an axilary header
+		trc->AddBlankAuxilaryHeader("picks");
+		vtkSmartPointer<vtkTraceHeader> ahdr= trc->GetAuxilaryHeader("picks");
+		vtkSmartPointer<vtkVariantArray> traceID = vtkSmartPointer<vtkVariantArray>::New(); traceID->SetName("traceID");
+		vtkSmartPointer<vtkVariantArray> time = vtkSmartPointer<vtkVariantArray>::New(); time->SetName("time");
+		ahdr->AddColumn(traceID);
+		ahdr->AddColumn(time);
+
 		cout << "\nHeader table:\n";
 		trc->GetHeaderTable()->Dump();
+
+		cout << "\nAux header: picks\n";
+		trc->GetAuxilaryHeader("picks")->Dump();
 
 		// Write out the trace data
 		cout << "\nTraceData object:\n";

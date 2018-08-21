@@ -39,6 +39,7 @@ Copyright 2017 Bateared Collie
 #include "vtkDataArray.h"
 #include "vtkSmartPointer.h"
 
+#include <map>
 #include <string>
 #include <iostream>
 
@@ -100,7 +101,16 @@ Python
 ------
 
 	@code
-	...
+    tpD = vtkTracePanelData()
+    tpD.SetDimensions(nsmpl,ntrace,1)
+    tpD.SetSpacing(delta,1.,1.)
+    tpD.SetOrigin(origin,0.,0.)
+
+    vtk_data = numpy_support.numpy_to_vtk(array.flatten(),
+                                          deep=copy
+                                          )
+    vtk_data.SetName("TraceData")
+    tpD.GetPointData().SetScalars(vtk_data)
 	@endcode
 
 
@@ -147,6 +157,39 @@ public:
 	//! Copy but without allocating any scalars
 	virtual void UnAllocatedCopy(vtkDataObject* src);
 
+	//! Check auxilary Header table exists
+	bool AuxHeaderExists(const char* key){
+		if(this->AuxilaryHeaders.count(key)!=1) return false;
+		return true;
+	}
+
+	//! Get list of Aux header tables
+	std::vector<std::string> GetAuxHeaderNames(){
+		std::vector<std::string> out;
+		for(std::map<std::string,vtkSmartPointer<vtkTraceHeader>>::iterator it =
+			this->AuxilaryHeaders.begin(); it != this->AuxilaryHeaders.end(); ++it) {
+			out.push_back(it->first);
+		}
+		return out;
+	}
+
+	//! Get Auxilary Header Table
+	vtkTraceHeader* GetAuxilaryHeader(const char* key){
+		return this->AuxilaryHeaders[key];
+	}
+
+	//! Remove Auxilary Header Table
+	void RemoveAuxilaryHeader(const char* key){
+		this->AuxilaryHeaders.erase(key);
+	}
+
+	//! Add Blank Auxilary Header Table
+	void AddBlankAuxilaryHeader(const char* key)
+	{
+		this->AuxilaryHeaders[key] = vtkSmartPointer<vtkTraceHeader>::New();
+	}
+
+
 protected:
 
 	vtkTracePanelData(){
@@ -159,7 +202,12 @@ protected:
 
 private:
 
-	vtkSmartPointer<vtkTraceHeader> HeaderTable;		//!< Trace header table object
+	vtkSmartPointer<vtkTraceHeader> HeaderTable;		//!< Main Trace header table object one enrty per trace
+
+	std::map<std::string,vtkSmartPointer<vtkTraceHeader>> AuxilaryHeaders; //!< Additional Header tables
+																			/*!
+																			 * Can be used to store trace picks etc.
+																			 */
 
 };
 

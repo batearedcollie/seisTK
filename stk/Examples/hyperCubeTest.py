@@ -25,7 +25,7 @@
 # EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-import stk.generators as gen
+import stk.hyperCubeUtility as hu
 import stk.mdExt as md
 
 
@@ -42,7 +42,7 @@ def HyperCubeDataSet():
     print "***********************************" 
  
     # Generate a simple hyper cube
-    cube = gen.hyperCubeGenerate(array=np.zeros([10,20,5,6],dtype=np.float),
+    cube = hu.hyperCubeGenerate(array=np.zeros([10,20,5,6],dtype=np.float),
                           delta=[0.1,0.2,1.,2.],
                           origin=[-0.5,0.,-10.,3.],
                           )

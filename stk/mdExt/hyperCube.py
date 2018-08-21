@@ -26,7 +26,7 @@
 #
 
 from vtk.util import numpy_support
-import stk.generators as gen
+import stk.hyperCubeUtility as hu
 import rsf.api as sfapi
 
 import tempfile
@@ -62,7 +62,7 @@ def ToHyperCubeData(MdgscrInput,name="HyperCubeData"):
         axis=axis+1
         nn = MdgscrInput.int("n"+str(axis))
             
-    cube = gen.hyperCubeGenerate(array=MdgscrInput.__array__(),
+    cube = hu.hyperCubeGenerate(array=MdgscrInput.__array__(),
                           delta=delta,
                           origin=origin,
                           name = name, 
