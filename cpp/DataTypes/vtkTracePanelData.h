@@ -48,9 +48,12 @@ Copyright 2017 Bateared Collie
 
 /*!
 
-\brief Combines a vtkHyperCube and vtkTraceHeader Object inorder to store traces
+\brief Combines a vtkHyperCube and vtkHeaderTable Object inorder to store traces
 
 By convention the X axis of the cube is trace time. Y is the trace number
+
+Trace meta data is stores as a named list of vtkHeaderTable objects. By default only 1 table
+is present. The "traces" contains 1 row per trace. There are no required fields in the tables.
 
 Usage
 =====
@@ -162,7 +165,7 @@ public:
 		return true;
 	}
 
-	//! Get list of Aux header tables
+	//! Get list of header tables
 	std::vector<std::string> GetHeaderTableNames(){
 		std::vector<std::string> out;
 		for(std::unordered_map<std::string,vtkSmartPointer<vtkHeaderTable>>::iterator it =
@@ -172,22 +175,28 @@ public:
 		return out;
 	}
 
-	//! Get Auxilary Header Table
+	//! Get Header Table
 	vtkHeaderTable* GetHeaderTable(const char* key){
 		return this->Headers[key];
 	}
 
-	//! Remove Auxilary Header Table
+	//! Remove Header Table
 	void RemoveHeaderTable(const char* key){
 		this->Headers.erase(key);
 	}
 
-	//! Add Blank Auxilary Header Table
-	vtkHeaderTable* AddBlankHeaderTable(const char* key)
+	//! Add Blank Header Table
+	/*!
+	 * By default the list of existing tables is checked and a null pointer is returned
+	 *  if the table already exists. Use forceOverWrite=true to disable.
+	 */
+	vtkHeaderTable* AddBlankHeaderTable(const char* key, bool forceOverWrite=false)
 	{
-		if(this->HeaderTableExists(key)==true){
-			vtkErrorMacro("Header table " << key << " already exists")
-			return nullptr;
+		if(forceOverWrite ==false){
+			if(this->HeaderTableExists(key)==true){
+				vtkErrorMacro("Header table " << key << " already exists")
+				return nullptr;
+			}
 		}
 
 		this->Headers[key] = vtkSmartPointer<vtkHeaderTable>::New();
@@ -208,9 +217,12 @@ protected:
 private:
 
 
-	std::unordered_map<std::string,vtkSmartPointer<vtkHeaderTable>> Headers; //!< Additional Header tables
+	std::unordered_map<std::string,vtkSmartPointer<vtkHeaderTable>> Headers; //!< Header tables
 																			/*!
-																			 * Can be used to store trace picks etc.
+																			 * Each table consists of name table pair
+																			 *
+																			 * Only 1 table is presence by default
+																			 * "traces" contiains 1 row per trace
 																			 */
 
 };
