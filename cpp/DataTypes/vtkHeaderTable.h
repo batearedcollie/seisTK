@@ -58,7 +58,7 @@ C++
 
 	@code
 
-	vtkSmartPointer<vtkTraceHeader> hdr = vtkSmartPointer<vtkTraceHeader>::New();
+	vtkSmartPointer<vtkHeaderTable> hdr = vtkSmartPointer<vtkHeaderTable>::New();
 
 	// Set up basic table
 	vtkSmartPointer<vtkVariantArray> xpos = vtkSmartPointer<vtkVariantArray>::New();
@@ -87,7 +87,7 @@ Python
 	@code
 	from stk.DataTypes import vtkTraceHeader
 
-    header = vtkTraceHeader()
+    header = vtkHeaderTable()
 
     # Add stations field
     v = vtk.vtkVariantArray()
@@ -108,15 +108,15 @@ Python
     header.Dump()
 	@endcode
 */
-class VTK_EXPORT vtkTraceHeader : public vtkTable
+class VTK_EXPORT vtkHeaderTable : public vtkTable
 {
 
 public:
 	//! New method
-	static vtkTraceHeader *New();
+	static vtkHeaderTable *New();
 
 	//! Typedef
-	vtkTypeMacro(vtkTraceHeader,vtkTable)
+	vtkTypeMacro(vtkHeaderTable,vtkTable)
 
 	//! Printself
 	void PrintSelf(ostream &os, vtkIndent indent);
@@ -162,10 +162,10 @@ public:
 	int GetDataObjectType() {return VTK_TRACE_HEADER;}
 
 	//! Retrieve an instance of this class from an information object.
-	static vtkTraceHeader* GetData(vtkInformation* info);
+	static vtkHeaderTable* GetData(vtkInformation* info);
 
 	//! Retrieve an instance of this class from an information object.
-	static vtkTraceHeader* GetData(vtkInformationVector* v, int i=0);
+	static vtkHeaderTable* GetData(vtkInformationVector* v, int i=0);
 
 	//! Shallow copy the data from src into this object.
 	virtual void ShallowCopy(vtkDataObject* src);
@@ -205,11 +205,11 @@ public:
 protected:
 
 	//! Constructor
-	vtkTraceHeader(){
+	vtkHeaderTable(){
 	}
 
 	//! Destructor
-	~vtkTraceHeader(){}
+	~vtkHeaderTable(){}
 
 
 private:

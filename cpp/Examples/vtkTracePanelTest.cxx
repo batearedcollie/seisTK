@@ -65,7 +65,7 @@ int main()
 		trc->SetOrigin(org);
 
 		// Add some trace headers
-		vtkSmartPointer<vtkTraceHeader> hdr= trc->GetHeaderTable();
+		vtkSmartPointer<vtkHeaderTable> hdr= trc->GetTraceHeaderTable();
 
 		vtkSmartPointer<vtkVariantArray> xpos = vtkSmartPointer<vtkVariantArray>::New();
 		xpos->SetName("xpos");
@@ -84,18 +84,17 @@ int main()
 
 
 		// Add an axilary header
-		trc->AddBlankAuxilaryHeader("picks");
-		vtkSmartPointer<vtkTraceHeader> ahdr= trc->GetAuxilaryHeader("picks");
+		vtkSmartPointer<vtkHeaderTable> ahdr = trc->AddBlankHeaderTable("picks");
 		vtkSmartPointer<vtkVariantArray> traceID = vtkSmartPointer<vtkVariantArray>::New(); traceID->SetName("traceID");
 		vtkSmartPointer<vtkVariantArray> time = vtkSmartPointer<vtkVariantArray>::New(); time->SetName("time");
 		ahdr->AddColumn(traceID);
 		ahdr->AddColumn(time);
 
 		cout << "\nHeader table:\n";
-		trc->GetHeaderTable()->Dump();
+		trc->GetTraceHeaderTable()->Dump();
 
 		cout << "\nAux header: picks\n";
-		trc->GetAuxilaryHeader("picks")->Dump();
+		trc->GetHeaderTable("picks")->Dump();
 
 		// Write out the trace data
 		cout << "\nTraceData object:\n";
@@ -125,20 +124,20 @@ int main()
 		vtkSmartPointer<vtkVariantArray> c2 = vtkSmartPointer<vtkVariantArray>::New(); c2->SetName("channel");
 		vtkSmartPointer<vtkVariantArray> c3 = vtkSmartPointer<vtkVariantArray>::New(); c3->SetName("location");
 
-		trc->GetHeaderTable()->AddColumn(c1);
-		trc->GetHeaderTable()->AddColumn(c2);
-		trc->GetHeaderTable()->AddColumn(c3);
+		trc->GetTraceHeaderTable()->AddColumn(c1);
+		trc->GetTraceHeaderTable()->AddColumn(c2);
+		trc->GetTraceHeaderTable()->AddColumn(c3);
 
 		for(int i=0;i<trc->GetFullDimensions()[1];i++){
 			vtkSmartPointer<vtkVariantArray> row  = vtkSmartPointer<vtkVariantArray>::New();
 			row->InsertNextValue( vtkVariant( std::string("stn")+std::to_string(i) ) );
 			row->InsertNextValue( vtkVariant( "CHZ" ) );
 			row->InsertNextValue( vtkVariant( i ) );
-			trc->GetHeaderTable()->InsertNextRow(row);
+			trc->GetTraceHeaderTable()->InsertNextRow(row);
 		}
 
 		cout << "\nHeaders:\n";
-		trc->GetHeaderTable()->Dump();
+		trc->GetTraceHeaderTable()->Dump();
 
 		// Assign some values
 		int nPoint = trc->GetNumberOfPoints();

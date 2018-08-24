@@ -30,7 +30,7 @@ Copyright 2017 Bateared Collie
 #define SEISTK_ALGORITHMS_VTKTRACEHEADERALGORITHM_H_
 
 // Includes
-#include "vtkTraceHeader.h"
+#include "vtkHeaderTable.h"
 #include "vtkTableAlgorithm.h"
 #include "vtkSmartPointer.h"
 
@@ -40,16 +40,16 @@ Copyright 2017 Bateared Collie
 \brief Abstract base algorithm class for working with trace header data.
 
 */
-class VTK_EXPORT vtkTraceHeaderAlgorithm : public vtkTableAlgorithm
+class VTK_EXPORT vtkHeaderTableAlgorithm : public vtkTableAlgorithm
 {
 
 public:
 
 	//! New method
-	static vtkTraceHeaderAlgorithm *New();
+	static vtkHeaderTableAlgorithm *New();
 
 	//! Typedef
-	vtkTypeMacro(vtkTraceHeaderAlgorithm , vtkTableAlgorithm)
+	vtkTypeMacro(vtkHeaderTableAlgorithm , vtkTableAlgorithm)
 
 	//! Print self
 	void PrintSelf(ostream& os, vtkIndent indent);
@@ -60,13 +60,13 @@ public:
 	//                            vtkInformationVector*);
 
 	//! Return pointer to output data
-	vtkTraceHeader* GetOutput(int port=0){
-		return vtkTraceHeader::SafeDownCast(this->GetOutputDataObject(port));
+	vtkHeaderTable* GetOutput(int port=0){
+		return vtkHeaderTable::SafeDownCast(this->GetOutputDataObject(port));
 	}
 
 protected:
 
-	vtkTraceHeaderAlgorithm(){
+	vtkHeaderTableAlgorithm(){
 		this->SetNumberOfInputPorts(1);
 		this->SetNumberOfOutputPorts(1);
 	}

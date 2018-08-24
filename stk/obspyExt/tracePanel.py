@@ -96,7 +96,7 @@ def ToObsPy(tracePanel,name="TraceData",**kwargs):
     out = obsStream([])
 
     dList=[]
-    for i in range(0,dims[1]): dList.append( th.GetTraceHeaderDict(i,tracePanel.GetHeaderTable(),**kwargs) )
+    for i in range(0,dims[1]): dList.append( th.GetTraceHeaderDict(i,tracePanel.GetTraceHeaderTable(),**kwargs) )
 
     for i in range(0,dims[1]):   
         

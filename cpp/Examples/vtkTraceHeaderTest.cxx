@@ -28,7 +28,7 @@ Copyright 2017 Bateared Collie
 
 /**************************************/
 // Includes
-#include "vtkTraceHeader.h"
+#include "vtkHeaderTable.h"
 #include "vtkSmartPointer.h"
 
 #include "vtkVariant.h"
@@ -52,7 +52,7 @@ int main()
 		cout << "\n\n*********************************\n";
 		cout << "Basic test for vtkTraceHeader\n";
 
-		vtkSmartPointer<vtkTraceHeader> hdr = vtkSmartPointer<vtkTraceHeader>::New();
+		vtkSmartPointer<vtkHeaderTable> hdr = vtkSmartPointer<vtkHeaderTable>::New();
 
 		// Set up basic table
 		vtkSmartPointer<vtkVariantArray> xpos = vtkSmartPointer<vtkVariantArray>::New();
@@ -120,7 +120,7 @@ int main()
 		cout << "\n\n*********************************\n";
 		cout << "VTK TracHeader Threading Test\n";
 
-		vtkSmartPointer<vtkTraceHeader> hdr = vtkSmartPointer<vtkTraceHeader>::New();
+		vtkSmartPointer<vtkHeaderTable> hdr = vtkSmartPointer<vtkHeaderTable>::New();
 
 		// Set up basic table
 		vtkSmartPointer<vtkVariantArray> xpos = vtkSmartPointer<vtkVariantArray>::New();
@@ -153,7 +153,7 @@ int main()
 		int ntd = 1;
 		#endif
 
-		vtkSmartPointer<vtkTraceHeader> hdr_lcl = vtkSmartPointer<vtkTraceHeader>::New();
+		vtkSmartPointer<vtkHeaderTable> hdr_lcl = vtkSmartPointer<vtkHeaderTable>::New();
 		hdr_lcl->DeepCopy(hdr);
 		hdr_lcl->SetValueByName(0,"nsmpl",vtkVariant( tid ));
 

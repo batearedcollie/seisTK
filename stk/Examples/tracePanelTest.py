@@ -62,7 +62,7 @@ def TraceDataSet():
     print "Number of points = ",tdata.GetNumberOfPoints()
 
     print "Headers"
-    tdata.GetHeaderTable().Dump()
+    tdata.GetTraceHeaderTable().Dump()
 
     dims=np.zeros([2],dtype=np.int)
          
@@ -109,7 +109,7 @@ def TraceDataObsPy():
     print "Number of points = ",tracePanelData.GetNumberOfPoints()
 
     dlist=[]
-    for i in range(0,dims[1]): dlist.append( th.GetTraceHeaderDict(i,tracePanelData.GetHeaderTable()) )
+    for i in range(0,dims[1]): dlist.append( th.GetTraceHeaderDict(i,tracePanelData.GetTraceHeaderTable()) )
     
     for i,dd in enumerate(dlist):
         print "Dictionary for trace ",i

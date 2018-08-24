@@ -25,7 +25,7 @@
 # EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-from stk.DataTypes import vtkTraceHeader
+from stk.DataTypes import vtkHeaderTable
 import stk.traceHeaderUtility as tu
 
 import vtk
@@ -38,7 +38,7 @@ def BasicHeaderFunctionality():
     
     
     # Make a header set
-    header = vtkTraceHeader()
+    header = vtkHeaderTable()
     
     # Add stations field
     v = vtk.vtkVariantArray()
@@ -60,7 +60,7 @@ def BasicHeaderFunctionality():
     header.Dump()    
     
     # Set using a dictionary list aka. obspy
-    header2 = vtkTraceHeader()
+    header2 = vtkHeaderTable()
     tu.AddHeaderKeys(header2,{"station":"stn1","channel":"CHZ","nsmpl":100,
                               "starttime":UTCDateTime()})
   

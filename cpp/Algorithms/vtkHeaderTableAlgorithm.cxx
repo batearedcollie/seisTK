@@ -34,9 +34,8 @@ Copyright 2017 Bateared Collie
 #include "vtkObjectFactory.h"
 #include "vtkDemandDrivenPipeline.h"
 #include "vtkStreamingDemandDrivenPipeline.h"
-#include "vtkTraceHeaderAlgorithm.h"
-
 #include <iostream>
+#include "vtkHeaderTableAlgorithm.h"
 
 /**************************************/
 // Definitions
@@ -48,12 +47,12 @@ using namespace std;
 // Public methods
 
 // New method
-vtkStandardNewMacro(vtkTraceHeaderAlgorithm)
+vtkStandardNewMacro(vtkHeaderTableAlgorithm)
 
 // Print self
-void vtkTraceHeaderAlgorithm::PrintSelf(ostream& os, vtkIndent indent)
+void vtkHeaderTableAlgorithm::PrintSelf(ostream& os, vtkIndent indent)
 {
-	os << indent << "vtkTraceHeaderAlgorithm:\n";
+	os << indent << "vtkHeaderTableAlgorithm:\n";
 	this->Superclass::PrintSelf(os, indent);
 }
 
@@ -61,27 +60,27 @@ void vtkTraceHeaderAlgorithm::PrintSelf(ostream& os, vtkIndent indent)
 // Protected methods
 
 // Filling output ports
-int vtkTraceHeaderAlgorithm::FillInputPortInformation(
+int vtkHeaderTableAlgorithm::FillInputPortInformation(
   int vtkNotUsed(port), vtkInformation* info)
 {
-	info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkTraceHeader");
+	info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkHeaderTable");
 	return 1;
 }
 
 // Filling output ports
-int vtkTraceHeaderAlgorithm::FillOutputPortInformation(
+int vtkHeaderTableAlgorithm::FillOutputPortInformation(
   int vtkNotUsed(port), vtkInformation* info)
 {
-	info->Set(vtkDataObject::DATA_TYPE_NAME(), "vtkTraceHeader");
+	info->Set(vtkDataObject::DATA_TYPE_NAME(), "vtkHeaderTable");
 	return 1;
 }
 
-int vtkTraceHeaderAlgorithm::RequestDataObject(
+int vtkHeaderTableAlgorithm::RequestDataObject(
   vtkInformation* vtkNotUsed(request),
   vtkInformationVector** vtkNotUsed(inputVector),
   vtkInformationVector* vtkNotUsed(outputVector))
 {
-	vtkTraceHeader *newobj = vtkTraceHeader::New();
+	vtkHeaderTable *newobj = vtkHeaderTable::New();
 	this->GetExecutive()->SetOutputData(0, newobj);
 	newobj->Delete();
 	return 1;

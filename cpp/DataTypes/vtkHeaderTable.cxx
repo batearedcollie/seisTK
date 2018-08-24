@@ -30,7 +30,8 @@ Copyright 2017 Bateared Collie
 /**************************************/
 // Includes
 #include "vtkObjectFactory.h"
-#include "vtkTraceHeader.h"
+
+#include "vtkHeaderTable.h"
 
 /**************************************/
 // Definitions
@@ -42,42 +43,42 @@ using namespace std;
 // Public methods
 
 // New method
-vtkStandardNewMacro(vtkTraceHeader)
+vtkStandardNewMacro(vtkHeaderTable)
 
 // Print self
-void vtkTraceHeader::PrintSelf(ostream& os, vtkIndent indent)
+void vtkHeaderTable::PrintSelf(ostream& os, vtkIndent indent)
 {
-	os << indent << "vtkTraceHeader:\n";
+	os << indent << "vtkHeaderTable:\n";
 	this->Superclass::PrintSelf(os,indent.GetNextIndent());
-	os << indent << "End vtkTraceHeader" << endl;
+	os << indent << "End vtkHeaderTable" << endl;
 }
 
 // Get Data
-vtkTraceHeader* vtkTraceHeader::GetData(vtkInformation* info)
+vtkHeaderTable* vtkHeaderTable::GetData(vtkInformation* info)
 {
-  return info? vtkTraceHeader::SafeDownCast(info->Get(DATA_OBJECT())) : 0;
+  return info? vtkHeaderTable::SafeDownCast(info->Get(DATA_OBJECT())) : 0;
 }
 
 // Get Data
-vtkTraceHeader* vtkTraceHeader::GetData(vtkInformationVector* v, int i)
+vtkHeaderTable* vtkHeaderTable::GetData(vtkInformationVector* v, int i)
 {
-	return vtkTraceHeader::GetData(v->GetInformationObject(i));
+	return vtkHeaderTable::GetData(v->GetInformationObject(i));
 }
 
 // Shallow copy
-void vtkTraceHeader::ShallowCopy(vtkDataObject* src)
+void vtkHeaderTable::ShallowCopy(vtkDataObject* src)
 {
 	this->Superclass::ShallowCopy(src);
 }
 
 //Deep
-void vtkTraceHeader::DeepCopy(vtkDataObject* src)
+void vtkHeaderTable::DeepCopy(vtkDataObject* src)
 {
 	this->Superclass::DeepCopy(src);
 }
 
 //Empty
-void vtkTraceHeader::EmptyCopy(vtkDataObject* src)
+void vtkHeaderTable::EmptyCopy(vtkDataObject* src)
 {
 	std::vector<std::string> keys = this->GetKeyList();
 

@@ -31,17 +31,16 @@ Copyright 2017 Bateared Collie
 
 // Includes
 #include "vtkHyperCube.h"
-#include "vtkTraceHeader.h"
-
 #include "vtkInformation.h"
 #include "vtkInformationVector.h"
 #include "vtkPointData.h"
 #include "vtkDataArray.h"
 #include "vtkSmartPointer.h"
 
-#include <map>
+#include <unordered_map>
 #include <string>
 #include <iostream>
+#include "vtkHeaderTable.h"
 
 //! Definitions (vtk types go up to 36)
 #define VTK_TRACE_PANEL_DATA 38
@@ -132,8 +131,8 @@ public:
 	void PrintSelf(ostream& os, vtkIndent indent);
 
 	//! Friend function to access the header table
-	vtkTraceHeader* GetHeaderTable(){
-		return this->HeaderTable;
+	vtkHeaderTable* GetTraceHeaderTable(){
+		return this->Headers["traces"];
 	}
 
 	//! From vtkType.h, a handle on what type of vtkDataObject this is.
@@ -157,36 +156,42 @@ public:
 	//! Copy but without allocating any scalars
 	virtual void UnAllocatedCopy(vtkDataObject* src);
 
-	//! Check auxilary Header table exists
-	bool AuxHeaderExists(const char* key){
-		if(this->AuxilaryHeaders.count(key)!=1) return false;
+	//! Check Header table exists
+	bool HeaderExists(const char* key){
+		if(this->Headers.count(key)!=1) return false;
 		return true;
 	}
 
 	//! Get list of Aux header tables
-	std::vector<std::string> GetAuxHeaderNames(){
+	std::vector<std::string> GetHeaderTableNames(){
 		std::vector<std::string> out;
-		for(std::map<std::string,vtkSmartPointer<vtkTraceHeader>>::iterator it =
-			this->AuxilaryHeaders.begin(); it != this->AuxilaryHeaders.end(); ++it) {
+		for(std::unordered_map<std::string,vtkSmartPointer<vtkHeaderTable>>::iterator it =
+			this->Headers.begin(); it != this->Headers.end(); ++it) {
 			out.push_back(it->first);
 		}
 		return out;
 	}
 
 	//! Get Auxilary Header Table
-	vtkTraceHeader* GetAuxilaryHeader(const char* key){
-		return this->AuxilaryHeaders[key];
+	vtkHeaderTable* GetHeaderTable(const char* key){
+		return this->Headers[key];
 	}
 
 	//! Remove Auxilary Header Table
-	void RemoveAuxilaryHeader(const char* key){
-		this->AuxilaryHeaders.erase(key);
+	void RemoveHeaderTable(const char* key){
+		this->Headers.erase(key);
 	}
 
 	//! Add Blank Auxilary Header Table
-	void AddBlankAuxilaryHeader(const char* key)
+	vtkHeaderTable* AddBlankHeaderTable(const char* key)
 	{
-		this->AuxilaryHeaders[key] = vtkSmartPointer<vtkTraceHeader>::New();
+		if(this->HeaderExists(key)==true){
+			vtkErrorMacro("Header table " << key << " already exists")
+			return nullptr;
+		}
+
+		this->Headers[key] = vtkSmartPointer<vtkHeaderTable>::New();
+		return this->Headers[key];
 	}
 
 
@@ -194,7 +199,7 @@ protected:
 
 	vtkTracePanelData(){
 		this->SetNDimensions(2);
-		this->HeaderTable = vtkSmartPointer<vtkTraceHeader>::New();
+		this->Headers["traces"] = vtkSmartPointer<vtkHeaderTable>::New();
 	}
 
 	~vtkTracePanelData(){
@@ -202,9 +207,8 @@ protected:
 
 private:
 
-	vtkSmartPointer<vtkTraceHeader> HeaderTable;		//!< Main Trace header table object one enrty per trace
 
-	std::map<std::string,vtkSmartPointer<vtkTraceHeader>> AuxilaryHeaders; //!< Additional Header tables
+	std::unordered_map<std::string,vtkSmartPointer<vtkHeaderTable>> Headers; //!< Additional Header tables
 																			/*!
 																			 * Can be used to store trace picks etc.
 																			 */
