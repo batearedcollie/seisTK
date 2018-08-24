@@ -47,7 +47,6 @@ using namespace std;
 int main()
 {
 
-	// Need to have this so that the Python call back don't cause seg faults
 	{
 		cout << "\n\n*********************************\n";
 		cout << "Basic test for vtkTracePanelData\n";

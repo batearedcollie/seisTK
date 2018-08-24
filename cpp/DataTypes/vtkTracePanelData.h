@@ -157,7 +157,7 @@ public:
 	virtual void UnAllocatedCopy(vtkDataObject* src);
 
 	//! Check Header table exists
-	bool HeaderExists(const char* key){
+	bool HeaderTableExists(const char* key){
 		if(this->Headers.count(key)!=1) return false;
 		return true;
 	}
@@ -185,7 +185,7 @@ public:
 	//! Add Blank Auxilary Header Table
 	vtkHeaderTable* AddBlankHeaderTable(const char* key)
 	{
-		if(this->HeaderExists(key)==true){
+		if(this->HeaderTableExists(key)==true){
 			vtkErrorMacro("Header table " << key << " already exists")
 			return nullptr;
 		}
