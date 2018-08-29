@@ -81,7 +81,7 @@ void vtkTracePanelData::ShallowCopy(vtkDataObject* src)
     {
 		for(std::unordered_map<std::string,vtkSmartPointer<vtkHeaderTable>>::iterator it =
 			this->Headers.begin(); it != this->Headers.end(); ++it) {
-			this->AddBlankHeaderTable(it->first.c_str());
+			this->AddBlankHeaderTable(it->first.c_str(),true);
 			this->Headers[it->first.c_str()]->ShallowCopy(pdo->GetHeaderTable(it->first.c_str()));
 		}
 		this->Modified();
@@ -96,7 +96,7 @@ void vtkTracePanelData::DeepCopy(vtkDataObject* src)
 	{
 		for(std::unordered_map<std::string,vtkSmartPointer<vtkHeaderTable>>::iterator it =
 			this->Headers.begin(); it != this->Headers.end(); ++it) {
-			this->AddBlankHeaderTable(it->first.c_str());
+			this->AddBlankHeaderTable(it->first.c_str(),true);
 			this->Headers[it->first.c_str()]->DeepCopy(pdo->GetHeaderTable(it->first.c_str()));
 		}
 		this->Modified();
@@ -111,7 +111,7 @@ void vtkTracePanelData::EmptyCopy(vtkDataObject* src)
 	{
 		for(std::unordered_map<std::string,vtkSmartPointer<vtkHeaderTable>>::iterator it =
 			this->Headers.begin(); it != this->Headers.end(); ++it) {
-			this->AddBlankHeaderTable(it->first.c_str());
+			this->AddBlankHeaderTable(it->first.c_str(),true);
 			this->Headers[it->first.c_str()]->EmptyCopy(pdo->GetHeaderTable(it->first.c_str()));
 		}
 		this->Modified();
@@ -127,7 +127,7 @@ void vtkTracePanelData::UnAllocatedCopy(vtkDataObject* src)
 	{
 		for(std::unordered_map<std::string,vtkSmartPointer<vtkHeaderTable>>::iterator it =
 			this->Headers.begin(); it != this->Headers.end(); ++it) {
-			this->AddBlankHeaderTable(it->first.c_str());
+			this->AddBlankHeaderTable(it->first.c_str(),true);
 			this->Headers[it->first.c_str()]->EmptyCopy(pdo->GetHeaderTable(it->first.c_str()));
 		}
 		this->Modified();
