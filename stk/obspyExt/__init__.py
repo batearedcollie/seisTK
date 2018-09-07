@@ -28,4 +28,4 @@
 Transfer between seisTK and ObsPy
 '''
 
-from tracePanel import ToTracePanelData,ToObsPy
+from .tracePanel import ToTracePanelData,ToObsPy

@@ -47,7 +47,6 @@ class CustomBuildCommand(build_py):
         global without_madagascar_extension
         without_madagascar_extension = self.without_madagascar_extension
         if without_madagascar_extension!=None:
-            print "\nDisabling Madagascar extension at users request"
             self.__dict__["distribution"].__dict__["packages"].remove('stk.mdExt')
             self.__dict__["distribution"].__dict__["exclude"].append('stk.mdExt')
         build_py.run(self)  # OR: install.do_egg_install(self)
@@ -70,7 +69,6 @@ class CustomInstallCommand(install):
         global without_madagascar_extension
         without_madagascar_extension = self.without_madagascar_extension
         if without_madagascar_extension!=None:
-            print "\nDisabling Madagascar extension at users request"
             self.__dict__["distribution"].__dict__["packages"].remove('stk.mdExt')
             self.__dict__["distribution"].__dict__["exclude"].append('stk.mdExt')
         install.run(self)  # OR: install.do_egg_install(self)

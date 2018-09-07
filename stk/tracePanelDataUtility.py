@@ -33,7 +33,6 @@ import stk.traceHeaderUtility as th
 
 from obspy.core import UTCDateTime
 import numpy as np
-import exceptions
 
 def tracePanelGenerate(array=np.zeros([1,100]),
             traceDictList=[{
@@ -95,19 +94,19 @@ def tracePanelGenerate(array=np.zeros([1,100]),
             dd["sampling_rate"]=smpl_rate
         else:
             if dd["sampling_rate"]!=smpl_rate: 
-                raise exceptions.StandardError("Trace sample rate does not match the input value")
+                raise Exception("Trace sample rate does not match the input value")
         
         if "delta" not in dd: 
             dd["delta"]=delta
         else:
             if dd["delta"]!=delta: 
-                raise exceptions.StandardError("Trace sample delta does not match the input value")        
+                raise Exception("Trace sample delta does not match the input value")        
     
         if "npts" not in dd: 
             dd["npts"]=nsmpl
         else:
             if dd["npts"]!=nsmpl: 
-                raise exceptions.StandardError("Trace nsmpl does not match the input data")      
+                raise Exception("Trace nsmpl does not match the input data")      
     
     tpD = vtkTracePanelData()
     tpD.SetDimensions(nsmpl,ntrace,1)
