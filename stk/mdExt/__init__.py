@@ -28,4 +28,4 @@
 Transfer between m8r/madagascar and seisTK
 '''
 
-from hyperCube import ToHyperCubeData,M8rToHyperCubeData,ToMadagascar
+from .hyperCube import ToHyperCubeData,M8rToHyperCubeData,ToMadagascar

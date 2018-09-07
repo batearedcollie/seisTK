@@ -24,9 +24,13 @@ Installation
 
 * VTK (compiled with Python bindings) [https://github.com/Kitware/VTK]
 
-* ObsPy (for the tests) [https://github.com/obspy/obspy]
+* ObsPy [https://github.com/obspy/obspy]
 
 * Madagascar (for the tests) [https://github.com/ahay/src/] - compiled with python/ m8r bindings
+
+It will build succesfully without ObsPy and Madagascar, however pyhton functionality will be compromised and some tests wil fail
+The Madagascar extesions can be disabled by supplying the argument `-DSEISTK_DISABLE_MADAGASCAR_EXT:BOOL=TRUE`
+in cmake. 
 
 ###  Building 
 

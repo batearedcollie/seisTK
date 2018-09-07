@@ -25,43 +25,41 @@
 # EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
 
-import stk.hyperCubeUtility as hu
-import stk.mdExt as md
-
-
 import numpy as np
-import m8r as sf
 
 def HyperCubeDataSet():
     '''
     Creating a simple HyperCube data object
     '''
+    import stk.hyperCubeUtility as hu
 
-    print "\n***********************************"
-    print "Generic import"
-    print "***********************************" 
+    print("\n***********************************")
+    print("Generic import")
+    print("***********************************")
  
     # Generate a simple hyper cube
     cube = hu.hyperCubeGenerate(array=np.zeros([10,20,5,6],dtype=np.float),
                           delta=[0.1,0.2,1.,2.],
                           origin=[-0.5,0.,-10.,3.],
                           )
-    print "Number of dimensions is ",cube.GetNDimensions()
+    print("Number of dimensions is ",cube.GetNDimensions())
     
     dims=np.zeros([4],dtype=np.int)
         
     cube.GetFullDimensions(dims)
     for i,nn in enumerate(dims):
-        print "Length = ",nn," spacing =",cube.GetAxisSpacing(i)," origin =",cube.GetAxisOrigin(i)
+        print("Length = ",nn," spacing =",cube.GetAxisSpacing(i)," origin =",cube.GetAxisOrigin(i))
 
 def HyperCubeMadagascarTest():
     '''
     Converting to/from Madagascar/m8r
     '''
+    import stk.mdExt as md
+    import m8r as sf
     
-    print "\n***********************************"
-    print "M8r import/export"
-    print "***********************************" 
+    print("\n***********************************")
+    print("M8r import/export")
+    print("***********************************")
     
     # Make a madagascar file object
     grid = sf.math(output="sin(x1)*cos(x2)",
@@ -70,29 +68,43 @@ def HyperCubeMadagascarTest():
                    o1=10,o2=-10.)[0]
     
     #Grid informations
-    print "Madagascar data cube"
+    print("Madagascar data cube")
     grid.sfin()
     
-    print "\nConverting to vtkHyperCube"
+    print("\nConverting to vtkHyperCube")
     cube=md.M8rToHyperCubeData(grid)
     
-    print "Number of dimensions is ",cube.GetNDimensions()
+    print("Number of dimensions is ",cube.GetNDimensions())
     
     dims=np.zeros([cube.GetNDimensions()],dtype=np.int)  
     cube.GetFullDimensions(dims)
     for i,nn in enumerate(dims):
-        print "Length = ",nn," spacing =",cube.GetAxisSpacing(i)," origin =",cube.GetAxisOrigin(i)
+        print("Length = ",nn," spacing =",cube.GetAxisSpacing(i)," origin =",cube.GetAxisOrigin(i))
 
 
-    print "\nConverting back to madagascar"
+    print("\nConverting back to madagascar")
     mdObj = md.ToMadagascar(cube)
 
-    print "\nsfin:"
+    print("\nsfin:")
     mdObj.sfin()
 
-    print "\nsfattr:"
+    print("\nsfattr:")
     mdObj.attr()
         
 if __name__ == '__main__':
+    
     HyperCubeDataSet()
-    HyperCubeMadagascarTest()
+
+    do_mdgscr_test=True
+    import sys
+    for ss in sys.argv:
+        if "--no-madagascar" in ss:
+            do_mdgscr_test=False
+            break
+    
+    if do_mdgscr_test==True:
+        HyperCubeMadagascarTest()
+    else:
+        print("Madagascar tests disabled - returning early")
+    
+    

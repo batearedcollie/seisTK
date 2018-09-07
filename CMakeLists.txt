@@ -31,6 +31,8 @@ cmake_minimum_required(VERSION 3.2)
 # Create a project
 project(seisTK)
 
+#message("0-PYTHON_EXECUTABLE = ${PYTHON_EXECUTABLE}")
+
 #######################################
 # Add to the module path
 set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/CMake ${CMAKE_MODULE_PATH})
@@ -47,9 +49,14 @@ endif("${isSystemDir}" STREQUAL "-1")
 
 #######################################
 # Python Executable
-if(NOT PYTHON_EXECUTABLE)
-  find_package(PythonInterp)
+if(NOT SEISTK_USE_PYTHON_VERSION)
+    set(SEISTK_USE_PYTHON_VERSION 2)
 endif()
+
+find_package(PythonInterp ${SEISTK_USE_PYTHON_VERSION} REQUIRED)
+message("PYTHONINTERP_FOUND = ${PYTHONINTERP_FOUND}")
+message("PYTHON_EXECUTABLE = ${PYTHON_EXECUTABLE}")
+message("PYTHON_VERSION_STRING = ${PYTHON_VERSION_STRING}")
 
 #######################################
 # VTK
@@ -60,7 +67,7 @@ message(STATUS "VTK_INSTALL_PREFIX = ${VTK_INSTALL_PREFIX}")
 
 #######################################
 # Python and vtk wrapping
-find_package(PythonLibs 2.7 REQUIRED)
+find_package(PythonLibs ${SEISTK_USE_PYTHON_VERSION} REQUIRED)
 include(vtkWrapPython)
 include_directories("${PYTHON_INCLUDE_PATH}")
 
@@ -87,6 +94,10 @@ else()
 
 endif()
 
+#######################################
+#' Ability to disable Madagascar python extension
+set(SEISTK_DISABLE_MADAGASCAR_EXT FALSE CACHE BOOL 
+    "Disable the buildig of exnetsions for madagascar, use on systems where madagascar is not installed") 
 
 #######################################
 # Enable the tests
@@ -102,9 +113,15 @@ add_subdirectory(cpp/Examples)
 # Install the python module
 file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/setup.py" DESTINATION ${CMAKE_CURRENT_BINARY_DIR} )
 
+# Handle cases where we are excluding Madagascar
+set(PYTHON_BUILD_INSTALL_OPTIONS "")
+if(SEISTK_DISABLE_MADAGASCAR_EXT)
+    set(PYTHON_BUILD_INSTALL_OPTIONS "--without-madagascar-extension=True")
+endif()
+
 add_custom_command(
   OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/build/timestamp
-  COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/setup.py build 
+  COMMAND ${PYTHON_EXECUTABLE} "${CMAKE_CURRENT_BINARY_DIR}/setup.py" "build_py" "${PYTHON_BUILD_INSTALL_OPTIONS}" 
   COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_CURRENT_BINARY_DIR}/build/timestamp
   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
 )
@@ -114,9 +131,10 @@ add_custom_target(stk_build ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/build/timest
 # Install logic 
 set(INSTALL_CODE "execute_process(")
 set(INSTALL_CODE "${INSTALL_CODE} COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/setup.py")
-set(INSTALL_CODE "${INSTALL_CODE} install --prefix=${CMAKE_INSTALL_PREFIX}")
+set(INSTALL_CODE "${INSTALL_CODE} install --prefix=${CMAKE_INSTALL_PREFIX} ${PYTHON_BUILD_INSTALL_OPTIONS}")
 set(INSTALL_CODE "${INSTALL_CODE} WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}")
 set(INSTALL_CODE "${INSTALL_CODE} )")
+#message("INSTALL_CODE = ${INSTALL_CODE}")
 install(CODE "${INSTALL_CODE}")
 
 

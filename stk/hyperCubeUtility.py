@@ -30,8 +30,6 @@ from vtk.util import numpy_support
 from stk.DataTypes import vtkHyperCube
 
 import numpy as np
-import exceptions
-
 
 def hyperCubeGenerate(array=np.zeros([100,1]),
             delta=[1.,1.],
@@ -73,9 +71,13 @@ def hyperCubeGenerate(array=np.zeros([100,1]),
 
     # Check the axis number
     nDim=len(array.shape)
-    if len(delta)!=nDim: raise exceptions.StandardError("Delta length does not match arry dimensions")
-    if len(origin)!=nDim: raise exceptions.StandardError("origin length does not match arry dimensions")
-
+    if len(delta)!=nDim:  
+        #raise exceptions.StandardError("Delta length does not match arry dimensions")
+        raise Exception("Delta length does not match arry dimensions")
+    if len(origin)!=nDim: 
+        #raise exceptions.StandardError("origin length does not match arry dimensions")
+        raise Exception("Delta length does not match arry dimensions")
+    
     tpD = vtkHyperCube()
     tpD.SetNDimensions(nDim)
     tpD.SetDimensions(np.flip(array.shape,0))

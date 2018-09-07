@@ -31,7 +31,6 @@ file(GLOB PYTHON_TESTS "${CMAKE_CURRENT_SOURCE_DIR}/*.py" )
 file(COPY ${PYTHON_TESTS} DESTINATION ${CMAKE_CURRENT_BINARY_DIR} )
 
 
-
 #####################################
 # Add test targets
 #
@@ -57,13 +56,18 @@ foreach(test ${tests})
     get_filename_component(name ${test} NAME_WE) 
     message(STATUS "Adding test program ${name}")   
     
+    # Set up the command args
+    if(SEISTK_DISABLE_MADAGASCAR_EXT)
+        set(COMMAND_ARGS "--no-madagascar")
+    endif() 
+
     add_custom_target("run_${name}"
                   COMMAND "${CMAKE_COMMAND}" 
                   "-E" "env" 
                   "DYLD_LIBRARY_PATH=:${DYLD_String}" 
                   "LD_LIBRARY_PATH=${LD_String}" 
                   "PYTHONPATH=${CMAKE_CURRENT_BINARY_DIR}/../../:$ENV{PYTHONPATH}"
-                  "${PYTHON_EXECUTABLE}" "./${name}.py"
+                  "${PYTHON_EXECUTABLE}" "./${name}.py" "${COMMAND_ARGS}"
                   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                   VERBATIM
                   )   
@@ -75,7 +79,7 @@ foreach(test ${tests})
            "DYLD_LIBRARY_PATH=:${DYLD_String}" 
            "LD_LIBRARY_PATH=${LD_String}" 
            "PYTHONPATH=${CMAKE_CURRENT_BINARY_DIR}/../../:$ENV{PYTHONPATH}"
-           "${PYTHON_EXECUTABLE}" "./${name}.py"
+           "${PYTHON_EXECUTABLE}" "./${name}.py" "${COMMAND_ARGS}"
            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
            )
 

@@ -56,25 +56,25 @@ def BasicHeaderFunctionality():
     header.SetUniformValue("dt",vtk.vtkVariant(0.004))
     
     # Dump to screen
-    print "\nBasic table"
+    print("\nBasic table")
     header.Dump()    
     
     # Set using a dictionary list aka. obspy
     header2 = vtkHeaderTable()
     tu.AddHeaderKeys(header2,{"station":"stn1","channel":"CHZ","nsmpl":100,
                               "starttime":UTCDateTime()})
-  
+   
     tu.AddHeaderKeys(header2,{"station":"stn2","channel":"CH1",
                               "nsmpl":100,
                               "endtime":UTCDateTime()})  
-    
-    print "\nDictionary Header assignment"   
+     
+    print("\nDictionary Header assignment") 
     header2.Dump()
-
-    
+ 
+     
     # Retrieve as dictionary list (aka. obspy)
     rowDict=tu.GetTraceHeaderDict(1,header2)
-    print "Retrieved row1: ",rowDict
+    print("Retrieved row1: ",rowDict)
 
 if __name__ == '__main__':
     BasicHeaderFunctionality()

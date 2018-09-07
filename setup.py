@@ -27,13 +27,65 @@
 '''
 Set up module 
 '''
-from distutils.core import setup
 
-setup( 
-    name    = 'stk',
-    version = '0.1',
-    description = 'SeisTK Python bindings',
-    author = 'Bateared Collie',
+#from distutils.command.build_py import build_py as _build_py
+from distutils.core import setup
+from setuptools.command.install import install
+from setuptools.command.build_py import build_py
+
+class CustomBuildCommand(build_py):
+    user_options = install.user_options + [
+         ('without-madagascar-extension=', None, 'Disables the installation of Madagascar extensions, use =True to enable')
+     ]
+    #boolean_options = install.boolean_options +["without-madagascar-extension"]
+ 
+    def initialize_options(self):
+        build_py.initialize_options(self)
+        self.without_madagascar_extension = None
+ 
+    def run(self):
+        global without_madagascar_extension
+        without_madagascar_extension = self.without_madagascar_extension
+        if without_madagascar_extension!=None:
+            print "\nDisabling Madagascar extension at users request"
+            self.__dict__["distribution"].__dict__["packages"].remove('stk.mdExt')
+            self.__dict__["distribution"].__dict__["exclude"].append('stk.mdExt')
+        build_py.run(self)  # OR: install.do_egg_install(self)
+
+class CustomInstallCommand(install):
+    user_options = install.user_options + [
+         ('without-madagascar-extension=', None, 'Disables the installation of Madagascar extensions, use =True to enable')
+     ]
+    #boolean_options = install.boolean_options +["without-madagascar-extension"]
+
+    def initialize_options(self):
+        install.initialize_options(self)
+        self.without_madagascar_extension = None
+
+    def finalize_options(self):
+        #print('The custom option for install is ', self.custom_option)
+        install.finalize_options(self)
+
+    def run(self):
+        global without_madagascar_extension
+        without_madagascar_extension = self.without_madagascar_extension
+        if without_madagascar_extension!=None:
+            print "\nDisabling Madagascar extension at users request"
+            self.__dict__["distribution"].__dict__["packages"].remove('stk.mdExt')
+            self.__dict__["distribution"].__dict__["exclude"].append('stk.mdExt')
+        install.run(self)  # OR: install.do_egg_install(self)
+
+setup(
+    name ='stk',
+    version ='1.0',
+    description= 'SeisTK Python bindings',
+    author ='Bateared Collie',
     author_email = 'BatearedCollie@gmail.com',
-    packages=['stk','stk.generators','stk.mdExt','stk.obspyExt'],    
-)
+    packages=['stk','stk.generators','stk.mdExt','stk.obspyExt'],
+    exclude=[],
+    cmdclass={
+        'install': CustomInstallCommand,
+        'build_py': CustomBuildCommand,
+        }
+    
+    )
