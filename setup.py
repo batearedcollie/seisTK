@@ -79,7 +79,7 @@ setup(
     description= 'SeisTK Python bindings',
     author ='Bateared Collie',
     author_email = 'BatearedCollie@gmail.com',
-    packages=['stk','stk.generators','stk.mdExt','stk.obspyExt'],
+    packages=['stk','stk.mdExt','stk.obspyExt'],
     exclude=[],
     cmdclass={
         'install': CustomInstallCommand,
