@@ -454,7 +454,10 @@ public:
 
 	//! Reallocates and copies to crop to an extent - disabled
 	void Crop(const int* updateExtent){
-		vtkErrorMacro("vtkHyperCube::Crop - not supported  - Developer error")
+		if(this->NDimensions<=3){
+			return vtkImageData::Crop(updateExtent);
+		}
+		vtkErrorMacro("vtkHyperCube::Crop - not supported  - for HyperCubes with N dimension > 3")
 		return;
 	}
 
