@@ -149,6 +149,29 @@ void vtkHyperCube::UnAllocatedCopy(vtkDataObject* src)
     }
 }
 
+int vtkHyperCube::ReallocateScalars(int dataType, int numComponents,int Ndim, int* dims)
+{
+	// Make a copy of the old cube
+	vtkSmartPointer<vtkHyperCube> oldCube = vtkSmartPointer<vtkHyperCube>::New();
+	oldCube->DeepCopy(this);
+
+	// Now reallocate
+	this->SetDimensions(Ndim,dims);
+	this->AllocateScalars(dataType,numComponents);
+
+	if(oldCube->GetGridSizeInBytes()>this->GetGridSizeInBytes()){
+		vtkWarningMacro("Old size ("<< oldCube->GetGridSizeInBytes() <<
+				" is greater than new size(" << this->GetGridSizeInBytes() <<
+				")a partial copy will be performed")
+	}
+
+	char* out = (char*) this->GetScalarPointer();
+	char* in = (char*) oldCube->GetScalarPointer();
+	memcpy(out,in,oldCube->GetGridSizeInBytes());
+
+	return 1;
+}
+
 //! Zero elements in double or float cube
 void vtkHyperCube::Zero()
 {
@@ -195,6 +218,9 @@ int*  vtkHyperCube::GetNDcoordinateFrom3D(int* coord3D)
 	this->getNDcoordinateFrom3D(coord3D,this->iPoint.data());
 	return this->iPoint.data();
 }
+
+
+
 
 /*************************************/
 /* Overriding vtkImageData functions */

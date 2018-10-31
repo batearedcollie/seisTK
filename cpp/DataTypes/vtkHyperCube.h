@@ -144,8 +144,21 @@ public:
 	 */
 	virtual void UnAllocatedCopy(vtkDataObject* src);
 
+	//! Reallcates the cube preserving the original data
+	/*!
+	 * This can also be used to change the scalar type etc.
+	 */
+	int ReallocateScalars(int dataType, int numComponents,int Ndim, int* dims);
+
 	//! Zero elements in double or float cube
 	virtual void Zero();
+
+	//! Retuns the size in bytes - assuming coniguous storage
+	vtkIdType GetGridSizeInBytes()
+	{
+		return this->GetNumberOfPoints() *
+				( this->GetNumberOfScalarComponents()* this->GetScalarSize());
+	}
 
 	//! Compute 3D (wrapped) coordinates from ND - thread safe
 	void  Get3DcoordinateFromND(int* coordND, int coord3D[3]);
@@ -164,6 +177,7 @@ public:
 		int coord[3]={i,j,k};
 		return this->GetNDcoordinateFrom3D(coord);
 	}
+
 
 
 	//!TODO Add an extra dimension - on outside
