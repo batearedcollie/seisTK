@@ -181,6 +181,72 @@ int main()
 
 	}
 
+	{
+		cout << "\n\n*********************************\n";
+		cout << "Copying vtkTracePanelData\n";
+
+		// Make some trace data
+		vtkSmartPointer<vtkTracePanelData> trc = vtkSmartPointer<vtkTracePanelData>::New();
+		int dims[2]={125,10};			// 10 traces of 125 samples
+		trc->SetDimensions(dims);
+		trc->AllocateScalars(VTK_FLOAT,1);
+		double smpl[2]={0.004,1.};
+		trc->SetSpacing(smpl);
+		double org[2]={-1,0.};			// start of time axis at -1. seconds
+		trc->SetOrigin(org);
+
+		// Add some trace headers
+		{
+			vtkSmartPointer<vtkHeaderTable> hdr = trc->AddBlankHeaderTable("traces",true);
+			vtkSmartPointer<vtkVariantArray> xpos = vtkSmartPointer<vtkVariantArray>::New();
+			xpos->SetName("xpos");
+			vtkSmartPointer<vtkVariantArray> ypos = vtkSmartPointer<vtkVariantArray>::New();
+			ypos->SetName("ypos");
+			vtkSmartPointer<vtkVariantArray> stn_id = vtkSmartPointer<vtkVariantArray>::New();
+			stn_id->SetName("stn_id");
+			for ( unsigned int i = 0; i < 10; i++ ) {
+				xpos->InsertNextValue( vtkVariant( double(i*20.) ) );
+				ypos->InsertNextValue( vtkVariant( double(i*-20.) ) );
+				stn_id->InsertNextValue( vtkVariant(i) );
+			}
+			hdr->AddColumn(xpos);
+			hdr->AddColumn(ypos);
+			hdr->AddColumn(stn_id);
+		}
+		{
+			vtkSmartPointer<vtkHeaderTable> hdr = trc->AddBlankHeaderTable("table2",true);
+			vtkSmartPointer<vtkVariantArray> xx = vtkSmartPointer<vtkVariantArray>::New();
+			xx->SetName("xx");
+			for ( unsigned int i = 0; i < 10; i++ ) {
+				xx->InsertNextValue( vtkVariant(i) );
+			}
+			hdr->AddColumn(xx);
+		}
+		{
+			cout << "Input header tables:\n";
+			std::vector<std::string> hdrTableNames=  trc->GetHeaderTableNames();
+			for(int i=0;i<hdrTableNames.size();i++){
+				cout << "Table: " << hdrTableNames[i] << endl;
+				trc->GetHeaderTable(hdrTableNames[i].c_str())->Dump();
+			}
+		}
+
+		vtkSmartPointer<vtkTracePanelData> trc_copy = vtkSmartPointer<vtkTracePanelData>::New();
+		trc_copy->DeepCopy(trc);
+		{
+
+			cout << "Copied header tables\n";
+			std::vector<std::string> hdrTableNames=  trc_copy->GetHeaderTableNames();
+			for(int i=0;i<hdrTableNames.size();i++){
+				cout << "Table: " << hdrTableNames[i] << endl;
+				trc->GetHeaderTable(hdrTableNames[i].c_str())->Dump();
+			}
+		}
+
+
+	}
+
+
 	//We use return =0 for tests because
 	// Otherwise it breaks Makefiles
 	return 0;

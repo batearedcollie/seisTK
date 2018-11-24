@@ -79,11 +79,7 @@ void vtkTracePanelData::ShallowCopy(vtkDataObject* src)
 {
 	if (vtkTracePanelData* const pdo = vtkTracePanelData::SafeDownCast(src))
     {
-		for(std::unordered_map<std::string,vtkSmartPointer<vtkHeaderTable>>::iterator it =
-			this->Headers.begin(); it != this->Headers.end(); ++it) {
-			this->AddBlankHeaderTable(it->first.c_str(),true);
-			this->Headers[it->first.c_str()]->ShallowCopy(pdo->GetHeaderTable(it->first.c_str()));
-		}
+		this->CopyHeaders(pdo,2);
 		this->Modified();
     }
 	this->Superclass::ShallowCopy(src);
@@ -94,11 +90,7 @@ void vtkTracePanelData::DeepCopy(vtkDataObject* src)
 {
 	if (vtkTracePanelData* const pdo = vtkTracePanelData::SafeDownCast(src))
 	{
-		for(std::unordered_map<std::string,vtkSmartPointer<vtkHeaderTable>>::iterator it =
-			this->Headers.begin(); it != this->Headers.end(); ++it) {
-			this->AddBlankHeaderTable(it->first.c_str(),true);
-			this->Headers[it->first.c_str()]->DeepCopy(pdo->GetHeaderTable(it->first.c_str()));
-		}
+		this->CopyHeaders(pdo,3);
 		this->Modified();
 	}
 	this->Superclass::DeepCopy(src);
@@ -109,11 +101,7 @@ void vtkTracePanelData::EmptyCopy(vtkDataObject* src)
 {
 	if (vtkTracePanelData* const pdo = vtkTracePanelData::SafeDownCast(src))
 	{
-		for(std::unordered_map<std::string,vtkSmartPointer<vtkHeaderTable>>::iterator it =
-			this->Headers.begin(); it != this->Headers.end(); ++it) {
-			this->AddBlankHeaderTable(it->first.c_str(),true);
-			this->Headers[it->first.c_str()]->EmptyCopy(pdo->GetHeaderTable(it->first.c_str()));
-		}
+		this->CopyHeaders(pdo,1);
 		this->Modified();
     }
 	this->Superclass::EmptyCopy(src);
@@ -125,14 +113,31 @@ void vtkTracePanelData::UnAllocatedCopy(vtkDataObject* src)
 {
 	if (vtkTracePanelData* const pdo = vtkTracePanelData::SafeDownCast(src))
 	{
-		for(std::unordered_map<std::string,vtkSmartPointer<vtkHeaderTable>>::iterator it =
-			this->Headers.begin(); it != this->Headers.end(); ++it) {
-			this->AddBlankHeaderTable(it->first.c_str(),true);
-			this->Headers[it->first.c_str()]->EmptyCopy(pdo->GetHeaderTable(it->first.c_str()));
-		}
+		this->CopyHeaders(pdo,1);
 		this->Modified();
     }
 	this->Superclass::UnAllocatedCopy(src);
+}
+
+void vtkTracePanelData::CopyHeaders(vtkDataObject* src, int CopyType)
+{
+	if (vtkTracePanelData* const pdo = vtkTracePanelData::SafeDownCast(src))
+	{
+		std::unordered_map<std::string,vtkSmartPointer<vtkHeaderTable>>* hdrs = pdo->GetHeaders();
+		for(std::unordered_map<std::string,vtkSmartPointer<vtkHeaderTable>>::iterator it =
+			hdrs->begin(); it != hdrs->end(); ++it) {
+			this->AddBlankHeaderTable(it->first.c_str(),true);
+
+			if(CopyType==1){
+				this->Headers[it->first.c_str()]->EmptyCopy(pdo->GetHeaderTable(it->first.c_str()));
+			}else if(CopyType==2){
+				this->Headers[it->first.c_str()]->ShallowCopy(pdo->GetHeaderTable(it->first.c_str()));
+			}else{
+				this->Headers[it->first.c_str()]->DeepCopy(pdo->GetHeaderTable(it->first.c_str()));
+			}
+		}
+		this->Modified();
+    }
 }
 
 /**************************************/

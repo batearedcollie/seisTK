@@ -180,6 +180,11 @@ public:
 		return this->Headers[key];
 	}
 
+	//! Friend function to provide access to the full header table object
+	std::unordered_map<std::string,vtkSmartPointer<vtkHeaderTable>>* GetHeaders(){
+		return &this->Headers;
+	}
+
 	//! Remove Header Table
 	void RemoveHeaderTable(const char* key){
 		this->Headers.erase(key);
@@ -203,6 +208,15 @@ public:
 		return this->Headers[key];
 	}
 
+	//! Copies the header tables from another object
+	/*!
+	 * Copy type is;
+	 *
+	 * 1= Empty
+	 * 2= Shallow
+	 * 3= Deep
+	 */
+	void CopyHeaders(vtkDataObject* src,int CompyType=3);
 
 protected:
 
