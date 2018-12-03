@@ -219,7 +219,37 @@ int*  vtkHyperCube::GetNDcoordinateFrom3D(int* coord3D)
 	return this->iPoint.data();
 }
 
+int vtkHyperCube::RemoveNullDimensions()
+{
 
+	int nd = this->NDimensions;
+	int dims[nd];
+	this->GetFullDimensions(dims);
+	double spc[nd];
+	this->GetSpacing(spc);
+	double org[nd];
+	this->GetOrigin(org);
+
+	int i=0;
+	while(i<nd){
+		if(dims[i]==1){
+			for(int j=i+1;j<nd;j++){
+				dims[j-1]=dims[j];
+				org[j-1]=org[j];
+				spc[j-1]=spc[j];
+			}
+			nd--;
+		}else{
+			i++;
+		}
+	}
+
+	this->SetDimensions(nd,dims);
+	this->SetSpacing(spc);
+	this->SetOrigin(org);
+
+	return 1;
+}
 
 
 /*************************************/

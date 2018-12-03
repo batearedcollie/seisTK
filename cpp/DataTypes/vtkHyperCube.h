@@ -179,10 +179,11 @@ public:
 	}
 
 
+	//! Remove dimensions where the length is 1
+	int RemoveNullDimensions();
 
 	//!TODO Add an extra dimension - on outside
 
-	//!TODO Remove Null axis with length 1
 
 
 	/*************************************/
@@ -502,6 +503,11 @@ public:
 	//! Getter for the spacings
 	virtual void GetSpacing	(double *scp){
 		scp=this->Spacing.data();
+	}
+
+	//! Set axis origins
+	virtual void GetOrigin(double* org){
+		org= this->Origin.data();
 	}
 
 	//! Set axis origins

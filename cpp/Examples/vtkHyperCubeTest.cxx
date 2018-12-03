@@ -266,6 +266,58 @@ int main()
 	}
 	#endif
 
+	{
+		cout << "\n***************************\nHyperCube cube reduction test\n";
+
+		vtkSmartPointer<vtkHyperCube> hCube = vtkSmartPointer<vtkHyperCube>::New();
+
+		int dims[5]={3,1,4,1,5};
+		hCube->SetDimensions(5,dims);
+		hCube->AllocateScalars(VTK_FLOAT,1);
+
+		cout << "Image dimensions: ";
+		for(int i=0; i< hCube->GetNDimensions();i++){cout << hCube->GetFullDimensions()[i] << ", ";}
+		cout << std::endl;
+
+		int nPoint = hCube->GetNumberOfPoints();
+		cout << "Number of points = " << nPoint << std::endl;
+		int ijk[6];
+		for(vtkIdType ii=0;ii<hCube->GetNumberOfPoints();ii++){
+			hCube->GetNDPointFromId(ii,ijk);
+			float* ff = (float*) hCube->GetScalarPointer(ijk);
+			*ff=ii;
+		}
+
+		{
+			int ijk[6];
+			cout << "Original Data = ";
+			for(vtkIdType ii=0;ii<hCube->GetNumberOfPoints();ii++){
+				hCube->GetNDPointFromId(ii,ijk);
+				cout << *(float*) hCube->GetScalarPointer(ijk) << ", ";
+			}
+			cout << endl;
+		}
+
+		hCube->RemoveNullDimensions();
+
+		cout << "After removal of null dimensions \n";
+		cout << "Number of dimensions = " << hCube->GetNDimensions() << endl;
+		cout << "Image dimensions: ";
+		for(int i=0; i<hCube->GetNDimensions();i++){cout << hCube->GetFullDimensions()[i] << ", ";}
+		cout << std::endl;
+
+		{
+			int ijk[hCube->GetNDimensions()];
+			cout << "Data: ";
+			for(vtkIdType ii=0;ii<hCube->GetNumberOfPoints();ii++){
+				hCube->GetNDPointFromId(ii,ijk);
+				cout << *(float*) hCube->GetScalarPointer(ijk) << ", ";
+			}
+			cout << endl;
+		}
+
+	}
+
 
 	//We use return =0 for tests because
 	// Otherwise it breaks Makefiles
