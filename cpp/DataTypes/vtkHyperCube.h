@@ -77,6 +77,9 @@ Copyright 2017 Bateared Collie
 			CodeForDoubles										\
 		}
 
+//! Definitions (vtk types go up to about 40)
+#define VTK_HYPERCUBE 90
+
 /*!
 \brief Extends the vtkImageData object to handle and arbitrary number of dimensions
 
@@ -118,6 +121,9 @@ public:
 
 	//! Retrieve an instance of this class from an information object.
 	static vtkHyperCube* GetData(vtkInformationVector* v, int i=0);
+
+	//! From vtkType.h, a handle on what type of vtkDataObject this is.
+	int GetDataObjectType() {return VTK_HYPERCUBE;}
 
 	//! Set scalar name
 	virtual void SetScalarName(std::string string){

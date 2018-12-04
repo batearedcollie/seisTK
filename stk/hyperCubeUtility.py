@@ -72,11 +72,9 @@ def hyperCubeGenerate(array=np.zeros([100,1]),
     # Check the axis number
     nDim=len(array.shape)
     if len(delta)!=nDim:  
-        #raise exceptions.StandardError("Delta length does not match arry dimensions")
-        raise Exception("Delta length does not match arry dimensions")
+        raise Exception("Delta length does not match array dimensions")
     if len(origin)!=nDim: 
-        #raise exceptions.StandardError("origin length does not match arry dimensions")
-        raise Exception("Delta length does not match arry dimensions")
+        raise Exception("Delta length does not match array dimensions")
     
     tpD = vtkHyperCube()
     tpD.SetNDimensions(nDim)

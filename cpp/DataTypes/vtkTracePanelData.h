@@ -42,8 +42,8 @@ Copyright 2017 Bateared Collie
 #include <iostream>
 #include "vtkHeaderTable.h"
 
-//! Definitions (vtk types go up to 36)
-#define VTK_TRACE_PANEL_DATA 38
+//! Definitions (vtk types go up to about 40)
+#define VTK_TRACE_PANEL_DATA 92
 
 
 /*!

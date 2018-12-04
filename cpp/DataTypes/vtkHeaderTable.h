@@ -43,8 +43,8 @@ Copyright 2017 Bateared Collie
 #include <string>
 #include <iostream>
 
-//! Definitions (vtk types go up to 36)
-#define VTK_TRACE_HEADER 39
+//! Definitions (vtk types go up to 40)
+#define VTK_TRACE_HEADER 91
 
 /*!
 
