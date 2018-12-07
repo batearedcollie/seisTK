@@ -139,11 +139,13 @@ int main()
 		trc->GetTraceHeaderTable()->Dump();
 
 		// Assign some values
+		{
 		int nPoint = trc->GetNumberOfPoints();
 		float* ff = (float*) trc->GetScalarPointer();
 		for(vtkIdType counter=0;counter<nPoint;counter++){
 			*ff = 1.;
 			ff++;
+		}
 		}
 
 
@@ -163,6 +165,7 @@ int main()
 		trc_lcl->DeepCopy(trc);
 
 		// Do something
+		{
 		int nPoint = trc_lcl->GetNumberOfPoints();
 		for(vtkIdType counter=0;counter<nPoint;counter++){
 			int coord[4];
@@ -170,6 +173,7 @@ int main()
 			trc_lcl->GetNDPointFromId(counter,coord);
 			float* ff = (float*) trc_lcl->GetScalarPointer(coord,work);
 			*ff *= tid;
+		}
 		}
 
 		float* ff = (float*) trc_lcl->GetScalarPointer();

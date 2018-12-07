@@ -508,12 +508,12 @@ public:
 
 	//! Getter for the spacings
 	virtual void GetSpacing	(double *scp){
-		scp=this->Spacing.data();
+		memcpy(scp,this->Spacing.data(),this->GetNDimensions()*sizeof(double));
 	}
 
 	//! Set axis origins
 	virtual void GetOrigin(double* org){
-		org= this->Origin.data();
+		memcpy(org,this->Origin.data(),this->GetNDimensions()*sizeof(double));
 	}
 
 	//! Set axis origins
