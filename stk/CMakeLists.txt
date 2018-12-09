@@ -25,10 +25,19 @@
 # EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 # Installation directory
-## todo make this a cache path but cannot get it working
-#set(PYTHON_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib/python2.7/site-packages/stk")
-set(PYTHON_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}/site-packages/stk")
-#set(PYTHON_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}/dist-packages/stk")
+## In most cases this will be site-packages but if we are on a debain system this will be dist-packages 
+##   so we'll set the install directory according to where pip is installed
+execute_process(
+      COMMAND "${PYTHON_EXECUTABLE}" "-m" "pip" "-V"
+      OUTPUT_VARIABLE PYTHON_PIP_OUPUT
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+      )
+if(PYTHON_PIP_OUPUT MATCHES "dist")
+    set(PYTHON_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}/dist-packages/stk")
+else()
+    set(PYTHON_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}/site-packages/stk")
+endif()
+
 
 # Module list to work though - these will be built for python compatibility
 set(PYTHON_MODULES "DataTypes" "Algorithms")
