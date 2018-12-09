@@ -25,10 +25,10 @@
 # EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 # Installation directory
-## todo make this a cche path but cannot get it working
+## todo make this a cache path but cannot get it working
 #set(PYTHON_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib/python2.7/site-packages/stk")
-#set(PYTHON_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}/site-packages/stk")
-set(PYTHON_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}/dist-packages/stk")
+set(PYTHON_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}/site-packages/stk")
+#set(PYTHON_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}/dist-packages/stk")
 
 # Module list to work though - these will be built for python compatibility
 set(PYTHON_MODULES "DataTypes" "Algorithms")
@@ -72,26 +72,27 @@ foreach(MOD ${PYTHON_MODULES})
 
     # Wrapping    
     vtk_wrap_python3(${MOD} PY_SRC_FILES "${SRC_FILES}")
+
+    set(PREVMODS_USE "${PREVMODS}")
+    list(REVERSE PREVMODS_USE)
     
     # PythonD target
-    add_library(${MOD}PythonD ${PY_SRC_FILES} ${SRC_FILES})
-    target_link_libraries(${MOD}PythonD    
-                            ${PREVMODS}    
-                            ${VTK_LIBRARIES}
-                            vtkWrappingPythonCore 
-                            ${VTK_PYTHON_LIBRARIES}
+    add_library(${MOD}PythonD SHARED ${PY_SRC_FILES} ${SRC_FILES})
+    target_link_libraries(${MOD}PythonD 
+                            ${PREVMODS_USE}
+                            ${VTK_PYTHOND_LIBS}
+                            ${PYTHON_LIBRARIES}
+                            vtkWrappingPythonCore
                             )
-    
-    #message(STATUS "${MOD} PREVMODS = ${PREVMODS}")
-    #message(STATUS "VTK_PYTHOND_LIBS = ${VTK_PYTHOND_LIBS}")
     
     # Shared library target
     add_library(${MOD} MODULE ${MOD}Init.cxx)
     target_link_libraries(${MOD} 
                         ${MOD}PythonD  
-                        ${VTK_PYTHOND_LIBS}
-                        ${Boost_LIBRARIES}
                         )
+
+#                        ${PREVMODS_USE}
+#                        ${VTK_PYTHOND_LIBS}
           
     set_target_properties(${MOD} PROPERTIES PREFIX "")
     if(APPLE) 
@@ -105,11 +106,18 @@ foreach(MOD ${PYTHON_MODULES})
     add_dependencies(pythonWrapping ${MOD})
 
     # Install targets
-    install(TARGETS ${MOD} ${MOD}PythonD 
+    install(TARGETS ${MOD} 
         RUNTIME DESTINATION bin
         LIBRARY DESTINATION ${PYTHON_INSTALL_DIR}
         ARCHIVE DESTINATION ${PYTHON_INSTALL_DIR}
         )
+
+    install(TARGETS ${MOD}PythonD 
+        RUNTIME DESTINATION bin
+        LIBRARY DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_PREFIX}/lib/
+        )
+
 
     # Append to previous modules
     list(APPEND PREVMODS ${MOD}PythonD)

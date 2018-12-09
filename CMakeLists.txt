@@ -127,16 +127,13 @@ add_custom_command(
 )
 add_custom_target(stk_build ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/build/timestamp)
 
-
 # Install logic 
 set(INSTALL_CODE "execute_process(")
 set(INSTALL_CODE "${INSTALL_CODE} COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/setup.py")
 set(INSTALL_CODE "${INSTALL_CODE} install --prefix=${CMAKE_INSTALL_PREFIX} ${PYTHON_BUILD_INSTALL_OPTIONS}")
 set(INSTALL_CODE "${INSTALL_CODE} WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}")
 set(INSTALL_CODE "${INSTALL_CODE} )")
-#message("INSTALL_CODE = ${INSTALL_CODE}")
 install(CODE "${INSTALL_CODE}")
-
 
 #######################################
 # Add the python dir (for testing)
