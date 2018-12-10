@@ -45,7 +45,7 @@ set(PYTHON_MODULES "DataTypes" "Algorithms")
 # Modules that will be linked but not built for python
 #set(LINKED_MODULES "" )
 
-# Listof VTK modules used
+# List of VTK modules used
 set(VTK_MODULES_USED vtkCommonDataModel vtkCommonCore vtkCommonExecutionModel) 
 set(VTK_PYTHOND_LIBS)
 foreach(TMP_LIB ${VTK_MODULES_USED})  
@@ -61,7 +61,7 @@ foreach(MOD ${LINKED_MODULES})
     include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../cpp/${MOD}/")
 endforeach()
 
-#Add the non-built modules to link against
+# Add the non-built modules to link against
 foreach(MOD ${LINKED_MODULES})
     list(APPEND PREVMODS Sp${MOD})
 endforeach()
@@ -85,24 +85,35 @@ foreach(MOD ${PYTHON_MODULES})
     set(PREVMODS_USE "${PREVMODS}")
     list(REVERSE PREVMODS_USE)
     
-    # PythonD target
-    add_library(${MOD}PythonD SHARED ${PY_SRC_FILES} ${SRC_FILES})
-    target_link_libraries(${MOD}PythonD 
+    if(APPLE)
+        # I don't know why but the linking seems to work difefrently on OSX compared to linux
+        #  if the supporting libraries are not linked directly to the PythonD it fails.
+        add_library(${MOD}PythonD SHARED ${PY_SRC_FILES} ${SRC_FILES})
+        target_link_libraries(${MOD}PythonD 
                             ${PREVMODS_USE}
+                            vtkWrappingPythonCore
                             ${VTK_PYTHOND_LIBS}
                             ${PYTHON_LIBRARIES}
-                            vtkWrappingPythonCore
                             )
-    
-    # Shared library target
-    add_library(${MOD} MODULE ${MOD}Init.cxx)
-    target_link_libraries(${MOD} 
+        add_library(${MOD} MODULE ${MOD}Init.cxx)
+        target_link_libraries(${MOD} 
                         ${MOD}PythonD  
                         )
-
-#                        ${PREVMODS_USE}
-#                        ${VTK_PYTHOND_LIBS}
-          
+    else()
+        # Building pythonD shared library and python module on non-OSX
+        add_library(${MOD}PythonD SHARED ${PY_SRC_FILES} ${SRC_FILES})
+        target_link_libraries(${MOD}PythonD 
+                            vtkWrappingPythonCore
+                            )
+        add_library(${MOD} MODULE ${MOD}Init.cxx)
+        target_link_libraries(${MOD} 
+                        ${MOD}PythonD  
+                        ${PREVMODS_USE}
+                        ${VTK_PYTHOND_LIBS}
+                        )
+    endif()
+  
+                                  
     set_target_properties(${MOD} PROPERTIES PREFIX "")
     if(APPLE) 
         set_target_properties(${MOD} PROPERTIES SUFFIX ".so")
