@@ -142,6 +142,9 @@ public:
 	void DeepCopy(vtkDataObject* src);
 
 	//! Create an empty copy
+	/*!
+	 * create same data volume but does not ste any values
+	 */
 	virtual void EmptyCopy(vtkDataObject* src);
 
 	//! Copy but without allocating any scalars

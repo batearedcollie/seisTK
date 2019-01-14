@@ -216,7 +216,7 @@ public:
 	 * 2= Shallow
 	 * 3= Deep
 	 */
-	void CopyHeaders(vtkDataObject* src,int CompyType=3);
+	void CopyHeaders(vtkDataObject* src,int CopyType=3);
 
 protected:
 
