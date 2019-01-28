@@ -91,7 +91,9 @@ def ConvertKeysFromVTK(inputDict,lambdaDict={"starttime": lambda x: x if x == No
     '''
     return ConvertKeys(inputDict,lambdaDict)
 
-def AddHeaderKeys(tHeader,inputDict,**kwargs):
+    
+
+def AddHeaderKeys(tHeader,inputDict,field_prefix="",**kwargs):
     '''
     Adds a row in the header table using inputDict 
     
@@ -100,11 +102,15 @@ def AddHeaderKeys(tHeader,inputDict,**kwargs):
 
     @param inputDict: input dictionary
     @type inputDict: dictionary
+    
+    @param field_prefix: string used to perform recusrive calls
+    @type field_prefix: string
+    
     '''
 
     dd = ConvertKeysToVTK(inputDict,**kwargs)
 
-    # Get list of keys ion table
+    # Get list of keys in table
     cols = GetHeaderKeys(tHeader)
     
     # Add value for keys we already have in table
@@ -119,12 +125,31 @@ def AddHeaderKeys(tHeader,inputDict,**kwargs):
 
     # Add the columns that do not already exist
     for kk in inputDict:
+        
         if kk not in cols:
-            addArray=vtk.vtkVariantArray()
-            for i in range(0,insertID+1): addArray.InsertNextValue(None)
-            addArray.SetName(kk)
-            tHeader.AddColumn(addArray)
-            tHeader.SetValueByName(insertID,kk,dd[kk])
+
+            # This should catch obspy headers and generic dictionaries
+            if isinstance(dd[kk],dict)==True or hasattr(dd[kk], '__dict__')==True:
+
+                # We have a dictionary - acll recursively pre-pending the key
+                fp = field_prefix
+                if field_prefix != "": fp += "_"
+                fp += kk + "_"
+                AddHeaderKeys(tHeader,dd[kk],field_prefix=fp,**kwargs)
+            else:
+                
+ 
+                          
+                addArray=vtk.vtkVariantArray()
+                for i in range(0,insertID+1): addArray.InsertNextValue(None)
+
+                nn = field_prefix
+                if field_prefix != "": nn += "_"
+                nn += kk
+
+                addArray.SetName(nn)
+                tHeader.AddColumn(addArray)
+                tHeader.SetValueByName(insertID,nn,dd[kk])
 
 def GetTraceHeaderDict(traceID,tHeader,**kwargs):
     '''

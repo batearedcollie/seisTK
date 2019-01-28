@@ -121,7 +121,9 @@ def tracePanelGenerate(array=np.zeros([1,100]),
     
 #     for dd in traceDictList: tpD.appendDict(dd)
 
-    for dd in traceDictList: th.AddHeaderKeys(tpD.GetTraceHeaderTable(),dd,**kwargs)
+    for dd in traceDictList: 
+        th.AddHeaderKeys(tpD.GetTraceHeaderTable(),dd,**kwargs)
+
 
 
     return tpD
