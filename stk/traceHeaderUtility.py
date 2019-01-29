@@ -34,6 +34,16 @@ def GetHeaderKeys(tHeader):
     '''
     return [ tHeader.GetColumnName(i) for i in range(0,tHeader.GetNumberOfColumns())]
 
+def AddBlankHeaderField(tHeader,fieldname):
+    '''
+    Adds a blank header field field to a header table
+    '''
+    nrow = tHeader.GetNumberOfRows()
+    arr = vtk.vtkVariantArray()
+    for i in range(0,nrow): arr.InsertNextValue(None)
+    arr.SetName(fieldname)
+    tHeader.AddColumn(arr)
+    
 def ConvertKeys(inputDict,lambdaDict):
     '''
     Used to convert dictionary keys for representation in the trace header table and python
@@ -41,7 +51,7 @@ def ConvertKeys(inputDict,lambdaDict):
     @param inputDict: input dictionary to be converted
     @type inputDict: dictionary
     
-    @param lambdaDict: dictionary containg lambda functions to apply to specifi keys
+    @param lambdaDict: dictionary containg lambda functions to apply to specific keys
     @type lambdaDict: dictionary    
     
     @return: updated version of inputDict
@@ -91,11 +101,30 @@ def ConvertKeysFromVTK(inputDict,lambdaDict={"starttime": lambda x: x if x == No
     '''
     return ConvertKeys(inputDict,lambdaDict)
 
-    
-
-def AddHeaderKeys(tHeader,inputDict,field_prefix="",**kwargs):
+def ExtractHeaderDataFromDict(inputDict,field_prefix=""):
     '''
-    Adds a row in the header table using inputDict 
+    Extracts the field names and data for header fields from the keys of an input dictinoary
+    If a dictionary item is itself a dictionary or dictionary like object the 
+    the function is called recursively.
+    
+    Results is a single level dictionary where the key names are the fields for the header
+    '''
+    outDict={}
+    for kk in inputDict:
+        if isinstance(inputDict[kk],dict)==True or hasattr(inputDict[kk], '__dict__')==True:
+                prefix = kk+"__"
+                if field_prefix != "": prefix = field_prefix+prefix
+                outDict.update( ExtractHeaderDataFromDict(inputDict[kk],field_prefix=prefix) )
+        else:
+            fieldname=kk
+            if field_prefix != "": fieldname = field_prefix+kk
+            outDict[fieldname]=inputDict[kk]
+    return outDict
+
+def AddHeaderKeys(tHeader,inputDict,create_new_row=True,**kwargs):
+    '''
+    Adds a row in the header table using inputDict. If an item in the input dictionary is 
+    itself a dictionary or dictionary like object the function is called recursively 
     
     @param tHeader: traceHeader object to be updated
     @type tHeader: stk.DataTypes.vtkTraceHeader
@@ -105,51 +134,31 @@ def AddHeaderKeys(tHeader,inputDict,field_prefix="",**kwargs):
     
     @param field_prefix: string used to perform recusrive calls
     @type field_prefix: string
-    
+      
     '''
 
     dd = ConvertKeysToVTK(inputDict,**kwargs)
 
-    # Get list of keys in table
-    cols = GetHeaderKeys(tHeader)
+    # Extract field name and data from this input dictionary
+    headerDict = ExtractHeaderDataFromDict(dd)
+    #for kk in headerDict: print(kk)
     
-    # Add value for keys we already have in table
-    addArray=vtk.vtkVariantArray()
-    for cc in cols: 
-        if cc in dd:
-            addArray.InsertNextValue(dd[cc])
-        else:
-            addArray.InsertNextValue(None)
-    insertID=0
-    if addArray.GetNumberOfValues()!=0: insertID=tHeader.InsertNextRow(addArray)    
-
-    # Add the columns that do not already exist
-    for kk in inputDict:
-        
-        if kk not in cols:
-
-            # This should catch obspy headers and generic dictionaries
-            if isinstance(dd[kk],dict)==True or hasattr(dd[kk], '__dict__')==True:
-
-                # We have a dictionary - acll recursively pre-pending the key
-                fp = field_prefix
-                if field_prefix != "": fp += "_"
-                fp += kk + "_"
-                AddHeaderKeys(tHeader,dd[kk],field_prefix=fp,**kwargs)
-            else:
+    # Add the fields to the table
+    existing_columns = GetHeaderKeys(tHeader)
+    for ff in headerDict:
+        if ff not in existing_columns: AddBlankHeaderField(tHeader,ff)
                 
- 
-                          
-                addArray=vtk.vtkVariantArray()
-                for i in range(0,insertID+1): addArray.InsertNextValue(None)
+    # Create an array to insert as the next row
+    fieldlist = GetHeaderKeys(tHeader)
 
-                nn = field_prefix
-                if field_prefix != "": nn += "_"
-                nn += kk
-
-                addArray.SetName(nn)
-                tHeader.AddColumn(addArray)
-                tHeader.SetValueByName(insertID,nn,dd[kk])
+    arr = vtk.vtkVariantArray()
+    for ff in fieldlist: 
+        if ff in headerDict: 
+            arr.InsertNextValue( headerDict[ff] )
+        else:
+            arr.InsertNextValue( None )
+    tHeader.InsertNextRow(arr) 
+        
 
 def GetTraceHeaderDict(traceID,tHeader,**kwargs):
     '''

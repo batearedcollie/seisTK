@@ -119,11 +119,8 @@ def tracePanelGenerate(array=np.zeros([1,100]),
     vtk_data.SetName("TraceData")
     tpD.GetPointData().SetScalars(vtk_data)
     
-#     for dd in traceDictList: tpD.appendDict(dd)
-
     for dd in traceDictList: 
         th.AddHeaderKeys(tpD.GetTraceHeaderTable(),dd,**kwargs)
-
 
 
     return tpD
