@@ -37,6 +37,7 @@ Copyright 2017 Bateared Collie
 #include "vtkInformationVector.h"
 #include "vtkVariant.h"
 #include "vtkVariantArray.h"
+#include "vtkIntArray.h"
 #include "vtkDataSetAttributes.h"
 #include "vtkDataArray.h"
 
@@ -201,6 +202,11 @@ public:
 		return ret;
 	}
 
+	//! Adds an id field to a table
+	int AddIdField();
+
+	//! Get the maximum value from a field
+	vtkVariant GetColumnMaxVal(const char* col);
 
 protected:
 

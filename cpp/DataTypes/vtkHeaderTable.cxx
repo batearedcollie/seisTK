@@ -80,15 +80,64 @@ void vtkHeaderTable::DeepCopy(vtkDataObject* src)
 //Empty
 void vtkHeaderTable::EmptyCopy(vtkDataObject* src)
 {
-	std::vector<std::string> keys = this->GetKeyList();
 
-	this->Initialize();
+	if (vtkHeaderTable* const pdo = vtkHeaderTable::SafeDownCast(src))
+    {
+		this->Initialize();
+		std::vector<std::string> keys = pdo->GetKeyList();
+		for(int i=0;i<keys.size();i++){
+			vtkSmartPointer<vtkVariantArray> vv = vtkSmartPointer<vtkVariantArray>::New();
+			vv->SetName(keys[i].c_str());
+			this->AddColumn(vv);
+		}
+		this->Modified();
+    }
+}
 
-	for(int i=0;i<keys.size();i++){
-		vtkSmartPointer<vtkVariantArray> vv = vtkSmartPointer<vtkVariantArray>::New();
-		vv->SetName(keys[i].c_str());
+int vtkHeaderTable::AddIdField()
+{
+	if(this->KeyExists("id")==false){
+		vtkSmartPointer<vtkIntArray> vv = vtkSmartPointer<vtkIntArray>::New();
+		vv->SetName("id");
+		for(int i=1;i<=this->GetNumberOfRows();i++){
+			vv->InsertNextValue(i);
+		}
 		this->AddColumn(vv);
+	}else{
+		for(int i=1;i<=this->GetNumberOfRows();i++){
+			int vv = this->GetColumnMaxVal("id").ToInt();
+			vtkSmartPointer<vtkIntArray> ids = vtkIntArray::SafeDownCast( this->GetColumnByName("id") );
+			for(vtkIdType ii=0;ii<ids->GetNumberOfValues();ii++){
+				vtkVariant vi = ids->GetVariantValue(ii);
+				if(vi.IsValid()==false){
+					vv++;
+					vi = vv;
+				}
+			}
+		}
 	}
+
+	return 1;
+}
+
+vtkVariant vtkHeaderTable::GetColumnMaxVal(const char* col)
+{
+	vtkSmartPointer<vtkVariantArray> vv = vtkVariantArray::SafeDownCast( this->GetColumnByName(col) );
+
+	vtkVariant vout;
+	for(vtkIdType i=0;i<vv->GetNumberOfValues();i++){
+		vtkVariant vt = vv->GetValue(i);
+		if(vt.IsValid()==true){
+			if(vout.IsValid()==false){
+				vout = vt;
+			}else{
+				if(vt>vout){
+					vout = vt;
+				}
+			}
+		}
+	}
+	return vout;
 }
 
 /**************************************/

@@ -218,6 +218,9 @@ public:
 	 */
 	void CopyHeaders(vtkDataObject* src,int CopyType=3);
 
+	//! Adds Id fields to all the trace headers
+	int AddHeaderIdFields();
+
 protected:
 
 	vtkTracePanelData(){
@@ -235,8 +238,8 @@ private:
 																			/*!
 																			 * Each table consists of name table pair
 																			 *
-																			 * Only 1 table is presence by default
-																			 * "traces" contiains 1 row per trace
+																			 * Only 1 table is present by default
+																			 * "traces" contains 1 row per trace
 																			 */
 
 };
