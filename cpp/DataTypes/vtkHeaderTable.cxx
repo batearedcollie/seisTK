@@ -104,15 +104,12 @@ int vtkHeaderTable::AddIdField()
 		}
 		this->AddColumn(vv);
 	}else{
-		for(int i=1;i<=this->GetNumberOfRows();i++){
-			int vv = this->GetColumnMaxVal("id").ToInt();
-			vtkSmartPointer<vtkIntArray> ids = vtkIntArray::SafeDownCast( this->GetColumnByName("id") );
-			for(vtkIdType ii=0;ii<ids->GetNumberOfValues();ii++){
-				vtkVariant vi = ids->GetVariantValue(ii);
-				if(vi.IsValid()==false){
-					vv++;
-					vi = vv;
-				}
+		int vv = this->GetColumnMaxVal("id").ToInt();
+		for(vtkIdType ii=0;ii<this->GetNumberOfRows();ii++){
+			vtkVariant vi = this->GetValueByName(ii,"id");
+			if(vi.IsValid()==false){
+				vv++;
+				this->SetValueByName(ii,"id",vv);
 			}
 		}
 	}
