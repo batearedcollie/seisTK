@@ -221,6 +221,10 @@ int*  vtkHyperCube::GetNDcoordinateFrom3D(int* coord3D)
 
 int vtkHyperCube::RemoveNullDimensions()
 {
+	// Test for calling with degenerate grid
+	if(this->GetNumberOfPoints()==1){
+		return 1;
+	}
 
 	int nd = this->NDimensions;
 	int dims[nd];
