@@ -164,6 +164,54 @@ int main()
 		#endif
 	}
 
+
+	{
+		cout << "\n\n*********************************\n";
+		cout << "Adding fields to trace headers\n";
+
+		vtkSmartPointer<vtkHeaderTable> hdr = vtkSmartPointer<vtkHeaderTable>::New();
+
+		// Set up basic table
+		vtkSmartPointer<vtkVariantArray> xpos = vtkSmartPointer<vtkVariantArray>::New();
+		xpos->SetName("xpos");
+		vtkSmartPointer<vtkVariantArray> ypos = vtkSmartPointer<vtkVariantArray>::New();
+		ypos->SetName("ypos");
+		vtkSmartPointer<vtkVariantArray> stn_id = vtkSmartPointer<vtkVariantArray>::New();
+		stn_id->SetName("stn_id");
+		for ( unsigned int i = 0; i < 10; i++ ) {
+			xpos->InsertNextValue( vtkVariant( double(i*20.) ) );
+			ypos->InsertNextValue( vtkVariant( double(i*-20.) ) );
+			stn_id->InsertNextValue( vtkVariant(i) );
+		}
+
+		hdr->AddColumn(xpos);
+		hdr->AddColumn(ypos);
+		hdr->AddColumn(stn_id);
+
+		hdr->AddIdField();
+
+		hdr->Dump();
+
+
+		std::vector<double> dst;
+		std::vector<std::string> ss;
+		for(int i=0;i<hdr->GetNumberOfRows();i++){
+			double xx = hdr->GetValueByName(i,"xpos").ToDouble();
+			double yy = hdr->GetValueByName(i,"ypos").ToDouble();
+			dst.push_back( sqrt(xx*xx+yy*yy) );
+
+			std::string sx =  hdr->GetValueByName(i,"xpos").ToString();
+			std::string sy =  hdr->GetValueByName(i,"ypos").ToString();
+			std::string st = sx+"-"+sy;
+			ss.push_back(st);
+		}
+		hdr->AddField("distance",dst.data());
+		hdr->AddField("text",ss.data());
+
+		hdr->Dump();
+	}
+
+
 	return 0;
 }
 

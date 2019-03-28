@@ -33,6 +33,8 @@ Copyright 2017 Bateared Collie
 
 #include "vtkHeaderTable.h"
 
+#include "vtkStringArray.h"
+
 /**************************************/
 // Definitions
 

@@ -41,11 +41,33 @@ Copyright 2017 Bateared Collie
 #include "vtkDataSetAttributes.h"
 #include "vtkDataArray.h"
 
+#include "vtkIntArray.h"
+#include "vtkFloatArray.h"
+#include "vtkDoubleArray.h"
+#include "vtkStringArray.h"
+
 #include <string>
 #include <iostream>
 
 //! Definitions (vtk types go up to 40)
 #define VTK_TRACE_HEADER 91
+
+
+#define VTKHEADERTABLE_ADDFEILD_MACRO(type,vtkType) 	\
+	int AddField(const char* name, type* vals)			\
+	{													\
+		if(this->KeyExists(name)==true){				\
+		vtkErrorMacro("Attempting at add field "<< 		\
+				name << " but field already exists")	\
+		}												\
+	vtkSmartPointer<vtkType> arr = vtkSmartPointer<vtkType>::New();	\
+	arr->SetName(name);									\
+	for(int i=0;i<this->GetNumberOfRows();i++){			\
+		arr->InsertNextValue((type)vals[i]);			\
+	}													\
+	this->AddColumn(arr);								\
+	return 1;											\
+	}
 
 /*!
 
@@ -207,6 +229,21 @@ public:
 
 	//! Get the maximum value from a field
 	vtkVariant GetColumnMaxVal(const char* col);
+
+	//! Adds a field to the table
+	VTKHEADERTABLE_ADDFEILD_MACRO(float,vtkFloatArray)
+
+	//! Adds a field to the table
+	VTKHEADERTABLE_ADDFEILD_MACRO(int,vtkIntArray)
+
+	//! Adds a field to the table
+	VTKHEADERTABLE_ADDFEILD_MACRO(double,vtkDoubleArray)
+
+	//! Adds a field to the table
+	VTKHEADERTABLE_ADDFEILD_MACRO(char*,vtkStringArray)
+
+	//! Adds a field to the table
+	VTKHEADERTABLE_ADDFEILD_MACRO(std::string,vtkStringArray)
 
 protected:
 
