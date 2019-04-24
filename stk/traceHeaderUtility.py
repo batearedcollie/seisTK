@@ -30,7 +30,7 @@ from obspy import UTCDateTime
 
 def GetHeaderKeys(tHeader):
     '''
-    Returns a list fo the header keys in traceheader object
+    Returns a list for the header keys in traceheader object
     '''
     return [ tHeader.GetColumnName(i) for i in range(0,tHeader.GetNumberOfColumns())]
 
@@ -159,7 +159,6 @@ def AddHeaderKeys(tHeader,inputDict,create_new_row=True,**kwargs):
             arr.InsertNextValue( None )
     tHeader.InsertNextRow(arr) 
         
-
 def GetTraceHeaderDict(traceID,tHeader,**kwargs):
     '''
     Returns a trace header as a dictionary

@@ -60,8 +60,13 @@ message("PYTHON_VERSION_STRING = ${PYTHON_VERSION_STRING}")
 
 #######################################
 # VTK
-find_package(VTK REQUIRED)
+
+if(NOT VTK_USE_FILE)
+    find_package(VTK REQUIRED)
+endif()
+
 include(${VTK_USE_FILE})
+message(STATUS "VTK_USE_FILE = ${VTK_USE_FILE}")
 message(STATUS "VTK_LIBRARIES = ${VTK_LIBRARIES}")
 message(STATUS "VTK_INSTALL_PREFIX = ${VTK_INSTALL_PREFIX}")
 
