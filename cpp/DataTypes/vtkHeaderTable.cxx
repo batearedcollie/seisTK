@@ -32,8 +32,8 @@ Copyright 2017 Bateared Collie
 #include "vtkObjectFactory.h"
 
 #include "vtkHeaderTable.h"
-
 #include "vtkStringArray.h"
+#include "vtkAbstractArray.h"
 
 /**************************************/
 // Definitions
@@ -121,11 +121,11 @@ int vtkHeaderTable::AddIdField()
 
 vtkVariant vtkHeaderTable::GetColumnMaxVal(const char* col)
 {
-	vtkSmartPointer<vtkVariantArray> vv = vtkVariantArray::SafeDownCast( this->GetColumnByName(col) );
 
+	vtkAbstractArray* vabs = this->GetColumnByName(col);
 	vtkVariant vout;
-	for(vtkIdType i=0;i<vv->GetNumberOfValues();i++){
-		vtkVariant vt = vv->GetValue(i);
+	for(vtkIdType i=0;i<vabs->GetNumberOfValues();i++){
+		vtkVariant vt = vabs->GetVariantValue(i);
 		if(vt.IsValid()==true){
 			if(vout.IsValid()==false){
 				vout = vt;

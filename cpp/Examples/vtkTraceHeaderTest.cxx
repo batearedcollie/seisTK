@@ -209,6 +209,10 @@ int main()
 		hdr->AddField("text",ss.data());
 
 		hdr->Dump();
+
+		// Test adding a second Id field
+		hdr->AddIdField();
+
 	}
 
 
