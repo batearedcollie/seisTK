@@ -284,14 +284,16 @@ void vtkHyperCube::SetDimensions(int* dims)
 	// Compute extents vector
 	std::vector<int> ext = this->makeExtentsFromDims(dims);
 
-	// Set the Full extents
+	// Set the Full extents and bounding box
 	this->SetFullExtent(ext.data());
+	this->ComputeFullBounds();
 }
 
 void  vtkHyperCube::SetDimensions(int Ndim, int* dims)
 {
 	this->SetNDimensions(Ndim);
 	this->SetDimensions(dims);
+
 }
 
 int* vtkHyperCube::GetFullDimensions(){
@@ -333,6 +335,39 @@ void vtkHyperCube::SetFullExtent(int* ext)
 		this->SetExtent(ext3d,false);
 	}
 	this->Modified();
+}
+
+void vtkHyperCube::SetFullBounds(double* vv)
+{
+	// Set full extents
+	this->FullBounds.resize(2*this->NDimensions);
+	for(int i=0;i< 2*this->NDimensions;i++){this->FullBounds[i]=vv[i];}
+
+	// Set 3D geometric bounds
+	if(this->NDimensions==3){
+		for(int i=0;i <6;i++){this->Bounds[i]=vv[i];}
+	}else{
+		double bb3d[6]={0,0,0,0,0,0};
+		bb3d[0]=vv[0]; bb3d[1]=vv[1];
+		if(this->NDimensions>1){bb3d[2]=vv[2]; bb3d[3]=vv[3]; }
+		if(this->NDimensions>2){bb3d[4]=vv[4]; bb3d[5]=vv[5]; }
+		if(this->NDimensions>3){
+			bb3d[4]=0;
+			bb3d[5]=this->GetDimensions()[2];
+		}
+		for(int i=0;i <6;i++){this->Bounds[i]=bb3d[i];}
+	}
+}
+
+void vtkHyperCube::ComputeFullBounds()
+{
+	std::vector<double> bb;
+	int* dims= this->GetFullDimensions();
+	for(int i=0;i<this->NDimensions;i++){
+		bb.push_back(this->GetAxisOrigin(i));
+		bb.push_back((dims[i]-1)*this->GetAxisSpacing(i)+this->GetAxisOrigin(i));
+	}
+	this->SetFullBounds(bb.data());
 }
 
 int vtkHyperCube::GetDataDimension()
@@ -377,7 +412,8 @@ int vtkHyperCube::ComputeStructuredCoordinates (const double* x,
 												this->FullExtent.data(),
 												this->Spacing.data(),
 												this->Origin.data(),
-												this->GetBounds());
+												this->GetFullBounds()
+												);
 }
 
 int vtkHyperCube::ComputeStructuredCoordinates( const double* x,
@@ -397,6 +433,7 @@ int vtkHyperCube::ComputeStructuredCoordinates( const double* x,
 	int isInBounds = 1;
 	for (int i = 0; i < this->NDimensions; i++)
 	{
+
 		double d = x[i] - origin[i];
 	    double doubleLoc = d / spacing[i];
 
@@ -424,6 +461,7 @@ int vtkHyperCube::ComputeStructuredCoordinates( const double* x,
 	    // low boundary check
 	    else if ( ijk[i] < minExt)
 	      {
+
 	      if ( (spacing[i] >= 0 && x[i] >= bounds[i*2]) ||
 	           (spacing[i] < 0 && x[i] <= bounds[i*2 + 1]) )
 	        {
@@ -660,7 +698,7 @@ void vtkHyperCube::SetSpacing(double* spc)
 	for(int i=this->NDimensions;i<3;i++){
 		this->Spacing[i]=1.;
 	}
-	//vtkImageData::SetSpacing(this->Spacing.data());
+	this->ComputeFullBounds();
 }
 
 void vtkHyperCube::SetOrigin(double* org)
@@ -671,7 +709,7 @@ void vtkHyperCube::SetOrigin(double* org)
 	for(int i=this->NDimensions;i<3;i++){
 		this->Origin[i]=0.;
 	}
-	//vtkImageData::SetSpacing(this->Spacing.data());
+	this->ComputeFullBounds();
 }
 
 void* vtkHyperCube::GetArrayPointer(vtkDataArray* 	array,
@@ -706,7 +744,6 @@ void vtkHyperCube::ComputeInternalExtent(int* intExt, int* tgtExt, int* bnds)
 	}
 	vtkImageData::ComputeInternalExtent(intExt,tgtExt,bnds);
 }
-
 
 void vtkHyperCube::GetNDPointFromId(vtkIdType id, int *ijk)
 {

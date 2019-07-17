@@ -187,7 +187,6 @@ public:
 		return this->GetNDcoordinateFrom3D(coord);
 	}
 
-
 	//! Remove dimensions where the length is 1
 	int RemoveNullDimensions();
 
@@ -226,6 +225,17 @@ public:
 
 	//! Function to set the full extents -  - use GetExtent() for the wrapped 3D cube
 	virtual int* GetFullExtent(){return this->FullExtent.data();}
+
+	//! Sets the full bounding box
+	virtual void SetFullBounds(double* vv);
+
+	//! Returns pointer to the full bounding box (xmin, xmax, ymin, ymax, ... )
+	virtual double* GetFullBounds(){
+		return this->FullBounds.data();
+	}
+
+	//! Computes and sets the bounding box based on the axis spacings and origins
+	void ComputeFullBounds();
 
 	// Return data dimensionality
 	virtual int GetDataDimension();
@@ -580,6 +590,7 @@ protected:
 
 		this->Spacing.resize(3,1.);
 		this->Origin.resize(3,0.);
+		this->FullBounds={0,0,0,0,0,0};
 
 		// TODO- not thread safe
 		this->Point.resize(3);
@@ -595,6 +606,7 @@ protected:
 												used to map the 3D grid.
 											*/
 	std::vector<int> FullDimensions; 	//!< Full dimensions of the object (all dimensions)
+	std::vector<double> FullBounds;		//!< Axis spacings
 	std::vector<double> Spacing;		//!< Axis spacings
 	std::vector<double> Origin;			//!< Axis origins
 
@@ -604,10 +616,6 @@ private:
 	std::vector<double> Point;			//!< for the GetPoint method (Note - not thread safe)
 	std::vector<int> iPoint;			//!< For computing positions (Note - not thread safe)
 	int coord[3];						//!< for computing 3D positions (Note - not thread safe)
-	//#if defined(_OPENMP)
-	//	#pragma omp threadprivate(Point,iPoint,coord)
-	//#endif
-
 
 	//! Internal method to compute extents from input dimensions
 	virtual std::vector<int> makeExtentsFromDims(int* dims);

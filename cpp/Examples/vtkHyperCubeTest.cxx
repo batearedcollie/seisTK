@@ -136,6 +136,17 @@ int main()
 		double pcoord[4];
 		int ret= hCube->ComputeStructuredCoordinates(coord,icoord,pcoord);
 
+		{
+		int* hdims= hCube->GetFullDimensions();
+		double* hspc= hCube->GetSpacing();
+		double* horg = hCube->GetOrigin();
+
+		cout << "\nGrid:\n";
+		cout << "N: " << hdims[0] << ", " << hdims[1] << ", " << hdims[2] << ", " << hdims[3] << endl;
+		cout << "D: " << hspc[0] << ", " << hspc[1] << ", " << hspc[2] << ", " << hspc[3] << endl;
+		cout << "O: " << horg[0] << ", " << horg[1] << ", " << horg[2] << ", " << horg[3] << endl;
+		}
+
 		cout << "Point coordinates =" << coord[0] << ","  << coord[1] << ","
 				 << coord[2] << ","  << coord[3] << endl;
 		cout << "ret=" << ret << endl;
@@ -143,6 +154,83 @@ int main()
 				 << icoord[2] << ","  << icoord[3] << endl;
 		cout << "pcoord=" << pcoord[0] << ","  << pcoord[1] << ","
 				 << pcoord[2] << ","  << pcoord[3] << endl;
+
+
+		// Try a point outside the grid
+		coord[0]=-1;
+		cout << "Trying outside grid: " << coord[0] << ", " << coord[1] << ", " << coord[2] << ", " << coord[3] << endl;
+
+		ret= hCube->ComputeStructuredCoordinates(coord,icoord,pcoord);
+		cout << "ret= " << ret << endl;
+		if(ret==1){
+			cerr << "Test failure " << endl;
+			return 1;
+		}
+
+		// Try an axis with a negative delta
+		{
+			vtkSmartPointer<vtkHyperCube> cc = vtkSmartPointer<vtkHyperCube>::New();
+			cc->DeepCopy(hCube);
+			double org[4]={0.,0.,0.,0};
+			cc->SetOrigin(org);
+			double spc[4]={1.,-1.,1.,1.};
+			cc->SetSpacing(spc);
+			int* hdims= cc->GetFullDimensions();
+			double* hspc= cc->GetSpacing();
+			double* horg = cc->GetOrigin();
+			cout << "\nGrid:\n";
+			cout << "N: " << hdims[0] << ", " << hdims[1] << ", " << hdims[2] << ", " << hdims[3] << endl;
+			cout << "D: " << hspc[0] << ", " << hspc[1] << ", " << hspc[2] << ", " << hspc[3] << endl;
+			cout << "O: " << horg[0] << ", " << horg[1] << ", " << horg[2] << ", " << horg[3] << endl;
+
+
+			std::vector<double> pp={0.5,-1.1,0.5,0.5};
+
+			cout << "pp=" << pp[0] << ", " << pp[1] << ", " << pp[2] << ", " << pp[3] << endl;
+
+			ret= cc->ComputeStructuredCoordinates(pp.data(),icoord,pcoord);
+			cout << "ret=" << ret << endl;
+			if(ret!=1){
+				cerr << "Test failure " << endl;
+				return 1;
+			}
+			cout << "icoord=" << icoord[0] << ","  << icoord[1] << ","
+					 << icoord[2] << ","  << icoord[3] << endl;
+			cout << "pcoord=" << pcoord[0] << ","  << pcoord[1] << ","
+					 << pcoord[2] << ","  << pcoord[3] << endl;
+
+			// Try an out of bound on negative axis
+			pp[1]=-2.1;
+			cout << "\npp=" << pp[0] << ", " << pp[1] << ", " << pp[2] << ", " << pp[3] << endl;
+			ret= cc->ComputeStructuredCoordinates(pp.data(),icoord,pcoord);
+			cout << "ret=" << ret << endl;
+			if(ret==1){
+				cerr << "Test failure " << endl;
+				return 1;
+			}
+
+		}
+
+		// Another test
+		{
+			vtkSmartPointer<vtkHyperCube> cc = vtkSmartPointer<vtkHyperCube>::New();
+			std::vector<int> nn={41,63,1};
+			cc->SetDimensions(3,nn.data());
+			std::vector<double> ss = {-25, 50, 1};
+			cc->SetSpacing(ss.data());
+			std::vector<double> oo = {-1500, -100, 0};
+			cc->SetOrigin(oo.data());
+
+			std::vector<double> pp={-1000, 1000, 0};
+			cout << "\npp=" << pp[0] << ", " << pp[1] << ", " << pp[2] << endl;
+			ret= cc->ComputeStructuredCoordinates(pp.data(),icoord,pcoord);
+
+			cout << "ret=" << ret << endl;
+			if(ret==1){
+				cerr << "Test failure " << endl;
+				return 1;
+			}
+		}
 
 
 		// Computing 3D from 4D coordinates and vice versa
@@ -195,9 +283,7 @@ int main()
 		cout << " Backwards id=" << idout << endl;
 		}
 
-
 	}
-
 
 	#if defined(_OPENMP)
 	{
@@ -242,7 +328,6 @@ int main()
 
 		}
 		}
-
 
 		// Make thread local copy
 		#pragma omp parallel
