@@ -401,6 +401,12 @@ int main()
 			cout << endl;
 		}
 
+		// List scalar names
+		std::vector< std::string > ss = hCube->GetScalarNames();
+		for(int ii=0;ii<ss.size();ii++){
+			cout << "ArrayName = " << ss[ii] << endl;
+		}
+
 	}
 
 

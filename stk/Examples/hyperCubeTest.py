@@ -49,6 +49,9 @@ def HyperCubeDataSet():
     cube.GetFullDimensions(dims)
     for i,nn in enumerate(dims):
         print("Length = ",nn," spacing =",cube.GetAxisSpacing(i)," origin =",cube.GetAxisOrigin(i))
+    
+    sclNames = [cube.GetScalarArrayName(i) for i in range(0,cube.GetNumberOfScalarArrays())]
+    print("ScalarNames=",sclNames)
 
 def HyperCubeMadagascarTest():
     '''

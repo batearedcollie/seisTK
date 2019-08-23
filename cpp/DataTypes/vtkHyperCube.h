@@ -577,6 +577,29 @@ public:
 	 */
 	void GetNDPointFromId(vtkIdType id, int *ijk,int * work_dims);
 
+	//! Convenience function to get a list of the scalar names
+	std::vector< std::string > GetScalarNames()
+	{
+		std::vector< std::string> rr;
+		for(int i=0;i<this->GetPointData()->GetNumberOfArrays();i++){
+			rr.push_back( this->GetPointData()->GetArray(i)->GetName() );
+		}
+		return rr;
+	}
+
+	//! Convenience function to get the number of scalar arrays
+	int GetNumberOfScalarArrays()
+	{
+		return this->GetPointData()->GetNumberOfArrays();
+	}
+
+	//! Convenience function to get a specific scalar name
+	char* GetScalarArrayName(int i=0)
+	{
+		return this->GetPointData()->GetArray(i)->GetName();
+	}
+
+
 protected:
 
 	// Constructor
