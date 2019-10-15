@@ -119,6 +119,22 @@ int vtkHeaderTable::AddIdField()
 	return 1;
 }
 
+void vtkHeaderTable::RemoveAllRows()
+{
+	vtkIdType nn = this->GetNumberOfRows();
+	for(vtkIdType ii=nn-1;ii>=0;ii--){
+		this->RemoveRow(ii);
+	}
+}
+
+void vtkHeaderTable::RemoveAllColumns()
+{
+	vtkIdType nn = this->GetNumberOfColumns();
+	for(vtkIdType ii=nn-1;ii>=0;ii--){
+		this->RemoveColumn(ii);
+	}
+}
+
 vtkVariant vtkHeaderTable::GetColumnMaxVal(const char* col)
 {
 

@@ -227,6 +227,12 @@ public:
 	//! Adds an id field to a table
 	int AddIdField();
 
+	//! Remove all rows from the table
+	void RemoveAllRows();
+
+	//! Remove all coumns from a table
+	void RemoveAllColumns();
+
 	//! Get the maximum value from a field
 	vtkVariant GetColumnMaxVal(const char* col);
 
