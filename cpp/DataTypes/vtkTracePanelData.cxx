@@ -123,6 +123,8 @@ void vtkTracePanelData::CopyHeaders(vtkDataObject* src, int CopyType)
 {
 	if (vtkTracePanelData* const pdo = vtkTracePanelData::SafeDownCast(src))
 	{
+		this->Headers.clear();
+
 		std::unordered_map<std::string,vtkSmartPointer<vtkHeaderTable>>* hdrs = pdo->GetHeaders();
 		for(std::unordered_map<std::string,vtkSmartPointer<vtkHeaderTable>>::iterator it =
 			hdrs->begin(); it != hdrs->end(); ++it) {
