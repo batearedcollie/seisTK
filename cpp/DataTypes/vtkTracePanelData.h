@@ -216,7 +216,7 @@ public:
 	 * 2= Shallow
 	 * 3= Deep
 	 */
-	void CopyHeaders(vtkDataObject* src,int CopyType=3);
+	virtual void CopyHeaders(vtkDataObject* src,int CopyType=3);
 
 	//! Adds Id fields to all the trace headers
 	int AddHeaderIdFields();
