@@ -60,6 +60,7 @@ endforeach()
 foreach(MOD ${LINKED_MODULES})
     include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../cpp/${MOD}/")
 endforeach()
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../cpp/Common/")
 
 # Add the non-built modules to link against
 foreach(MOD ${LINKED_MODULES})

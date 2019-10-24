@@ -46,6 +46,8 @@ Copyright 2017 Bateared Collie
 #include "vtkDoubleArray.h"
 #include "vtkStringArray.h"
 
+#include "stkMacros.hpp"
+
 #include <string>
 #include <iostream>
 
@@ -139,7 +141,7 @@ public:
 	static vtkHeaderTable *New();
 
 	//! Typedef
-	vtkTypeMacro(vtkHeaderTable,vtkTable)
+	stkTypeMacro(vtkHeaderTable,vtkTable)
 
 	//! Printself
 	void PrintSelf(ostream &os, vtkIndent indent);

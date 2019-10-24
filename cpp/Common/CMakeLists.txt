@@ -24,48 +24,9 @@
 # TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, 
 # EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-set(HDR_FILES vtkHyperCubeAlgorithm.h 
-                vtkHeaderTableAlgorithm.h 
-                vtkTracePanelAlgorithm.h 
+# Specify sources and library name
+set(HDR_FILES stkMacros.hpp
                 )
-set(SRC_FILES vtkHyperCubeAlgorithm.cxx
-                vtkHeaderTableAlgorithm.cxx
-                vtkTracePanelAlgorithm.cxx
-                )
-
-set(LIBNAME Algorithms)
-
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../Common/")
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../DataTypes/")
-include_directories("${CMAKE_CURRENT_SOURCE_DIR}")
-
-#######################################
-# Building the library
-
-# C++ Libraries are prefixed with Sp
-set(LIBNAME "stk${LIBNAME}")
-
-add_compile_options(-std=c++11)
-
-add_library(${LIBNAME} SHARED ${SRC_FILES})
-TARGET_LINK_LIBRARIES(${LIBNAME}
-                                stkDataTypes 
-                                ${Boost_LIBRARIES} 
-                                ${PYTHON_LIBRARIES} 
-                                ${VTK_LIBRARIES})
-if(APPLE) 
-    set_target_properties(${LIBNAME} PROPERTIES SUFFIX ".so")
-    set_target_properties(${LIBNAME} PROPERTIES PREFIX "lib")
-endif()
-
-
-#######################################
-# Installation
-install(TARGETS ${LIBNAME} 
-        RUNTIME DESTINATION bin
-        LIBRARY DESTINATION lib
-        ARCHIVE DESTINATION lib
-        )
 
 foreach(hdr ${HDR_FILES})
     install(FILES "${hdr}" DESTINATION include)

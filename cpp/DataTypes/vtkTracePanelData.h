@@ -37,6 +37,8 @@ Copyright 2017 Bateared Collie
 #include "vtkDataArray.h"
 #include "vtkSmartPointer.h"
 
+#include "stkMacros.hpp"
+
 #include <unordered_map>
 #include <string>
 #include <iostream>
@@ -125,7 +127,7 @@ public:
 	static vtkTracePanelData *New();
 
 	//! Typedef
-	vtkTypeMacro(vtkTracePanelData , vtkHyperCube)
+	stkTypeMacro(vtkTracePanelData , vtkHyperCube)
 
 	//! Print self
 	/*!

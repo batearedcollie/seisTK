@@ -48,7 +48,7 @@ public:
 	static vtkHyperCubeAlgorithm *New();
 
 	//! Typedef
-	vtkTypeMacro(vtkHyperCubeAlgorithm , vtkImageAlgorithm)
+	stkTypeMacro(vtkHyperCubeAlgorithm , vtkImageAlgorithm)
 
 	//! Print self
 	void PrintSelf(ostream& os, vtkIndent indent);

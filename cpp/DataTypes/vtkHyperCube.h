@@ -37,6 +37,8 @@ Copyright 2017 Bateared Collie
 #include "vtkPointData.h"
 #include "vtkDataArray.h"
 
+#include "stkMacros.hpp"
+
 #include <iostream>
 #include <vector>
 
@@ -111,7 +113,7 @@ public:
 	static vtkHyperCube *New();
 
 	// Typedef
-	vtkTypeMacro(vtkHyperCube , vtkImageData)
+	stkTypeMacro(vtkHyperCube , vtkImageData)
 
 	//! Print self
 	void PrintSelf(ostream& os, vtkIndent indent);

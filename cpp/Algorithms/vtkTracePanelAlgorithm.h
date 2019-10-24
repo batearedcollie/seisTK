@@ -48,7 +48,7 @@ public:
 	static vtkTracePanelAlgorithm *New();
 
 	//! Typedef
-	vtkTypeMacro(vtkTracePanelAlgorithm , vtkHyperCubeAlgorithm)
+	stkTypeMacro(vtkTracePanelAlgorithm , vtkHyperCubeAlgorithm)
 
 	//! Print self
 	void PrintSelf(ostream& os, vtkIndent indent);

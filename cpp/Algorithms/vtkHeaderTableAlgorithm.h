@@ -49,7 +49,7 @@ public:
 	static vtkHeaderTableAlgorithm *New();
 
 	//! Typedef
-	vtkTypeMacro(vtkHeaderTableAlgorithm , vtkTableAlgorithm)
+	stkTypeMacro(vtkHeaderTableAlgorithm , vtkTableAlgorithm)
 
 	//! Print self
 	void PrintSelf(ostream& os, vtkIndent indent);

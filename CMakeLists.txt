@@ -110,6 +110,7 @@ enable_testing()
 
 #######################################
 # Build the modules
+add_subdirectory(cpp/Common)
 add_subdirectory(cpp/DataTypes)
 add_subdirectory(cpp/Algorithms)
 add_subdirectory(cpp/Examples)
