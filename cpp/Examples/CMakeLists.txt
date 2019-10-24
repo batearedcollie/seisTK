@@ -28,6 +28,7 @@
 include_directories ("${CMAKE_CURRENT_SOURCE_DIR}")
 include_directories ("${CMAKE_CURRENT_SOURCE_DIR}/../DataTypes")
 include_directories ("${CMAKE_CURRENT_SOURCE_DIR}/../Algorithms")
+include_directories ("${CMAKE_CURRENT_SOURCE_DIR}/../Common")
 
 
 #SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
