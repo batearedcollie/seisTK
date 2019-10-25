@@ -77,7 +77,7 @@ vtkTracePanelData* vtkTracePanelData::GetData(vtkInformationVector* v, int i)
 // Shallow copy
 void vtkTracePanelData::ShallowCopy(vtkDataObject* src)
 {
-	if (vtkTracePanelData* const pdo = vtkTracePanelData::SafeDownCast(src))
+	if (vtkTracePanelData* const pdo = vtkTracePanelData::SafeDownCast(src,false))
     {
 		this->CopyHeaders(pdo,2);
 		this->Modified();
@@ -88,7 +88,7 @@ void vtkTracePanelData::ShallowCopy(vtkDataObject* src)
 // Deep
 void vtkTracePanelData::DeepCopy(vtkDataObject* src)
 {
-	if (vtkTracePanelData* const pdo = vtkTracePanelData::SafeDownCast(src))
+	if (vtkTracePanelData* const pdo = vtkTracePanelData::SafeDownCast(src,false))
 	{
 		this->CopyHeaders(pdo,3);
 		this->Modified();
@@ -99,7 +99,7 @@ void vtkTracePanelData::DeepCopy(vtkDataObject* src)
 // Empty copy
 void vtkTracePanelData::EmptyCopy(vtkDataObject* src)
 {
-	if (vtkTracePanelData* const pdo = vtkTracePanelData::SafeDownCast(src))
+	if (vtkTracePanelData* const pdo = vtkTracePanelData::SafeDownCast(src,false))
 	{
 		this->CopyHeaders(pdo,1);
 		this->Modified();
@@ -107,11 +107,10 @@ void vtkTracePanelData::EmptyCopy(vtkDataObject* src)
 	this->Superclass::EmptyCopy(src);
 }
 
-
 // UnAllocated copy
 void vtkTracePanelData::UnAllocatedCopy(vtkDataObject* src)
 {
-	if (vtkTracePanelData* const pdo = vtkTracePanelData::SafeDownCast(src))
+	if (vtkTracePanelData* const pdo = vtkTracePanelData::SafeDownCast(src,false))
 	{
 		this->CopyHeaders(pdo,1);
 		this->Modified();
@@ -121,7 +120,7 @@ void vtkTracePanelData::UnAllocatedCopy(vtkDataObject* src)
 
 void vtkTracePanelData::CopyHeaders(vtkDataObject* src, int CopyType)
 {
-	if (vtkTracePanelData* const pdo = vtkTracePanelData::SafeDownCast(src))
+	if (vtkTracePanelData* const pdo = vtkTracePanelData::SafeDownCast(src,false))
 	{
 		this->Headers.clear();
 

@@ -83,7 +83,7 @@ void vtkHeaderTable::DeepCopy(vtkDataObject* src)
 void vtkHeaderTable::EmptyCopy(vtkDataObject* src)
 {
 
-	if (vtkHeaderTable* const pdo = vtkHeaderTable::SafeDownCast(src))
+	if (vtkHeaderTable* const pdo = vtkHeaderTable::SafeDownCast(src,false))
     {
 		this->Initialize();
 		std::vector<std::string> keys = pdo->GetKeyList();

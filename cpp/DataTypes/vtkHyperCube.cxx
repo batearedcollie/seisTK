@@ -86,7 +86,7 @@ void vtkHyperCube::ShallowCopy(vtkDataObject* src)
 
 	this->Superclass::ShallowCopy(src);
 
-	if (vtkHyperCube* const pdo = vtkHyperCube::SafeDownCast(src))
+	if (vtkHyperCube* const pdo = vtkHyperCube::SafeDownCast(src,false))
 	{
 		this->SetNDimensions(pdo->GetNDimensions());
 		this->SetSpacing(pdo->GetSpacing());
@@ -110,7 +110,7 @@ void vtkHyperCube::DeepCopy(vtkDataObject* src)
 	}
 	#endif
 
-	if (vtkHyperCube* const pdo = vtkHyperCube::SafeDownCast(src))
+	if (vtkHyperCube* const pdo = vtkHyperCube::SafeDownCast(src,false))
 	{
 		this->SetNDimensions(pdo->GetNDimensions());
 		this->SetDimensions(pdo->GetFullDimensions());
@@ -124,7 +124,7 @@ void vtkHyperCube::DeepCopy(vtkDataObject* src)
 // Empty copy
 void vtkHyperCube::EmptyCopy(vtkDataObject* src)
 {
-  if (vtkHyperCube* const pdo = vtkHyperCube::SafeDownCast(src))
+  if (vtkHyperCube* const pdo = vtkHyperCube::SafeDownCast(src,false))
     {
 	  this->SetNDimensions(pdo->GetNDimensions());
 	  this->SetDimensions(pdo->GetDimensions());
@@ -139,7 +139,7 @@ void vtkHyperCube::EmptyCopy(vtkDataObject* src)
 // Empty copy
 void vtkHyperCube::UnAllocatedCopy(vtkDataObject* src)
 {
-  if (vtkHyperCube* const pdo = vtkHyperCube::SafeDownCast(src))
+  if (vtkHyperCube* const pdo = vtkHyperCube::SafeDownCast(src,false))
     {
 	  this->SetNDimensions(pdo->GetNDimensions());
 	  this->SetDimensions(pdo->GetDimensions());

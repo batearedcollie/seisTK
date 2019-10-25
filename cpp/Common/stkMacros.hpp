@@ -33,7 +33,7 @@ Copyright 2019 Bateared Collie
 //#include "vtkMacros.h"
 
 //! A generic error message macro which can be used without a vtk object
-#define stkGenericErrorMacro(msg)									\
+#define stkGenericWarningMacro(msg)									\
   if (vtkObject::GetGlobalWarningDisplay())                         \
   {                                                                 \
     vtkOStreamWrapper::EndlType endl;                               \
@@ -73,7 +73,7 @@ Copyright 2019 Bateared Collie
       return static_cast<thisClass *>(o); 															\
     } 																								\
 	if(showError==true){																			\
-		stkGenericErrorMacro("Failure to SafeDownCast to " << thisClassName << 						\
+		stkGenericWarningMacro("Failure to SafeDownCast to " << thisClassName << 						\
 				" likely that the object was not originally derived from this class")				\
 	}																								\
     return nullptr;																					\
