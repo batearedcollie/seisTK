@@ -57,7 +57,7 @@ def ToTracePanelData(traces,origin_time=0.,name="TraceData",**kwargs):
     tlen = traces[0].data.shape[0]
     for tr in traces:
         if tr.data.shape[0] > tlen: tlen = tr.data.shape[0] 
-    mat = np.zeros([len(traces),tlen])
+    mat = np.zeros([len(traces),tlen],dtype=tr.data[0].dtype)
     for i,tr in  enumerate(traces): mat[i,:] = tr.data[:]
     
     # Create a list of trace dictionaries
