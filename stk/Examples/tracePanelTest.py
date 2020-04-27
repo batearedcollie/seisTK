@@ -24,27 +24,35 @@
 # TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, 
 # EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #
-from obspy.core.stream import Stream
-from obspy.core.trace import Trace as obsTrace
-from obspy.core import UTCDateTime 
-import numpy as np
 
+import stk
+
+if stk.useObsLn==True:
+    from obsln.core.stream import Stream
+    from obsln.core.trace import Trace as obsTrace
+    from obsln.core import UTCDateTime 
+else:
+    from obspy.core.stream import Stream
+    from obspy.core.trace import Trace as obsTrace
+    from obspy.core import UTCDateTime 
+  
+import numpy as np
 import stk.tracePanelDataUtility as tu
 import stk.traceHeaderUtility as th
-
-import stk.obspyExt as stkObs
   
-
+import stk.obspyExt as stkObs
+   
+ 
 def TraceDataSet():
     '''
     Createing a simple HyperCube data object
     '''
- 
+  
     print("\n***********************************")
     print("Generic import")
     print("***********************************")
-
-
+ 
+ 
     # Generate a simple trace panel data
     tdata = tu.tracePanelGenerate(
                         array=np.zeros([1,100]),
@@ -60,29 +68,29 @@ def TraceDataSet():
                           )
     print("Number of dimensions is ",tdata.GetNDimensions())
     print("Number of points = ",tdata.GetNumberOfPoints())
-
+ 
     print("Headers")
     tdata.GetTraceHeaderTable().Dump()
-
+ 
     dims=np.zeros([2],dtype=np.int)
-         
+          
     tdata.GetFullDimensions(dims)
     for i,nn in enumerate(dims):
         print("Length = ",nn," spacing =",tdata.GetAxisSpacing(i)," origin =",tdata.GetAxisOrigin(i))
-
+ 
 def TraceDataObsPy():
     '''
     Creating a vtkTracePanelData using obsPy objects
     '''   
-
+ 
     print("\n***********************************")
-    print("ObsPy functionality")
+    print("ObsPy / ObsLn functionality")
     print("***********************************")
-    
+     
     # Make and obspy data stream
     dta = np.zeros(100)
     dta[50]=1.
-
+ 
     st = Stream()
     data = np.zeros([100])
     hdr={'sampling_rate' : 500, 
@@ -95,31 +103,32 @@ def TraceDataObsPy():
         }
     tr = obsTrace(data=dta,header=hdr)
     st.append(tr)
-
+ 
     # Plot it 
     #st[0].plot()
- 
+  
     # Now make it into a trace panel data
     print("\nConverting to trace panel data")
     tracePanelData = stkObs.ToTracePanelData(st,origin_time=0.,name="TraceData")    
- 
+  
     dims = tracePanelData.GetDimensions()
     print("Working with trace panel data:")
     print("Dimensions = ",dims[0],dims[1],dims[2])
     print("Number of points = ",tracePanelData.GetNumberOfPoints())
-
+ 
     dlist=[]
     for i in range(0,dims[1]): dlist.append( th.GetTraceHeaderDict(i,tracePanelData.GetTraceHeaderTable()) )
-    
+     
     for i,dd in enumerate(dlist):
         print("Dictionary for trace ",i)
         for kk in dd: print("\t",kk," : ",dd[kk])
-       
+        
 #     # Convert back to obspy
     print("\nBack to ObsPy data")
     updatedObsPy = stkObs.ToObsPy(tracePanelData) 
     print(updatedObsPy)
 
 if __name__ == '__main__':
+
     TraceDataSet()
     TraceDataObsPy()

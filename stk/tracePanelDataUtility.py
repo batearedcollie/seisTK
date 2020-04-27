@@ -31,7 +31,12 @@ from stk.DataTypes import vtkTracePanelData
 
 import stk.traceHeaderUtility as th
 
-from obspy.core import UTCDateTime
+import stk 
+if stk.useObsLn==True:
+    from obsln.core import UTCDateTime
+else:
+    from obspy.core import UTCDateTime
+    
 import numpy as np
 
 def tracePanelGenerate(array=np.zeros([1,100]),

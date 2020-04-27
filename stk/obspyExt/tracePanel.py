@@ -26,8 +26,15 @@
 #
 from vtk.util import numpy_support
 
-from obspy.core.stream import Stream as obsStream
-from obspy.core.trace import Trace as obsTrace
+import stk
+
+if stk.useObsLn==True:
+    from obsln.core.stream import Stream as obsStream
+    from obsln.core.trace import Trace as obsTrace 
+else:
+    from obspy.core.stream import Stream as obsStream
+    from obspy.core.trace import Trace as obsTrace   
+
 
 import stk.tracePanelDataUtility as tu
 import stk.traceHeaderUtility as th

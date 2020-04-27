@@ -34,4 +34,16 @@ __vname__="master"
 __versionshort__= str(__majorversion__)+"."+str(__minorversion__)
 __version__= str(__majorversion__)+"."+str(__minorversion__)+"-"+str(__vname__)
 
-pass
+# Set up import of obsPy or ObsLn
+useObsLn=False
+try:
+    import obspy
+except ImportError:
+    try:
+        import obsln
+    except ImportError:
+        raise Exception("Could not find ObsPy or ObsLn - required for pyhton functionality")
+         
+    useObsLn=True
+    
+

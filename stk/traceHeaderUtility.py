@@ -26,7 +26,12 @@
 #
 
 import vtk
-from obspy import UTCDateTime 
+
+import stk
+if stk.useObsLn==True:
+    from obsln.core import UTCDateTime
+else:
+    from obspy.core import UTCDateTime
 
 def GetHeaderKeys(tHeader):
     '''

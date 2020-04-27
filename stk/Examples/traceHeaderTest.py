@@ -29,7 +29,11 @@ from stk.DataTypes import vtkHeaderTable
 import stk.traceHeaderUtility as tu
 
 import vtk
-from obspy import UTCDateTime
+
+try:
+    from obsln import UTCDateTime
+except ImportError:
+    from obspy import UTCDateTime
 
 def BasicHeaderFunctionality():
     '''

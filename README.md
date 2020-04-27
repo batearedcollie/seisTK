@@ -24,7 +24,7 @@ Installation
 
 * VTK (compiled with Python bindings) [https://github.com/Kitware/VTK]
 
-* ObsPy [https://github.com/obspy/obspy]
+* ObsPy [https://github.com/obspy/obspy] or ObsLn [https://github.com/batearedcollie/obsln]
 
 * Madagascar (for the tests) [https://github.com/ahay/src/] - compiled with python/ m8r bindings
 
