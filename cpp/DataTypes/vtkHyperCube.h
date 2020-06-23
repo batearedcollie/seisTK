@@ -504,6 +504,20 @@ public:
 		this->SetSpacing(spc);
 	}
 
+	//! Setting spacing - on first 2 axis
+	virtual void SetSpacing(double dx, double dy)
+	{
+		double spc[3]={dx,dy,1.};
+		this->SetSpacing(spc);
+	}
+
+	//! Setting spacing - on first axis
+	virtual void SetSpacing(double dx)
+	{
+		double spc[3]={dx,1.,1.};
+		this->SetSpacing(spc);
+	}
+
 	//! Setting spacing
 	virtual void SetSpacing(double* spc);
 
@@ -539,6 +553,18 @@ public:
 
 	//! Set axis origins
 	virtual void SetOrigin(double* );
+
+	//! Set axis origin on first axis
+	virtual void SetOrigin(double x){
+		double org[3]={x,0.,0.};
+		this->SetOrigin(org);
+	}
+
+	//! Set axis origin on first axis
+	virtual void SetOrigin(double x, double y){
+		double org[3]={x,y,0.};
+		this->SetOrigin(org);
+	}
 
 	//! Get axis origins
 	virtual double* GetOrigin(){return this->Origin.data();}
