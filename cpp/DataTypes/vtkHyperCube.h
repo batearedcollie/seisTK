@@ -600,8 +600,8 @@ public:
 	/*!
 	 * returns
 	 * =======
-	 * ijk - the point coordinates
-	 * work_dims - the dimensions of the cube
+	 * ijk - the point coordinates (allocated to ND)
+	 * work_dims - the dimensions of the cube (allocated to ND)
 	 */
 	void GetNDPointFromId(vtkIdType id, int *ijk,int * work_dims);
 
