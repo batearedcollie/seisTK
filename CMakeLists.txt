@@ -192,6 +192,11 @@ set(INSTALL_CODE "${INSTALL_CODE} WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}"
 set(INSTALL_CODE "${INSTALL_CODE} )")
 install(CODE "${INSTALL_CODE}")
 
+
+#######################################
+# Add the common directory - not built as moduls
+add_subdirectory(Common)
+
 #######################################
 # Add the python dir 
 add_subdirectory(stk)
