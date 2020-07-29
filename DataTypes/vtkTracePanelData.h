@@ -201,7 +201,7 @@ public:
 	{
 		if(forceOverWrite ==false){
 			if(this->HeaderTableExists(key)==true){
-				vtkErrorMacro("Header table " << key << " already exists")
+				vtkErrorMacro("Header table " << key << " already exists");
 				return nullptr;
 			}
 		}
@@ -243,6 +243,12 @@ private:
 																			 * Only 1 table is present by default
 																			 * "traces" contains 1 row per trace
 																			 */
+
+	//! Make sure copy constructor is disabled
+	vtkTracePanelData(const vtkTracePanelData&) = delete;
+
+	//! Make sure asigment constructor is disabled
+	void operator=(const vtkTracePanelData&) = delete;
 
 };
 

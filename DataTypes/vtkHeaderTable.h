@@ -60,7 +60,7 @@ Copyright 2017 Bateared Collie
 	{													\
 		if(this->KeyExists(name)==true){				\
 		vtkErrorMacro("Attempting at add field "<< 		\
-				name << " but field already exists")	\
+				name << " but field already exists");	\
 		}												\
 	vtkSmartPointer<vtkType> arr = vtkSmartPointer<vtkType>::New();	\
 	arr->SetName(name);									\
@@ -265,6 +265,12 @@ protected:
 
 private:
 
+
+	//! Make sure copy constructor is disabled
+	vtkHeaderTable(const vtkHeaderTable&) = delete;
+
+	//! Make sure asigment constructor is disabled
+	void operator=(const vtkHeaderTable&) = delete;
 };
 
 

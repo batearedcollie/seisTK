@@ -26,62 +26,64 @@ Copyright 2017 Bateared Collie
  EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef SEISTK_ALGORITHMS_VTKTRACEHEADERALGORITHM_H_
-#define SEISTK_ALGORITHMS_VTKTRACEHEADERALGORITHM_H_
+#ifndef SEISTK_CPP_ALGORITHMS_VTKHYPERCUBEALGORITHM_H_
+#define SEISTK_CPP_ALGORITHMS_VTKHYPERCUBEALGORITHM_H_
 
 // Includes
-#include "vtkHeaderTable.h"
-#include "vtkTableAlgorithm.h"
 #include "vtkSmartPointer.h"
-
-
+#include "vtkHyperCube.h"
+#include "vtkImageAlgorithm.h"
 
 /*!
-\brief Abstract base algorithm class for working with trace header data.
+\brief Base algorithm class for working with vtkHyperCube data.
+
+Special thanks to Dave Gobbi and team at Kitware for advice in putting this together
 
 */
-class VTK_EXPORT vtkHeaderTableAlgorithm : public vtkTableAlgorithm
+class VTK_EXPORT vtkHyperCubeAlgorithm : public vtkImageAlgorithm
 {
-
 public:
 
 	//! New method
-	static vtkHeaderTableAlgorithm *New();
+	static vtkHyperCubeAlgorithm *New();
 
 	//! Typedef
-	stkTypeMacro(vtkHeaderTableAlgorithm , vtkTableAlgorithm)
+	stkTypeMacro(vtkHyperCubeAlgorithm , vtkImageAlgorithm)
 
 	//! Print self
 	void PrintSelf(ostream& os, vtkIndent indent);
 
 	//! Interface the algorithm to the Pipeline's passes.
-	//int ProcessRequest(vtkInformation*,
-	//                             vtkInformationVector**,
-	//                            vtkInformationVector*);
+	int ProcessRequest(vtkInformation*,
+	                             vtkInformationVector**,
+	                             vtkInformationVector*);
 
 	//! Return pointer to output data
-	vtkHeaderTable* GetOutput(int port=0){
-		return vtkHeaderTable::SafeDownCast(this->GetOutputDataObject(port));
+	vtkHyperCube* GetOutput(int port=0){
+		return vtkHyperCube::SafeDownCast(this->GetOutputDataObject(port));
 	}
+
 
 protected:
 
-	vtkHeaderTableAlgorithm(){
+	//! Constructor
+	vtkHyperCubeAlgorithm(){
 		this->SetNumberOfInputPorts(1);
 		this->SetNumberOfOutputPorts(1);
 	}
 
-	//! Fill input ports - to take vtkTracePanelData objects
+	//! Fill input ports - to take vtkHyperCube objects
 	virtual int FillInputPortInformation(int port, vtkInformation* info);
 
-	//! Fill output ports - to take vtkTracePanelData objects
+	//! Fill output ports - to take vtkHyperCube objects
 	virtual int FillOutputPortInformation(int port, vtkInformation* info);
 
-//	//! Request update extent
-//		virtual int RequestUpdateExtent(
-//		  vtkInformation* vtkNotUsed(request),
-//		  vtkInformationVector** inputVector,
-//		  vtkInformationVector* vtkNotUsed(outputVector));
+	//! Request update extent
+	virtual int RequestUpdateExtent(
+	  vtkInformation* vtkNotUsed(request),
+	  vtkInformationVector** inputVector,
+	  vtkInformationVector* vtkNotUsed(outputVector));
+
 
 	//! Produce output of proper type
 	virtual int RequestDataObject(vtkInformation* request,
@@ -92,14 +94,20 @@ protected:
 	virtual int RequestData(vtkInformation* request,
 	                          vtkInformationVector** inputVector,
 	                          vtkInformationVector* outputVector){
-		vtkErrorMacro("Developer Error RequestData not implemented")
+		vtkErrorMacro("Developer Error RequestData not implemented");
 		return 0;
 	}
+
+
 private:
 
+	//! Make sure copy constructor is disabled
+	vtkHyperCubeAlgorithm(const vtkHyperCubeAlgorithm&) = delete;
 
+	//! Make sure asigment constructor is disabled
+	void operator=(const vtkHyperCubeAlgorithm&) = delete;
 
 };
 
 
-#endif /* SEISTK_ALGORITHMS_VTKTRACEHEADERALGORITHM_H_ */
+#endif /* SEISTK_CPP_ALGORITHMS_VTKHYPERCUBEALGORITHM_H_ */

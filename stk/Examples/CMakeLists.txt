@@ -34,21 +34,9 @@ file(COPY ${PYTHON_TESTS} DESTINATION ${CMAKE_CURRENT_BINARY_DIR} )
 #####################################
 # Add test targets
 #
-# Note we explicitly set the LD_LIBARARY_PATH and DYLD_LIBRARY_PATH
+# Note we are using system LD_LIBRARY_PATH etc.
+#  soe will run from install location.
 #
-#set(Link_Libs "DataTypes" "Algorithms")
-#foreach(Lnk_LIB ${Link_Libs})
-#    set(LibDIR "${CMAKE_CURRENT_BINARY_DIR}/../${Lnk_LIB}")
-#    set(LibPathString "${LibPathString}:${LibDIR}")
-#endforeach()
-
-set(LibPathString "${CMAKE_CURRENT_BINARY_DIR}/../../stk/")
-set(LibPathString "${LibPathString}:${CMAKE_CURRENT_BINARY_DIR}/../../cpp/DataTypes/")
-set(LibPathString "${LibPathString}:${CMAKE_CURRENT_BINARY_DIR}/../../cpp/Algorithms/")
-set(LibPathString "${LibPathString}:${VTK_INSTALL_PREFIX}/lib")
-
-set(LD_String "${LibPathString}:${VTK_INSTALL_PREFIX}/lib:$ENV{LD_LIBRARY_PATH}")
-set(DYLD_String "${LibPathString}:${VTK_INSTALL_PREFIX}/lib:$ENV{DYLD_LIBRARY_PATH}")
 
 # Now make testing and running targets
 file(GLOB tests "${CMAKE_CURRENT_BINARY_DIR}/*Test.py")
@@ -60,13 +48,13 @@ foreach(test ${tests})
     if(SEISTK_DISABLE_MADAGASCAR_EXT)
         set(COMMAND_ARGS "--no-madagascar")
     endif() 
-
+    
     add_custom_target("run_${name}"
                   COMMAND "${CMAKE_COMMAND}" 
                   "-E" "env" 
-                  "DYLD_LIBRARY_PATH=:${DYLD_String}" 
-                  "LD_LIBRARY_PATH=${LD_String}" 
-                  "PYTHONPATH=${CMAKE_CURRENT_BINARY_DIR}/../../:$ENV{PYTHONPATH}"
+                  "DYLD_LIBRARY_PATH=:$ENV{DYLD_LIBRARY_PATH}" 
+                  "LD_LIBRARY_PATH=$ENV{LD_LIBRARY_PATH}" 
+                  "PYTHONPATH=$ENV{PYTHONPATH}"
                   "${PYTHON_EXECUTABLE}" "./${name}.py" "${COMMAND_ARGS}"
                   WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                   VERBATIM
@@ -76,9 +64,9 @@ foreach(test ${tests})
     add_test(NAME ${name} 
            COMMAND "${CMAKE_COMMAND}" 
            "-E" "env" 
-           "DYLD_LIBRARY_PATH=:${DYLD_String}" 
-           "LD_LIBRARY_PATH=${LD_String}" 
-           "PYTHONPATH=${CMAKE_CURRENT_BINARY_DIR}/../../:$ENV{PYTHONPATH}"
+           "DYLD_LIBRARY_PATH=:$ENV{DYLD_String}" 
+           "LD_LIBRARY_PATH=$ENV{LD_String}" 
+           "PYTHONPATH=$ENV{PYTHONPATH}"
            "${PYTHON_EXECUTABLE}" "./${name}.py" "${COMMAND_ARGS}"
            WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
            )

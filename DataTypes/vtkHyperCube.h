@@ -105,7 +105,7 @@ into the 3rd dimension of the 3D image cube.
 
 
 */
-class VTK_EXPORT vtkHyperCube : public vtkImageData
+class  vtkHyperCube : public vtkImageData
 {
 public:
 
@@ -327,7 +327,7 @@ public:
 	 */
 	virtual void GetVoxelGradient(int* ijk, vtkDataArray *s, vtkDataArray *g){
 		if(this->NDimensions<3){
-			vtkErrorMacro("vtkHyperCube::GetVoxelGradient not supported  for NDimension>3- developer error")
+			vtkErrorMacro("vtkHyperCube::GetVoxelGradient not supported  for NDimension>3- developer error");
 			return;
 		}
 		this->GetVoxelGradient(ijk[0],ijk[1],ijk[2],s,g);
@@ -347,7 +347,7 @@ public:
 	virtual void GetVoxelGradient(int i, int j, int k, vtkDataArray *s, vtkDataArray *g)
 	{
 		if(this->NDimensions<3){
-			vtkErrorMacro("vtkHyperCube::GetVoxelGradient not supported  for NDimension>3- developer error")
+			vtkErrorMacro("vtkHyperCube::GetVoxelGradient not supported  for NDimension>3- developer error");
 			return;
 		}
 		vtkImageData::GetVoxelGradient(i,j,k,s,g);
@@ -364,7 +364,7 @@ public:
 	 */
 	virtual void GetPointGradient(int* ijk, vtkDataArray *s, double* g){
 		if(this->NDimensions<3){
-			vtkErrorMacro("vtkHyperCube::GetVoxelGradient not supported  for NDimension>3- developer error")
+			vtkErrorMacro("vtkHyperCube::GetVoxelGradient not supported  for NDimension>3- developer error");
 			return;
 		}
 		this->GetPointGradient(ijk[0],ijk[1],ijk[2],s,g);
@@ -382,7 +382,7 @@ public:
 	virtual void GetPointGradient(int i, int j, int k, vtkDataArray *s, double* g)
 	{
 		if(this->NDimensions<3){
-			vtkErrorMacro("vtkHyperCube::GetVoxelGradient not supported  for NDimension>3- developer error")
+			vtkErrorMacro("vtkHyperCube::GetVoxelGradient not supported  for NDimension>3- developer error");
 			return;
 		}
 		vtkImageData::GetPointGradient(i,j,k,s,g);
@@ -484,7 +484,7 @@ public:
 
 	//! This method is disabled
 	virtual void CopyAndCastFrom(vtkHyperCube* inData,int* 	extent){
-		vtkErrorMacro("vtkHyperCube::CopyAndCastFrom - not supported  - Developer error")
+		vtkErrorMacro("vtkHyperCube::CopyAndCastFrom - not supported  - Developer error");
 		return;
 	}
 
@@ -493,7 +493,7 @@ public:
 		if(this->NDimensions<=3){
 			return vtkImageData::Crop(updateExtent);
 		}
-		vtkErrorMacro("vtkHyperCube::Crop - not supported  - for HyperCubes with N dimension > 3")
+		vtkErrorMacro("vtkHyperCube::Crop - not supported  - for HyperCubes with N dimension > 3");
 		return;
 	}
 
@@ -649,7 +649,7 @@ protected:
 	}
 
 	// Destructor
-	//~vtkHyperCube(){}
+	~vtkHyperCube(){}
 
 	int NDimensions;					//!< Number of dimensions
 	std::vector<int> FullExtent;		/*!< Full extents of the object (all dimensions)
@@ -677,6 +677,12 @@ private:
 	//! Returns the index of a point in ND (unwarped) coordinates.
 	int getNDcoordinateFrom3D(int* coord3D,int* coordND);
 
+
+	//! Make sure copy constructor is disabled
+	vtkHyperCube(const vtkHyperCube&) = delete;
+
+	//! Make sure asigment constructor is disabled
+	void operator=(const vtkHyperCube&) = delete;
 };
 
 

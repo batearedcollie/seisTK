@@ -162,7 +162,7 @@ int vtkHyperCube::ReallocateScalars(int dataType, int numComponents,int Ndim, in
 	if(oldCube->GetGridSizeInBytes()>this->GetGridSizeInBytes()){
 		vtkWarningMacro("Old size ("<< oldCube->GetGridSizeInBytes() <<
 				" is greater than new size(" << this->GetGridSizeInBytes() <<
-				")a partial copy will be performed")
+				")a partial copy will be performed");
 	}
 
 	char* out = (char*) this->GetScalarPointer();
@@ -594,7 +594,7 @@ float vtkHyperCube::GetScalarComponentAsFloat(int* coords,int component,int coor
 {
 
 	if(this->get3DcoordinateFromND(coords,coord_workspace)!=1){
-		vtkErrorMacro("Error computing cooridnate")
+		vtkErrorMacro("Error computing coordinate");
 		return 0.;
 	}
 	return vtkImageData::GetScalarComponentAsFloat(coord_workspace[0],
@@ -607,7 +607,7 @@ float vtkHyperCube::GetScalarComponentAsFloat(int* coords,int component)
 {
 
 	if(this->get3DcoordinateFromND(coords,this->coord)!=1){
-		vtkErrorMacro("Error computing cooridnate")
+		vtkErrorMacro("Error computing coordinate");
 		return 0.;
 	}
 	return vtkImageData::GetScalarComponentAsFloat(this->coord[0],
@@ -619,7 +619,7 @@ float vtkHyperCube::GetScalarComponentAsFloat(int* coords,int component)
 void vtkHyperCube::SetScalarComponentFromFloat(int* ijk,int component,float v,int coord_workspace[3])
 {
 	if(this->get3DcoordinateFromND(ijk,coord_workspace)!=1){
-		vtkErrorMacro("Error computing coordinate")
+		vtkErrorMacro("Error computing coordinate");
 		return;
 	}
 	return vtkImageData::SetScalarComponentFromFloat(coord_workspace[0],
@@ -631,7 +631,7 @@ void vtkHyperCube::SetScalarComponentFromFloat(int* ijk,int component,float v,in
 void vtkHyperCube::SetScalarComponentFromFloat(int* ijk,int component,float v)
 {
 	if(this->get3DcoordinateFromND(ijk,this->coord)!=1){
-		vtkErrorMacro("Error computing coordinate")
+		vtkErrorMacro("Error computing coordinate");
 		return;
 	}
 	return vtkImageData::SetScalarComponentFromFloat(this->coord[0],
@@ -644,7 +644,7 @@ float vtkHyperCube::GetScalarComponentAsDouble(int* coords,int component,int coo
 {
 
 	if(this->get3DcoordinateFromND(coords,coord_workspace)!=1){
-		vtkErrorMacro("Error computing coordinate")
+		vtkErrorMacro("Error computing coordinate");
 		return 0.;
 	}
 	return vtkImageData::GetScalarComponentAsDouble(coord_workspace[0],
@@ -657,7 +657,7 @@ float vtkHyperCube::GetScalarComponentAsDouble(int* coords,int component)
 {
 
 	if(this->get3DcoordinateFromND(coords,this->coord)!=1){
-		vtkErrorMacro("Error computing coordinate")
+		vtkErrorMacro("Error computing coordinate");
 		return 0.;
 	}
 	return vtkImageData::GetScalarComponentAsDouble(this->coord[0],
@@ -669,7 +669,7 @@ float vtkHyperCube::GetScalarComponentAsDouble(int* coords,int component)
 void vtkHyperCube::SetScalarComponentFromDouble(int* ijk,int component,double v,int coord_workspace[3])
 {
 	if(this->get3DcoordinateFromND(ijk,coord_workspace)!=1){
-		vtkErrorMacro("Error computing coordinate")
+		vtkErrorMacro("Error computing coordinate");
 		return;
 	}
 	return vtkImageData::SetScalarComponentFromDouble(coord_workspace[0],
@@ -681,7 +681,7 @@ void vtkHyperCube::SetScalarComponentFromDouble(int* ijk,int component,double v,
 void vtkHyperCube::SetScalarComponentFromDouble(int* ijk,int component,double v)
 {
 	if(this->get3DcoordinateFromND(ijk,this->coord)!=1){
-		vtkErrorMacro("Error computing coordinate")
+		vtkErrorMacro("Error computing coordinate");
 		return;
 	}
 	return vtkImageData::SetScalarComponentFromDouble(this->coord[0],
@@ -740,7 +740,7 @@ void vtkHyperCube::ComputeInternalExtent(int* intExt, int* tgtExt, int* bnds)
 {
 	if(this->NDimensions>3){
 		vtkErrorMacro("Developer Error routine not supported "
-				" for ND > 3 got "<< this->NDimensions)
+				" for ND > 3 got "<< this->NDimensions);
 	}
 	vtkImageData::ComputeInternalExtent(intExt,tgtExt,bnds);
 }

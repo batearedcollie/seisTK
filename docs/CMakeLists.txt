@@ -47,14 +47,11 @@ if(BUILD_DOCUMENTATION)
                       WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                       COMMENT "Generating API documentation with Doxygen"
                       DEPENDS ${doxyfile} 
-                            ${ProcSupport} 
                             ${DataTypes} 
-                            ${HyperCubeFilters} 
-                            ${TraceTimeWindowFilters} 
-                            ${TracePanelFilters}
+                            ${Algorithms} 
+
                       VERBATIM)
 
     install(DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/html DESTINATION doc/seisTK)
-
 
 endif()

@@ -1,0 +1,7 @@
+NAME
+  STK::Algorithms
+LIBRARY_NAME
+  Algorithms
+DEPENDS
+  VTK::CommonCore
+  STK::DataTypes

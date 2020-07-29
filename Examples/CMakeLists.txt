@@ -36,18 +36,25 @@ include_directories ("${CMAKE_CURRENT_SOURCE_DIR}/../Common")
 #######################################
 # C executeables and test
 add_executable(vtkHyperCubeTest vtkHyperCubeTest.cxx)
-target_link_libraries(vtkHyperCubeTest stkDataTypes)
+target_link_libraries(vtkHyperCubeTest DataTypes
+                                        ${VTK_LIBRARIES}
+                                        )
 
 add_executable(vtkTraceHeaderTest vtkTraceHeaderTest.cxx)
-target_link_libraries(vtkTraceHeaderTest stkDataTypes)
+target_link_libraries(vtkTraceHeaderTest DataTypes
+                                        ${VTK_LIBRARIES}
+                                        )
+
 
 add_executable(vtkTracePanelTest vtkTracePanelTest.cxx)
-target_link_libraries(vtkTracePanelTest stkDataTypes)
+target_link_libraries(vtkTracePanelTest DataTypes
+                                        ${VTK_LIBRARIES}
+                                        )
 
 add_library(vtkSimpleTraceFilter SHARED vtkSimpleTraceFilter.cxx)
 TARGET_LINK_LIBRARIES(vtkSimpleTraceFilter
-                                stkDataTypes 
-                                stkAlgorithms
+                                DataTypes 
+                                Algorithms
                                 ${Boost_LIBRARIES} 
                                 ${PYTHON_LIBRARIES} 
                                 ${VTK_LIBRARIES})
@@ -71,7 +78,6 @@ set(LD_String "${LibPathString}:$ENV{LD_LIBRARY_PATH}")
 set(DYLD_String "${LibPathString}:$ENV{DYLD_LIBRARY_PATH}")
 
 # Now make testing and running targets
-
 file(GLOB tests "${CMAKE_CURRENT_SOURCE_DIR}/*Test.cxx")
 foreach(test ${tests})
     get_filename_component(name ${test} NAME_WE) 

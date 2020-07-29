@@ -146,7 +146,7 @@ int vtkTracePanelData::AddHeaderIdFields()
 	std::vector<std::string> keys = this->GetHeaderTableNames();
 	for(int i=0;i<keys.size();i++){
 		if(this->GetHeaderTable(keys[i].c_str())->AddIdField()!=1){
-			vtkErrorMacro("Error creating ID field for " << keys[i])
+			vtkErrorMacro("Error creating ID field for " << keys[i]);
 			return 0;
 		}
 	}

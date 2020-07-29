@@ -78,7 +78,11 @@ protected:
 
 private:
 
+	//! Make sure copy constructor is disabled
+	vtkTracePanelAlgorithm(const vtkTracePanelAlgorithm&) = delete;
 
+	//! Make sure asigment constructor is disabled
+	void operator=(const vtkTracePanelAlgorithm&) = delete;
 
 };
 
