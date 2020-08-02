@@ -1,5 +1,10 @@
 
 
+set(headers 
+    stkMacros.hpp
+)
 
-install(FILES stkMacros.hpp 
-            DESTINATION ${CMAKE_INSTALL_PREFIX}/include/)
+vtk_module_add_module(STK::Common
+  HEADER_ONLY  
+  HEADERS ${headers}
+  )

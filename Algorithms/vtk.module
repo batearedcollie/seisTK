@@ -4,4 +4,6 @@ LIBRARY_NAME
   Algorithms
 DEPENDS
   VTK::CommonCore
+  STK::Common
   STK::DataTypes
+  

@@ -5,3 +5,4 @@ LIBRARY_NAME
 DEPENDS
   VTK::CommonCore
   VTK::CommonDataModel
+  STK::Common
