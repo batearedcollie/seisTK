@@ -163,15 +163,6 @@ vtk_module_build(MODULES ${stk_modules}
 # Python Wrapping
 
 if(ENABLE_PYTHON) 
-
-    #
-    # TODO - start here - python module export is not working right
-    #   think I need to make a vtkmodules-vtk-python-module-properties.cmake
-    #
-    # Symptom is issues importign from msfpl
-    #
-
-
     vtk_module_python_default_destination(python_destination)
 
     message(STATUS "stk_cmake_destination=${stk_cmake_destination}")
