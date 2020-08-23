@@ -42,7 +42,7 @@ except ImportError:
     try:
         import obsln
     except ImportError:
-        raise Exception("Could not find ObsPy or ObsLn - required for pyhton functionality")
+        raise Exception("Could not find ObsPy or ObsLn - required for python functionality")
          
     useObsLn=True
     
