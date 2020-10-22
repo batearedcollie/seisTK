@@ -424,6 +424,7 @@ int vtkHyperCube::ComputeStructuredCoordinates( const double* x,
 											const double* origin,
 											const double* bounds)
 {
+
 	// tolerance is needed for 2D data (this is squared tolerance)
 	const double tol2 = 1e-12;
 
@@ -441,6 +442,7 @@ int vtkHyperCube::ComputeStructuredCoordinates( const double* x,
 	    ijk[i] = vtkMath::Floor(doubleLoc);
 
 	    pcoords[i] = doubleLoc - static_cast<double>(ijk[i]);
+
 
 	    int tmpInBounds = 0;
 	    int minExt = extent[i*2];
@@ -493,6 +495,20 @@ int vtkHyperCube::ComputeStructuredCoordinates( const double* x,
 	    // clear isInBounds if out of bounds for this dimension
 	    isInBounds = (isInBounds & tmpInBounds);
 	    }
+
+
+	  // Account for case where pcoords > 0.5 - we increment the coordinate and adjust the pcoords accordingly
+	  if(isInBounds){
+		  for (int i = 0; i < this->NDimensions; i++){
+			  int minExt = extent[i*2];
+			  int maxExt = extent[i*2 + 1];
+			  if(ijk[i]<maxExt && pcoords[i]>0.5){
+				  ijk[i]=ijk[i]+1;
+				  pcoords[i]=pcoords[i]-1.;
+			  }
+		  }
+	  }
+
 
 	  return isInBounds;
 }

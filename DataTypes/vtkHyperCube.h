@@ -296,17 +296,25 @@ public:
 	//! Convenience function computes the structured coordinates for a point x[3]
 	/*!
 	 * The voxel is specified by the array ijk, and the parametric coordinates
-	 *   in the cell are specified with pcoords[3].
+	 *   in the cell are specified with pcoords.
 	 *   The function returns a 0 if the point x is outside of the volume,
 	 *   and a 1 if inside the volume.
+	 *
+	 *   Note - unlike the vtkImageData method this forms the structured coordinates based on the
+	 *     nearest node not the node below.
+	 *
 	 */
 	virtual int ComputeStructuredCoordinates(const double* x, int* ijk, double* pcoords);
 
 	//! Computation of general structured coordinates - more general
 	/*!
 	 * Returns 0 if x is outside the volume, 1 if it is inside
+	 *
+	 * 	 Note - unlike the vtkImageData method this forms the structured coordinates based on the
+	 *     nearest node not the node below.
+	 *
 	 */
-	int ComputeStructuredCoordinates( const double x[3], int ijk[3],
+	int ComputeStructuredCoordinates( const double* x, int* ijk,
 												double pcoords[3],
 												const int* extent,
 												const double* spacing,
@@ -521,6 +529,13 @@ public:
 	//! Setting spacing
 	virtual void SetSpacing(double* spc);
 
+	//! Set axis spacing on an axis
+	virtual void SetAxisSpacing(int axis, double spc){
+		double* ss = this->GetSpacing();
+		ss[axis]=spc;
+		this->SetSpacing(ss);
+	}
+
 	//! Getting spacing for a single axis
 	//virtual PyObject* GetSpacingPython(){return (PyObject*)this->Spacing.data();}
 	virtual double GetAxisSpacing(int Axis){return this->Spacing[Axis];}
@@ -564,6 +579,13 @@ public:
 	virtual void SetOrigin(double x, double y){
 		double org[3]={x,y,0.};
 		this->SetOrigin(org);
+	}
+
+	//! Set origin on an axis
+	virtual void SetAxisOrigin(int axis, double org){
+		double* oo = this->GetOrigin();
+		oo[axis]=org;
+		this->SetOrigin(oo);
 	}
 
 	//! Get axis origins
