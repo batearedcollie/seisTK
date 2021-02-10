@@ -108,7 +108,7 @@ message(STATUS "BUILD_SHARED_LIBS = ${BUILD_SHARED_LIBS}")
 
 
 #######################################
-# Some general varioables
+# Some general variables
 
 set(STK_MAJOR_VERSION "1")
 set(STK_MINOR_VERSION "0")
