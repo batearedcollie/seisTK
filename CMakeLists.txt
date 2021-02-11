@@ -165,6 +165,7 @@ vtk_module_build(MODULES ${stk_modules}
 if(ENABLE_PYTHON) 
     vtk_module_python_default_destination(python_destination)
 
+	message(STATUS "python_destination=${python_destination}")
     message(STATUS "stk_cmake_destination=${stk_cmake_destination}")
 
     vtk_module_wrap_python(
@@ -224,11 +225,14 @@ if(ENABLE_PYTHON)
     add_custom_target(stk_build ALL DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/build/timestamp)
     
     
+    message(STATUS "Installing custom python modules in ${CMAKE_INSTALL_PREFIX}/${python_destination}/")
+    
+    
     # Install logic 
     set(INSTALL_CODE "execute_process(")
     set(INSTALL_CODE "${INSTALL_CODE} COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/setup.py")
     set(INSTALL_CODE "${INSTALL_CODE} install --prefix=${CMAKE_INSTALL_PREFIX} ")
-    set(INSTALL_CODE "${INSTALL_CODE} --install-lib ${CMAKE_INSTALL_PREFIX}/lib/python3.6/site-packages/ ")
+    set(INSTALL_CODE "${INSTALL_CODE} --install-lib ${CMAKE_INSTALL_PREFIX}/${python_destination}/ ")
     set(INSTALL_CODE "${INSTALL_CODE} ${PYTHON_BUILD_INSTALL_OPTIONS}")
     set(INSTALL_CODE "${INSTALL_CODE} WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}")
     set(INSTALL_CODE "${INSTALL_CODE} )")
