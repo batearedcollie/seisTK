@@ -39,8 +39,11 @@ Copyright 2017 Bateared Collie
 
 #include "stkMacros.hpp"
 
+
+
 #include <iostream>
-#include <vector>
+#include <cstring>
+//#include <vector>
 
 //! Macro to define pointer into hyper cube and run code
 #define USEHYPERCUBE_POINTERMACRO(type,cube,i,j,k,pvar,code)	\
@@ -105,6 +108,8 @@ into the 3rd dimension of the 3D image cube.
 
 
 */
+
+
 class  vtkHyperCube : public vtkImageData
 {
 public:
@@ -367,7 +372,7 @@ public:
 	 * 	scalars from which the gradient is to be computed. This method will treat structured
 	 * 	point datasets of any dimension.
 	 *
-	 * 	Disbaled for ND>3
+	 * 	Disabled for ND>3
 	 *
 	 */
 	virtual void GetPointGradient(int* ijk, vtkDataArray *s, double* g){
@@ -384,7 +389,7 @@ public:
 	 * 	scalars from which the gradient is to be computed. This method will treat structured
 	 * 	point datasets of any dimension.
 	 *
-	 * 	Disbaled for ND>3
+	 * 	Disabled for ND>3
 	 *
 	 */
 	virtual void GetPointGradient(int i, int j, int k, vtkDataArray *s, double* g)

@@ -32,6 +32,7 @@ Copyright 2017 Bateared Collie
 #include "vtkHyperCube.h"
 #include "vtkSmartPointer.h"
 
+
 #if defined(_OPENMP)
 	#include <omp.h>
 #endif
