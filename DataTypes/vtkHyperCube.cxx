@@ -96,6 +96,40 @@ void vtkHyperCube::ShallowCopy(vtkDataObject* src)
 	this->Modified();
 }
 
+int vtkHyperCube::ShallowCopy(vtkDataObject* src,
+                    const int Ndim, int* dims,
+                    double* spc,
+                    double* org,
+                    const int nComponent
+                    )
+{
+
+    this->Superclass::ShallowCopy(src);
+
+    if (vtkHyperCube* const pdo = vtkHyperCube::SafeDownCast(src,false))
+    {
+        // Check the grid size and properties are ok and then reset meta data
+        vtkIdType np=nComponent;
+        for(int ii=0;ii<Ndim;ii++) np *=dims[ii];
+
+        if(np!=pdo->GetNumberOfPoints()*pdo->GetNumberOfScalarComponents()){
+            vtkErrorMacro("Error with shallow copy grid change - grids do not match");
+            return 0;
+        }
+
+        //TODO- This is changing the original too..
+        pdo->GetPointData()->GetScalars()->SetNumberOfComponents(nComponent);
+
+        this->SetNDimensions(Ndim);
+        this->SetSpacing(spc);
+        this->SetOrigin(org);
+        this->SetDimensions(dims);
+    }
+    this->Modified();
+    return 1;
+}
+
+
 // Deep copy
 void vtkHyperCube::DeepCopy(vtkDataObject* src)
 {

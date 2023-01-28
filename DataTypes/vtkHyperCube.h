@@ -145,12 +145,26 @@ public:
 	//! Perform shallow copy
 	void ShallowCopy(vtkDataObject* src);
 
+    //! Perform shallow copy - but changing the grid parameters
+	/*!
+	 *   Warning - currently this does not completely work.
+	 *      It can be used to change grid dimensions.
+	 *      But if the number of scalars is changed then
+	 *      then it is also changed in the original.
+	 */
+    int ShallowCopy(vtkDataObject* src,
+            const int Ndim, int* dims,
+            double* spc,
+            double* org,
+            const int nComponent=1);
+
+
 	//! Perform a deep copy
 	void DeepCopy(vtkDataObject* src);
 
 	//! Create an empty copy
 	/*!
-	 * create same data volume but does not ste any values
+	 * create same data volume but does not set any values
 	 */
 	virtual void EmptyCopy(vtkDataObject* src);
 
@@ -160,7 +174,7 @@ public:
 	 */
 	virtual void UnAllocatedCopy(vtkDataObject* src);
 
-	//! Reallcates the cube preserving the original data
+	//! Reallocates the cube preserving the original data
 	/*!
 	 * This can also be used to change the scalar type etc.
 	 */
