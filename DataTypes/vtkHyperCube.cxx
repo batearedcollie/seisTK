@@ -34,6 +34,10 @@ Copyright 2017 Bateared Collie
 #include "vtkMath.h"
 #include "vtkObjectFactory.h"
 
+#include "vtkFloatArray.h"
+#include "vtkDoubleArray.h"
+
+
 /**************************************/
 // Definitions
 
@@ -117,13 +121,44 @@ int vtkHyperCube::ShallowCopy(vtkDataObject* src,
             return 0;
         }
 
-        //TODO- This is changing the original too..
-        pdo->GetPointData()->GetScalars()->SetNumberOfComponents(nComponent);
-
         this->SetNDimensions(Ndim);
         this->SetSpacing(spc);
         this->SetOrigin(org);
         this->SetDimensions(dims);
+
+        vtkIdType npoint=1;
+        for(int ii=0;ii<Ndim;ii++) npoint *=dims[ii];
+
+        if(pdo->GetScalarType()==VTK_DOUBLE){
+            vtkNew<vtkDoubleArray> b;
+            vtkDoubleArray* a = vtkDoubleArray::SafeDownCast(pdo->GetPointData()->GetScalars());
+            if (a != nullptr)
+            {
+                b->SetName(a->GetName());
+                b->SetNumberOfComponents(nComponent);
+                b->SetArray(a->GetPointer(0), npoint, 1);
+                this->GetPointData()->SetScalars(b);
+            }else{
+                vtkErrorMacro("Error with shallow copy grid change - erro in array copy");
+                return 0;
+            }
+        }else if(pdo->GetScalarType()==VTK_DOUBLE){
+            vtkNew<vtkFloatArray> b;
+            vtkFloatArray* a = vtkFloatArray::SafeDownCast(pdo->GetPointData()->GetScalars());
+            if (a != nullptr)
+            {
+                b->SetName(a->GetName());
+                b->SetNumberOfComponents(nComponent);
+                b->SetArray(a->GetPointer(0), npoint, 1);
+                this->GetPointData()->SetScalars(b);
+            }else{
+                vtkErrorMacro("Error with shallow copy grid change - erro in array copy");
+                return 0;
+            }
+        }else{
+            vtkErrorMacro("Error with shallow copy grid change - only float or double data is supported");
+            return 0;
+        }
     }
     this->Modified();
     return 1;
