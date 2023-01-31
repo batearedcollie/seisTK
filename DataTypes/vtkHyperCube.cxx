@@ -136,8 +136,9 @@ int vtkHyperCube::ShallowCopy(vtkDataObject* src,
             {
                 b->SetName(a->GetName());
                 b->SetNumberOfComponents(nComponent);
-                b->SetArray(a->GetPointer(0), npoint, 1);
+                b->SetVoidArray(a->GetPointer(0), a->GetDataSize(), 1);
                 this->GetPointData()->SetScalars(b);
+                this->GetPointData()->SetActiveScalars(b->GetName());
             }else{
                 vtkErrorMacro("Error with shallow copy grid change - error in array copy");
                 return 0;
@@ -149,8 +150,9 @@ int vtkHyperCube::ShallowCopy(vtkDataObject* src,
             {
                 b->SetName(a->GetName());
                 b->SetNumberOfComponents(nComponent);
-                b->SetArray(a->GetPointer(0), npoint, 1);
+                b->SetVoidArray(a->GetPointer(0), a->GetDataSize(), 1);
                 this->GetPointData()->SetScalars(b);
+                this->GetPointData()->SetActiveScalars(b->GetName());
             }else{
                 vtkErrorMacro("Error with shallow copy grid change - error in array copy");
                 return 0;
