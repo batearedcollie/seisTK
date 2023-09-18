@@ -89,3 +89,22 @@ def hyperCubeGenerate(array=np.zeros([100,1]),
     
      
     return tpD
+
+def extractHyperCubeAsNumpy(cube,scalar_name=None,remove_unit_dimensions=True):
+    '''
+    Extracts the HyperCube data as a numpy array
+    '''
+
+    if scalar_name==None:
+        scalar_name = cube.GetScalarName()
+    numComp = cube.GetNumberOfScalarComponents()
+    dims = [0]*cube.GetNDimensions()
+    cube.GetFullDimensions(dims)
+    arr = numpy_support.vtk_to_numpy(cube.GetPointData().GetScalars(scalar_name))
+    arr.shape=dims[::-1]+[numComp]
+    if remove_unit_dimensions==True:
+        tp = ()
+        for kk in arr.shape: 
+            if kk!=1: tp += (kk,)
+        arr.shape=tp
+    return arr
