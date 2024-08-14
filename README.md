@@ -28,7 +28,7 @@ Installation
 
 * Madagascar (for the tests) [https://github.com/ahay/src/] - compiled with python/ m8r bindings
 
-It will build succesfully without ObsPy and Madagascar, however pyhton functionality will be compromised and some tests wil fail
+It will build succesfully without ObsPy and Madagascar, however python functionality will be compromised and some tests wil fail
 The Madagascar extesions can be disabled by supplying the argument `-DSEISTK_DISABLE_MADAGASCAR_EXT:BOOL=TRUE`
 in cmake. 
 

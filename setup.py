@@ -28,8 +28,8 @@
 Set up module 
 '''
 
-#from distutils.command.build_py import build_py as _build_py
-from distutils.core import setup
+import setuptools
+from setuptools import setup
 from setuptools.command.install import install
 from setuptools.command.build_py import build_py
 
