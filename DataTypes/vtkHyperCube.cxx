@@ -727,7 +727,7 @@ void vtkHyperCube::SetScalarComponentFromFloat(int* ijk,int component,float v)
 														component,v);
 }
 
-float vtkHyperCube::GetScalarComponentAsDouble(int* coords,int component,int coord_workspace[3])
+double vtkHyperCube::GetScalarComponentAsDouble(int* coords,int component,int coord_workspace[3])
 {
 
 	if(this->get3DcoordinateFromND(coords,coord_workspace)!=1){
@@ -740,7 +740,7 @@ float vtkHyperCube::GetScalarComponentAsDouble(int* coords,int component,int coo
 													component);
 }
 
-float vtkHyperCube::GetScalarComponentAsDouble(int* coords,int component)
+double vtkHyperCube::GetScalarComponentAsDouble(int* coords,int component)
 {
 
 	if(this->get3DcoordinateFromND(coords,this->coord)!=1){

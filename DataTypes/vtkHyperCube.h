@@ -488,10 +488,10 @@ public:
 	virtual void SetScalarComponentFromFloat(int* ijk,int component,float v);
 
 	//! Gets a scalar value - thread safe
-	virtual float GetScalarComponentAsDouble(int* coords,int component,int coord_workspace[3]);
+	virtual double GetScalarComponentAsDouble(int* coords,int component,int coord_workspace[3]);
 
 	//! Gets a scalar value - not thread safe
-	virtual float GetScalarComponentAsDouble(int* coords,int component);
+	virtual double GetScalarComponentAsDouble(int* coords,int component);
 
 	//! Gets a scalar value from 3D grid
 	virtual double GetScalarComponentAsDouble(int x,int y,int z,int component){
