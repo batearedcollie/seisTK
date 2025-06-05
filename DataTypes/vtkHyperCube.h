@@ -139,6 +139,14 @@ public:
 
 	//! Get scalar name
 	virtual char* GetScalarName(){
+	    if(this->GetPointData()==nullptr){
+	        vtkErrorMacro("Called GetScalarName without point data");
+	        return nullptr;
+	    }
+	    if(this->GetPointData()->GetScalars()==nullptr){
+	        vtkErrorMacro("Called GetScalarName without scalars");
+	        return nullptr;
+	    }
 		return this->GetPointData()->GetScalars()->GetName();
 	}
 
